@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=no, width=device-width">
+
+    <link rel="stylesheet" href="../../external%20resources/css/ol.css" type="text/css">
+    <link rel="stylesheet" href="../../external%20resources/bootstrap-3.3.4/css/bootstrap.min.css" type="text/css">
+    <link rel="stylesheet" href="../../external%20resources/bootstrap-3.3.4/css/bootstrap-theme.min.css" type="text/css">
+    <link rel="stylesheet" href="../css/style.css" type="text/css">
+    <link rel="stylesheet" href="../external%20resources/css/colorpicker.min.css">
+
+    <script src="../../external%20resources/jquery.min.js" type="text/javascript"></script>
+    <script src="../../external%20resources/jquery-ui.min.js" type="text/javascript"></script>
+    <script src="../../external%20resources/ol.js" type="text/javascript"></script>
+    <script src="../external%20resources/xmlToJson.js" type="text/javascript"></script>
+    <script src="../external%20resources/bootstrap-3.3.4/js/bootstrap.min.js"></script>
+    <script src="../external%20resources/Jsonix/Jsonix-all.js"></script>
+    <script src="../external%20resources/Jsonix/SLD_1.1.0_Geoserver.js"></script>
+    <script src="../external%20resources/Jsonix/GML_2.1.2.js"></script>
+    <script src="../external%20resources/Jsonix/Filter_1.0.0.js"></script>
+    <script src="../external%20resources/Jsonix/XLINK_1.0.js"></script>
+    <script src="../external%20resources/Jsonix/OWS_1.0.0.js"></script>
+    <script src="../external%20resources/Jsonix/SMIL_2.0.js"></script>
+    <script src="../external%20resources/Jsonix/SMIL_2.0_Language.js"></script>
+    <script src="../external%20resources/Jsonix/WFS_1.0.0.js"></script>
+    <script src="../external%20resources/Jsonix/XSD_1.0.0.js"></script>
+    <script src="../external%20resources/colorpicker.min.js"></script>
+
+    <script src="../js/Map%20Functions/createMap.js" type="text/javascript"></script>
+    <script src="../js/Map Functions/drawArea.js" type="text/javascript"></script>
+    <script src="../js/Map Functions/zoomControl.js" type="text/javascript"></script>
+    <script src="../js/Map Functions/clickCoordinates.js" type="text/javascript"></script>
+    <script src="../js/Map Functions/zoomToArea.js" type="text/javascript"></script>
+    <script src="../js/Map Functions/panToPosition.js" type="text/javascript"></script>
+    <script src="../js/Map Functions/printMap.js" type="text/javascript"></script>
+    <script src="../js/Map Functions/toggleFullScreen.js" type="text/javascript"></script>
+    <script src="../js/Map Functions/retrieveData.js" type="text/javascript"></script>
+    <script src="../js/Map%20Functions/layersVisibility.js" text="text/javascript"></script>
+
+    <script src="../js/Map%20Functions/toolsDraggable.js" type="text/javascript"></script>
+    <script src="../js/Map%20Functions/createLayersJSON.js"></script>
+
+
+    <title>Dynamic HTML creation</title>
+</head>
+<body>
+
+{% include "map_template.html.twig" %}
+
+<div style="clear: both"></div>
+
+<div id="tools">
+    {% for functionBar in visorData.functionsBar %}
+        <div id="toolBar" class="functionsBar" style="position: relative; top: {{ functionBar.position.top }}; left: {{ functionBar.position.left }} ;">
+            {% for function in functionBar.functions %}
+                {% include "functions/"~function|lower~"_template.html.twig" %}
+            {% endfor %}
+        </div>
+    {% endfor %}
+</div>
+
+{% include "SLD Editor/sldEditorModal_template.html.twig" %}
+
+</body>
+</html>
+
