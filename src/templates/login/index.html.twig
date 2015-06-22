@@ -18,7 +18,13 @@
 
 <body>
 
-{% include "/login/loginForm.html.twig" %}
+{% include "/login/alert.html.twig" %}
+{{ logged }}
+{% if logged == true %}
+    {% include "/login/logout.html.twig" %}
+{% else %}
+    {% include "/login/loginForm.html.twig" %}
+{% endif %}
 
 </body>
 </html>
