@@ -6,35 +6,32 @@ var layers=[];
 var grupos=[];
 var map;
 var layersGroupedNames = [];
-var geoserver="";
+var wmsurl="";
 
-function seleccionar_geoserver(wms)
+function seleccionar_geoserver()
 {	
-			if (wms=="geoserver")
-	{
-		geoserver="http://localhost:8080/geoserver/wms";
+		resetGlobalVariables();
+		wmsurl="http://localhost:8080/geoserver/wms";
 		crear_menu();
-	}
-	else
-	{
-			var formulario_wms= "<div id=\"addCapas\">"+
+}
+
+function menu_wms()
+{
+		var formulario_wms= 	"<div id=\"addCapas\">"+
 								"<label>Introduzca Wms:</label>"+
 								"<input type=\"text\"  id=\"wms\"/>"+
 								"<button onclick='seleccionar_wms()' id=\"botonInsertar\" class=\"btn btn-primary \">Buscar Capas</button>"
 		 $('#menugeo2').empty()
-		 $('#menugeo').empty().append(formulario_wms);
-		 
-	}
-
+		 $('#menugeo').empty().append(formulario_wms);	
 }
-
 
 function seleccionar_wms()
 {
+	resetGlobalVariables();
 	var wms=document.getElementById("wms").value;
 	if (wms)
 	{
-		geoserver=""+wms+"";
+		wmsurl=""+wms+"";
 		crear_menu();	
 		}
 }
@@ -50,7 +47,7 @@ function init()
                 view: new ol.View({
      				projection: ('EPSG:4230', 'EPSG:900913'),
     				center:[-434915.610107824, 5380511.6665677687],
-    				zoom:12
+    				zoom:8
                 })
             }); 
 
@@ -66,7 +63,7 @@ $.ajax({
 		 type: "GET",
 		 jsonp: "callback",
 		  dataType: 'text',
-		   url: geoserver+'?request=getCapabilities&service=wms',
+		   url: wmsurl+'?request=getCapabilities&service=wms',
 	
 			 crossDomain : true,
 
@@ -74,6 +71,7 @@ $.ajax({
 	.then(function(response) {
 	   layers=[];
         var c = parser.read(response);
+		console.log(c);
 		var capability = c.Capability;
 		 for(var i = 0; i < capability.Layer.Layer.length; i ++){
                 layers.push(capability.Layer.Layer[i].Name);
@@ -133,29 +131,29 @@ function addGroup()
             map.addLayer(layerGroup);
 			
         });
-		$(document).ajaxStop(function(){ updateTreeLayer() });
+		$(document).ajaxStop(function(){ updateTreeLayer(wmsurl) });
 		
 }	
 		
 function addLayer(){
-	console.log(geoserver)
+	//console.log(wmsurl)
 	var capa=document.getElementById("nombrecapa").value;
     var newlayer = new ol.layer.Tile({
 			source: new ol.source.TileWMS({
 			preload: Infinity,
-			url: geoserver,
+			url: wmsurl,
 			params:{
 						'LAYERS':""+capa+"", 'TILED':true
 				}
-			//name:""+nombre+""
+			
 			}),
 			name:""+capa+""
             });
-	
+	//console.log(newlayer);
 	map.addLayer(newlayer);
-	 updateTreeLayer();
-	
-	
+	var pruebascapas=map.getLayers().getArray();
+	console.log(pruebascapas)
+	updateTreeLayer(wmsurl);
 
 }
 
