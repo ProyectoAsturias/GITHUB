@@ -124,8 +124,8 @@ body{
     -moz-box-shadow:inset rgba(255,255,255,0.6) 0 1px 1px, rgba(0,0,0,0.1) 0 1px 1px;
     -webkit-box-shadow:inset rgba(255,255,255,0.6) 0 1px 1px, rgba(0,0,0,0.1) 0 1px 1px;
     box-shadow:inset rgba(255,255,255,0.6) 0 1px 1px, rgba(0,0,0,0.1) 0 1px 1px;
-    margin-left:12px;
-    float:right;
+    margin-left:35%;
+    vertical-align: middle;
 	padding:7px 21px;
 }
 

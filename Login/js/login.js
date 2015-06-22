@@ -50,11 +50,12 @@ function login(username, password){
         data: {method: "login", username: username, password: password}
     })
         .done(function(response){
-
+            if (!JSON.parse(response).logged){
+                showErrorMessage(JSON.parse(response).errorMessage);
+                return;
+            }
+            location.reload();
         })
-        .fail(function(response){
-            showErrorMessage(response.responseText);
-        });
 }
 
 function logout(){
@@ -64,6 +65,6 @@ function logout(){
         data: {method: "logout"}
     })
         .done(function(response){
-            console.log(response);
+            location.reload();
         });
 }

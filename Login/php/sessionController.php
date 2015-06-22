@@ -1,39 +1,46 @@
 <?php
 //Hacer login con el servicio de localgis
 if (!isset($_POST["method"])){
-    echo var_dump($_POST);
-    echo "Ningún método especificado";
     return;
 }
 
 if($_POST["method"] == "login"){
-    loginAttempt($_POST["username"], $_POST["password"]);
+    echo json_encode(login($_POST["username"], $_POST["password"]));
 }elseif ($_POST["method"] == "logout"){
     logout();
 }
 
-function loginAttempt($username, $password, $redirect=""){
+function login($username, $password, $redirect=""){
     $login= true; //Llamada al servicio de Localgis
     if ($login){
+        session_start();
         $_SESSION["username"] = $username;
         updateSession();
-        return true;
+        $loginResponse = new stdClass();
+        $loginResponse->logged = true;
+        return $loginResponse;
     }else{
-        return false;
+        $loginResponse = new stdClass();
+        $loginResponse->logged = false;
+        $loginResponse->errorMessage = "Error en la autenticación.";
+        return $loginResponse;
     }
 }
 
 function logout(){
-    if (isset($_SESSION["username"])) {
-        session_unset();
-        session_destroy();
-    }
+    session_start();
+    session_unset();
+    session_destroy();
 }
 
 function updateSession(){
-    if (isset($_SESSION['LAST_ACTIVITY']) && (time() - $_SESSION['LAST_ACTIVITY'] > 36000)) {
+    if (isset($_SESSION['LAST_ACTIVITY']) && (time() - $_SESSION['LAST_ACTIVITY'] > 86400)) {
         logout();
     }
     $_SESSION['LAST_ACTIVITY'] = time();
+}
+
+function getUsername(){
+    return $_SESSION["username"];
 }
 

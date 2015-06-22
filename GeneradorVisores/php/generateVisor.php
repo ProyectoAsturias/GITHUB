@@ -1,5 +1,6 @@
 <?php
-require_once "../../Twig/vendor/autoload.php";
+require_once "../../Common/Twig/vendor/autoload.php";
+
 
 $loader = new Twig_Loader_Filesystem(__DIR__."/../templates");
 $twig = new Twig_Environment($loader, array(
@@ -7,6 +8,6 @@ $twig = new Twig_Environment($loader, array(
 ));
 $twig->addExtension(new Twig_Extension_Debug());
 
-echo $twig->render('/Visor Generator/visorgenerator.html.twig', array(
+echo $twig->render('Visor Generator/visorgenerator.html.twig', array(
     "functions" => ["areazoom", "clickcoordinates", "dataretrieve", "draw", "fullscreen", "panto", "printmap", "zoomin", "zoomout"]
 ));

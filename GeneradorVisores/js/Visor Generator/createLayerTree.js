@@ -4,7 +4,6 @@ $(document).ready(function(){
 
 function updateTreeLayer(){
     $(document).ajaxStop(function(){
-        console.log("Hola");
         var treeData = generateTreeData();
         createLayerTree(treeData);
     });
