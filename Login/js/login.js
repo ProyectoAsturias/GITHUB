@@ -54,7 +54,7 @@ function login(username, password){
                 showErrorMessage(JSON.parse(response).errorMessage);
                 return;
             }
-            location.reload();
+            window.location.replace(redirectUrl);
         })
 }
 

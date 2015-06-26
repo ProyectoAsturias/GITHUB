@@ -25,5 +25,11 @@
     {% include "loginForm.html.twig" %}
 {% endif %}
 
+<script type="application/javascript">
+    var redirectUrl = "{{ redirectUrl }}";
+    var redirectError = "{{ redirectError|json_encode }}";
+    if (redirectError != "") showErrorMessage(redirectError);
+</script>
+
 </body>
 </html>

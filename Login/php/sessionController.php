@@ -18,6 +18,7 @@ function login($username, $password, $redirect=""){
         updateSession();
         $loginResponse = new stdClass();
         $loginResponse->logged = true;
+        $loginResponse->previousUrl = $_SERVER['HTTP_REFERER'];
         return $loginResponse;
     }else{
         $loginResponse = new stdClass();

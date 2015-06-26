@@ -1,7 +1,7 @@
 <?php
 /*
  * This file uses Twig to create dynamically a visor, with data from a JSON. This JSON contains data for the map (center, zoom level and WMS target) and functions bars assigned to it.
- * When rendering index.html.twig we send him an array with the visor data, used there to render templates individually, so we only will have the needed HTML on the loaded page.
+ * When rendering mapIndex.html.twig we send him an array with the visor data, used there to render templates individually, so we only will have the needed HTML on the loaded page.
  *
  * JSON will be loaded from a Database, right now it's hardcoded.
  *
@@ -20,6 +20,6 @@ $json = "{\"mapDetails\":{\"center\":[-424339.90999686107,5372327.873439357],\"z
 
 $visorData = json_decode($json);
 
-echo $twig->render('index.html.twig', array(
+echo $twig->render('index.twig', array(
     "visorData" => $visorData
 ));
