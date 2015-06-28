@@ -1,0 +1,67 @@
+#logo{
+	margin-top: 0.5vh;
+    margin-bottom: 1vh;
+}
+
+#map{
+    height: 100%;
+}
+
+#logo img{
+    height: 12vh;
+    width: 100%;
+}
+
+#leftBar{
+    height: 86vh;
+    background-color: lightgray
+}
+
+#saveMapButton{
+    width: 80%;
+}
+
+#cancelMapButton{
+    width: 20%;
+}
+
+#logout{
+    margin-top: 2vh;
+    text-align: center;
+}
+
+#layersTree{
+    height: 67vh;
+	overflow:auto;
+}
+
+#mapContainer{
+    
+	height: 86vh;
+}
+
+#allTools{
+    height: 12vh;
+    margin-top: 0.5vh;
+    margin-bottom: 1vh;
+    background-color: #eee
+}
+
+#fuentesDatos{
+	height: 100%;
+}
+
+#inputWms{
+	margin-top:1.2vh;
+	height:25%;
+}
+
+#wms{
+	margin-top:0.2vh;
+	height:25%;
+}
+
+#loadWms{
+	margin-top:0.2vh;
+	height:25%;
+}

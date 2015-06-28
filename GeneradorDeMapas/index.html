@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="es">
+	<head>
+		<title>Generador de Mapas</title>
+
+		<link href="css/creadorMapas.css" rel="stylesheet" media="screen">
+		<link href="../Common/bootstrap-3.3.4/css/bootstrap.min.css" rel="stylesheet" media="screen">
+		<link rel='stylesheet' href='../Common/css/ol.css'>
+		<link rel='stylesheet' href='../Common/css/chosen.css'>
+		
+		<script src="../Common/js/ol.js"></script>
+		<script src='../Common/js/jquery.min.js'></script>
+		<script src='../Common/js/bootstrap-treeview.js'></script>
+		<script src="../Common/js/chosen.jquery.js"></script>
+		<script src='../Common/js/attachMap.js'></script>
+		<script src='../Common/js/createMap.js'></script>
+		<script src="../Common/bootstrap-3.3.4/js/bootstrap.min.js"></script>
+
+		<script src='./js/configuration.js'></script>
+		<script src='./js/createTreeMap.js'></script>
+		<script src='./js/createLayerTreeMap.js'></script>
+		<script src='./js/createLegend.js'></script>
+		<script src='./js/login.js'></script>
+		<script src='./js/maps.js'></script>
+		<script src='./js/mapEditor.js'></script>
+		<script src='./js/localgis.js'></script>
+		<script src='./js/wms.js'></script>
+		<script>
+			paceOptions = {
+				startOnPageLoad: false,
+				elements: false,
+				restartOnRequestAfter: true,
+			}
+        </script>
+  		<script src="/Creador_mapas/pace/pace.js"></script>
+  		<link href="/Creador_mapas/pace/themes/blue/pace-theme-loading-bar.css" rel="stylesheet" />
+	</head>
+
+	<body>
+		<div class="col-md-12 column">
+			<div id="menucapas" class="col-md-2">
+				<div>
+					<div>
+						<div id="logo" class="">
+							<img src="../Common/images/cabeceraLogoAsturias.gif">
+						</div>
+						<div id="leftBar">
+							<div id="layersTree"></div>
+							<div class="btn-group btn-group-justified" role="group">
+								<a href="#" id="saveMapButton" class="btn btn-lg btn-success"><span class="glyphicon glyphicon-floppy-disk"></span> Guardar Mapa</a>
+								<a href="#" id="cancelMapButton" class="btn btn-lg btn-danger"><span class="glyphicon glyphicon-remove"></span>  </a>
+							</div>
+							<div class="separator"></div>
+							<div id="logout">
+								<p>Conectado como: <span class="glyphicon glyphicon-user"></span><strong> USUARIO</strong></p>
+								<a href="#" class="btn btn-lg btn-warning"><span class="glyphicon glyphicon-log-out"></span> Logout</a>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="col-md-10">
+				<div class="row clearfix">
+					<div id="allTools" class="col-md-12 column">
+						<div class="col-md-2" id="fuentesDatos">
+							<!--<h6>Fuentes de datos:</h6>-->
+							<button onclick='showListWms()' class="btn btn-primary btn-block" style="height:30%"> Wms Externo</button>
+							<button onclick='showListMaps()' class="btn btn-primary btn-block" style="height:30%"> Mapas Localgis</button>
+							<button onclick='showListFamilies()' class="btn btn-primary btn-block" style="height:30%"> Familias Localgis</button>
+						</div>
+
+						<div class="col-md-10" id="selector">
+						</div>
+					</div>
+					<div id="mapContainer">
+						<div id="map" class="map"></div>
+						<div class="ol-overlay-container">
+							<div id="areaOverlay"></div>
+						</div>
+						<div class="ol-overlay-container">
+							<div id="coordinatesOverlay"></div>
+						</div>
+					</div>
+				</div>  
+			</div>
+		</div>
+	</body>
+	<script>
+		initMap();
+	</script>
+</html>

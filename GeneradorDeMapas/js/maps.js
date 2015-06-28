@@ -1,0 +1,1 @@
+alert("Aquí irá la lista de mapas y el botón de crear mapa");
