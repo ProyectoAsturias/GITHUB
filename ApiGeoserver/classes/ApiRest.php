@@ -166,15 +166,26 @@ class ApiRest {
 		return json_decode($this->runApi('workspaces/'.urlencode($workspaceName).'/datastores/'.urlencode($datastoreName).'/featuretypes.json'));
 	}
 
-	public function addLayer($workspaceName, $datastoreName, $layerName, $description = ''){
-		if($this->existsWorkspace($workspaceName) && $this->existsDatastore($workspaceName, $datastoreName)){
-			return $this->runApi('workspaces/'.urlencode($workspaceName).'/datastores/'.urlencode($datastoreName).'/featuretypes.xml', 'POST', '<featureType>
-			<name>'.$layerName.'</name>
-			<nativeName>'.$layerName.'</nativeName>
-			<description>'.htmlentities($description, ENT_COMPAT).'</description>
-			<store class="dataStore"><name>'.htmlentities($datastoreName, ENT_COMPAT).'</name></store>
-			</featureType>');
-		}
+	public function addLayer($workspaceName, $datastoreName, $layerName, $description = '', $proj){
+		/*return 'workspaces/'.urlencode($workspaceName).'/datastores/'.urlencode($datastoreName).'/featuretypes.xml'.' # POST # <featureType>'.
+			'<name>'.$layerName.'</name>'.
+			'<nativeName>'.$layerName.'</nativeName>'.
+			'<description>'.htmlentities($description, ENT_COMPAT).'</description>'.
+			'<store class="dataStore"><name>'.htmlentities($datastoreName, ENT_COMPAT).'</name></store>'.
+			'</featureType>';*/
+		$srs="";
+		if($proj==null)
+			$srs='<srs>EPSG:23030</srs>';
+		$xml='<featureType>'.
+			'<name>'.$layerName.'</name>'.
+			'<nativeName>'.$layerName.'</nativeName>'.
+			$srs.
+			'<description>'.htmlentities($description, ENT_COMPAT).'</description>'.
+			'<store class="dataStore"><name>'.htmlentities($datastoreName, ENT_COMPAT).'</name></store>'.
+			'</featureType>';
+
+		if($this->existsWorkspace($workspaceName) && $this->existsDatastore($workspaceName, $datastoreName))
+			return $this->runApi('workspaces/'.urlencode($workspaceName).'/datastores/'.urlencode($datastoreName).'/featuretypes.xml', 'POST', $xml);
 		return "Workspace or Datastore don't exists";
 	}
 
@@ -319,21 +330,40 @@ class ApiRest {
 		return json_decode($this->runApi('styles.json'));
 	}
 
-	public function createStyle($styleName, $SLD) {
-		$rv = $this->runApi('styles.xml', 'POST', '<style>
-			<name>'.htmlentities($styleName, ENT_COMPAT).'</name>
-			<filename>'.htmlentities($styleName, ENT_COMPAT).'.sld</filename>
-			</style>');
-		$this->runApi('styles/'.urlencode($styleName), 'PUT', stripslashes($SLD), 'application/vnd.ogc.sld+xml');
-		return $rv;
+	public function createStyle($SLD, $styleName, $workspaceName) {
+		//curl -v -u admin:geoserver -XPOST -H 'Content-type: application/xml' -d '<style><name>tmp</name><filename>sld.prueba</filename></style>' http://localhost:8080/geoserver/rest/workspaces/Arbolado/styles
+		$dir='styles/';
+		$file_sld = $styleName.'.sld';
+		if (!file_exists($dir) || !is_dir($dir))
+			mkdir($dir,0777);
+		$SLD=str_replace(",", " ", $SLD);
+		$fp = fopen($dir.$file_sld, 'w');
+		fwrite($fp, $SLD);
+		fclose($fp);
+
+		$style='<style><name>'.htmlentities($styleName, ENT_COMPAT).'</name><filename>'.htmlentities($dir.$file_sld, ENT_COMPAT).'</filename></style>';
+		$result=$this->runApi('workspaces/'.urlencode($workspaceName).'/styles', 'POST', $style);
+		if ($result!="")
+			return $result;
+		else
+			$this->uploadSldStyle($dir.$file_sld, $styleName, $workspaceName);
 	}
 
-	public function addStyleToLayer($layerName, $workspaceName, $styleName) {
-		// Just adds style to the list of supported styles - then WMS requests can pass the desired style
-		return $this->runApi('layers/'.urlencode($layerName).'/styles', 'POST', '<style><name>'.htmlentities($styleName, ENT_COMPAT).'</name></style>');
+	public function uploadSldStyle($url_file, $styleName, $workspaceName) {
+		$curl='curl -u admin:geoserver -XPUT -H "Content-type: application/vnd.ogc.sld +xml" -d @'.$url_file.' http://localhost:8080/geoserver/rest/workspaces/'.$workspaceName.'/styles/'.$styleName;
+		shell_exec($curl);
+		//return $this->runApi('workspaces/'.htmlentities($workspaceName, ENT_COMPAT).'/styles/'.htmlentities($styleName, ENT_COMPAT), 'PUT', '@'.htmlentities($url_file, ENT_COMPAT));
+	}
+
+	public function addStyleToLayer($layerName, $styleName, $workspaceName) {
+		return $this->runApi('layers/'.htmlentities($workspaceName, ENT_COMPAT).':'.htmlentities($layerName, ENT_COMPAT).'/styles', 'POST', '<style><name>'.htmlentities($workspaceName, ENT_COMPAT).':'.htmlentities($styleName, ENT_COMPAT).'</name></style>');
+	}
+
+	public function defaultStyleToLayer($layerName, $styleName, $workspaceName) {
+		return $this->runApi('layers/'.htmlentities($workspaceName, ENT_COMPAT).':'.htmlentities($layerName, ENT_COMPAT), 'PUT', '<layer><defaultStyle><name>'.htmlentities($workspaceName, ENT_COMPAT).':'.htmlentities($styleName, ENT_COMPAT).'</name></defaultStyle></layer>');
 	}
 
 	public function deleteStyle($styleName) {
-		return $this->runApi('styles/'.urlencode($styleName), 'DELETE');
+		return $this->runApi('styles/'.htmlentities($styleName, ENT_COMPAT), 'DELETE');
 	}
 }

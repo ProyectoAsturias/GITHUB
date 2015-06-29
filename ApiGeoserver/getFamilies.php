@@ -1,7 +1,7 @@
 <?php
-	include "ApiRest.php";
-	include "Connection.php";
-	include "LocalgisMap.php";
+	include "classes/ApiRest.php";
+	include "classes/Connection.php";
+	include "classes/LocalgisMap.php";
 
 	$idMap=537;
 	$map = new LocalgisMap($idMap);
