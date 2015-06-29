@@ -1,11 +1,11 @@
 function showListWms() {
-	alert(apiPath+"getWms.php");
-	$('#selector').html("<select id=\"selectWms\" class=\"chosen-select\" style=\"width:250px;\" tabindex=\"1\"></select>"+
-		"<div id=\"inputWms\">" +
-			"<label>Introduzca Wms:</label>" +
-			"<input type=\"text\"  id=\"wms\"/>" +
-		"</div>"+
-		"<button onclick='loadWms()' id=\"loadWms\" class=\"btn btn-primary \">Importar Wms</button>");
+	menuDatosWms();
+	$('#selector').html("<div id=\"inputWms\" class=\"col-md-6\">" +
+			"<select id=\"selectWms\" class=\"chosen-select\" tabindex=\"1\" ></select>"+
+			"<input type=\"text\"  id=\"wms\" value=\"Introduzca un WMS\" style=\"width:100%; border-radius: 7px; \"/>" +
+			"<button onclick='loadWms()' id=\"loadWms\" class=\"btn btn-primary btn-block\" >Importar Wms</button>"+
+		"</div>");
+		
 	$.ajax({
 		type : "GET",
 		url : apiPath+"getWms.php",
@@ -15,6 +15,7 @@ function showListWms() {
 			for(var i=0; i<wmsList.length; i++)
 				$("#selectWms").append("<option value=\""+wmsList[i]+"\">"+wmsList[i]+"</option>");
 			$('#selectWms').prop('selectedIndex', -1);
+			$('.chosen-select').chosen({width:"100%"});
 		},
 		error:function(error){
 			alert("Error: "+error);
@@ -24,7 +25,7 @@ function showListWms() {
 
 function loadWms() {
 	var wms;
-	if($('#wms').val()!="")
+	if($('#wms').val()!="Introduzca un WMS")
 		wms=$('#wms').val();
 	else if($("#selectWms").val()!=null)
 		wms=$("#selectWms").val();

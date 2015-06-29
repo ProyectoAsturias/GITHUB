@@ -9,8 +9,7 @@ function loadWmsTree(wms) {
 		success:function (response) {
 			var service = parser.read(response);
 			var capabilities = service.Capability;
-			//var title = service.Service.Title;
-			var title = capabilities.Layer.Title;
+			var title = service.Service.Title;
 			var layers = [];
 			console.log(wms+"?request=getCapabilities&service=wms");
 			for(var i=0; i<capabilities.Layer.Layer.length; i++){
