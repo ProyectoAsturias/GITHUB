@@ -1,9 +1,9 @@
 function showListWms() {
-
-		$('#selector').html("<div id=\"inputWms\" class=\"col-md-4\">" +
-			"<select id=\"selectWms\" class=\"chosen-select\" tabindex=\"1\" style=\"height:25%\"></select>"+
-			"<input type=\"text\"  id=\"wms\" value=\"Introduzca un WMS\" style=\"width:100%; border-radius: 7px; height:25%;\"/>" +
-			"<button onclick='loadWms()' id=\"loadWms\" class=\"btn btn-primary btn-block\" style=\"height:25%\">Importar Wms</button>"+
+	menuDatosWms();
+	$('#selector').html("<div id=\"inputWms\" class=\"col-md-6\">" +
+			"<select id=\"selectWms\" class=\"chosen-select\" tabindex=\"1\" ></select>"+
+			"<input type=\"text\"  id=\"wms\" value=\"Introduzca un WMS\" style=\"width:100%; border-radius: 7px; \"/>" +
+			"<button onclick='loadWms()' id=\"loadWms\" class=\"btn btn-primary btn-block\" >Importar Wms</button>"+
 		"</div>");
 		
 	$.ajax({

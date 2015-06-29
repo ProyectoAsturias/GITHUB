@@ -10,15 +10,18 @@
 #logo img{
     height: 12vh;
     width: 100%;
+	min-height:14ex;
 }
 
 #leftBar{
     height: 86vh;
+	min-height:740px ;
     background-color: lightgray
 }
 
 #saveMapButton{
     width: 80%;
+	font-size:12pt;
 }
 
 #cancelMapButton{
@@ -32,11 +35,12 @@
 
 #layersTree{
     height: 67vh;
+	min-height:584px;
 	overflow:auto;
 }
 
 #mapContainer{
-    
+    min-height: 740px;
 	height: 86vh;
 }
 
@@ -44,7 +48,8 @@
     height: 12vh;
     margin-top: 0.5vh;
     margin-bottom: 1vh;
-    background-color: #eee
+    background-color: #eee;
+	min-height:14ex;
 }
 
 #fuentesDatos{
@@ -53,15 +58,39 @@
 
 #inputWms{
 	margin-top:1.2vh;
-	height:25%;
 }
 
 #wms{
 	margin-top:0.2vh;
-	height:25%;
 }
 
 #loadWms{
 	margin-top:0.2vh;
-	height:25%;
+}
+
+#inputMaps{
+	margin-top:1.8vh;
+}
+
+#importMap{
+	margin-top:1.8vh;
+}
+
+body,
+.navbar-fixed-top,
+.navbar-fixed-bottom {
+  min-width: 1500px;
+  min-height: 850px;
+}
+
+/* Non-responsive overrides
+ *
+ * Utilize the following CSS to disable the responsive-ness of the container,
+ * grid system, and navbar.
+ */
+
+/* Reset the container */
+.container {
+  width: 970px;
+  max-width: none !important;
 }

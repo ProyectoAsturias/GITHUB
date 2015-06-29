@@ -2,9 +2,9 @@
 <html lang="es">
 	<head>
 		<title>Generador de Mapas</title>
-
-		<link href="css/creadorMapas.css" rel="stylesheet" media="screen">
+		<link rel="favicon/favicon-96x96" sizes="96x96" href="../Common/images/favicon-96x96.png">
 		<link href="../Common/bootstrap-3.3.4/css/bootstrap.min.css" rel="stylesheet" media="screen">
+		<link href="css/creadorMapas.css" rel="stylesheet" media="screen">
 		<link rel='stylesheet' href='../Common/css/ol.css'>
 		<link rel='stylesheet' href='../Common/css/chosen.css'>
 		
@@ -25,20 +25,21 @@
 		<script src='./js/mapEditor.js'></script>
 		<script src='./js/localgis.js'></script>
 		<script src='./js/wms.js'></script>
+		<script src='./js/menuFuentesDatos.js'></script>
 		<script>
 			paceOptions = {
 				startOnPageLoad: false,
 				elements: false,
-				restartOnRequestAfter: true,
+				restartOnRequestAfter: 40,
 			}
         </script>
-  		<script src="/Creador_mapas/pace/pace.js"></script>
-  		<link href="/Creador_mapas/pace/themes/blue/pace-theme-loading-bar.css" rel="stylesheet" />
+  		<script src="../Common/pace/pace.js"></script>
+  		<link href="../Common/pace/themes/blue/pace-theme-loading-bar.css" rel="stylesheet" />
 	</head>
 
 	<body>
-		<div class="col-md-12 column">
-			<div id="menucapas" class="col-md-2">
+		<div>
+			<div id="menucapas" class="col-xs-2">
 				<div>
 					<div>
 						<div id="logo" class="">
@@ -59,17 +60,14 @@
 					</div>
 				</div>
 			</div>
-			<div class="col-md-10">
+			<div id="contenido" class="col-xs-10">
 				<div class="row clearfix">
-					<div id="allTools" class="col-md-12 column">
-						<div class="col-md-2" id="fuentesDatos">
-							<!--<h6>Fuentes de datos:</h6>-->
-							<button onclick='showListWms()' class="btn btn-primary btn-block" style="height:30%"> Wms Externo</button>
-							<button onclick='showListMaps()' class="btn btn-primary btn-block" style="height:30%"> Mapas Localgis</button>
-							<button onclick='showListFamilies()' class="btn btn-primary btn-block" style="height:30%"> Familias Localgis</button>
+					<div id="allTools" class="col-xs-12 column">
+						<div class="col-xs-2" id="fuentesDatos">
+							
 						</div>
 
-						<div class="col-md-10" id="selector">
+						<div class="col-xs-10" id="selector">
 						</div>
 					</div>
 					<div id="mapContainer">
@@ -86,6 +84,7 @@
 		</div>
 	</body>
 	<script>
+		initMenu();
 		initMap();
 	</script>
 </html>

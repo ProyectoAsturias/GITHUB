@@ -2,9 +2,11 @@
 * Muestra el listado de mapas de localgis disponibles
 **/
 function showListMaps(){
-	$('#selector').html("<select id=\"selectMap\" class=\"chosen-select\" style=\"width:350px;\" tabindex=\"1\"></select>"+
-		"<div=\"layers\"></div>"+
-		"<button onclick='importMap()' id=\"importMap\" class=\"btn btn-primary \">Importar Mapa</button>");
+	menuDatosMapLocalgis();
+	$('#selector').html("<div id=\"inputMaps\" class=\"col-md-6\">" +
+			"<select id=\"selectMap\" class=\"chosen-select\" ></select>"+
+			"<button onclick='importMap()' id=\"importMap\" class=\"btn btn-primary btn-block\">Importar Mapa</button>"+
+		"</div>");
 	$.ajax({
 		type: "GET",
 		url: apiPath+"getMaps.php",
@@ -16,7 +18,7 @@ function showListMaps(){
 				$("#selectMap").append("<option value=\""+mapId+"\" name=\""+mapName+"\">"+mapName+"</option>");
 			}
 			$('#selectMap').prop('selectedIndex', -1);
-			$('.chosen-select').chosen();
+			$('.chosen-select').chosen({width:"100%"});
 		},
 		error:function(error){
 			alert("Error: "+error);
@@ -25,17 +27,20 @@ function showListMaps(){
 }
 
 /*function showListFamilies(){
-	$('#selector').html("<select data-placeholder=\"Seleccione una familia\" id=\"selectFamiles\" class=\"chosen-select\" style=\"width:350px;\" tabindex=\"1\">" +
-	"</select><button>Añadir Familia completa</button><div id=\"listLayers\"></div>");
+	menuDatosFamiliesLocalgis();
+	$('#selector').html("<div id=\"inputFamilies\" class=\"col-md-6\">" +
+			"<select id=\"selectFamilies\" class=\"chosen-select\" ></select>"+
+			"<button onclick='importFamily()' id=\"importFamilies\" class=\"btn btn-primary btn-block\">Importar Familia</button>"+
+		"</div>");
 	$ajax({
 		type : "GET",
 		url : apiPath+"getFamilies.php",
 		success : function (response) {
 			var familyList = JSON.parse(response);
-			var htmlListFamilies = "";
 			for(var family in familyList)
-				htmlListFamilies += "<option value=\"" + family + "\"></option>";
-			$("#selectFamilies").html=htmlListFamilies;
+				$("#selectMap").append("<option value=\""+family+"\">"+family+"</option>");
+			$('#selectFamilies').prop('selectedIndex', -1);
+			$('.chosen-select').chosen({width:"100%"});
 		}
 	})
 }
