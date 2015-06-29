@@ -1,0 +1,3 @@
+<?php
+//Elimina un grupo
+?>

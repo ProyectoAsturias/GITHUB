@@ -1,4 +1,5 @@
 function showListWms() {
+	alert(apiPath+"getWms.php");
 	$('#selector').html("<select id=\"selectWms\" class=\"chosen-select\" style=\"width:250px;\" tabindex=\"1\"></select>"+
 		"<div id=\"inputWms\">" +
 			"<label>Introduzca Wms:</label>" +

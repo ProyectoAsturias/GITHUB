@@ -1,9 +1,9 @@
 
 <?php
 
-	include "ApiRest.php";
-	include "Connection.php";
-	include "LocalgisMap.php";
+	include "classes/ApiRest.php";
+	include "classes/Connection.php";
+	include "classes/LocalgisMap.php";
 
 	
 	print(getMaps());
