@@ -13,7 +13,7 @@ function showListMaps(){
 		success: function(response) {
 			var mapList=JSON.parse(response);
 			for(var i=0;i<mapList.length; i++){
-				var mapName= mapList[i].mapName;
+				var mapName= mapList[i].name;
 				var mapId = mapList[i].id;
 				$("#selectMap").append("<option value=\""+mapId+"\" name=\""+mapName+"\">"+mapName+"</option>");
 			}
@@ -86,7 +86,7 @@ function importMap(){
 			console.log(response);
 			if(response!="1" && response!="2"){
 				console.log("Mapa creado correctamente "+response);
-				var wms=server+"geoserver/"+mapName+"/wms";
+				var wms=server+"geoserver/Map_"+mapName+"/wms";
 				console.log(wms+"?request=getCapabilities&service=wms");
 				loadWmsTree(wms);
 			}

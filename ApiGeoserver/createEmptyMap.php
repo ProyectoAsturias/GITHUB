@@ -1,7 +1,7 @@
 <?php
 	include "createMap.php";
 	if(isset($_POST['mapName'])){
-		$mapName=$_POST['mapName'];
+		$mapName="Map_".$_POST['mapName'];
 		createGeoserverMap(-1,$mapName);
 	}
 	else if(isset($argv) && count($argv)==2){

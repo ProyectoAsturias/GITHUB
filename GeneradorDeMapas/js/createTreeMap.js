@@ -13,10 +13,11 @@ function loadWmsTree(wms) {
 			var layers = [];
 			console.log(wms+"?request=getCapabilities&service=wms");
 			for(var i=0; i<capabilities.Layer.Layer.length; i++){
-				var layer = newLayer(capabilities.Layer.Layer[i].Name,wms)
-				layers.push(layer);
+				addLayer(capabilities.Layer.Layer[i].Name,wms);
+				//var layer = newLayer(capabilities.Layer.Layer[i].Name,wms)
+				//layers.push(layer);
 			}
-			addGroup(title,wms,layers);
+			//addGroup(title,wms,layers);
 		},
 		error:function(error){
 			alert("Error: "+error);

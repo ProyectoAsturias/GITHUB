@@ -1,18 +1,17 @@
 <?php
-	include "classes/ApiRest.php";
-	include "classes/Connection.php";
-	include "classes/LocalgisMap.php";
+	require_once("classes/ApiRest.php");
+	require_once("classes/Connection.php");
+	require_once("classes/LocalgisMap.php");
+	require_once("addLayer.php");
 	/*
 		Un mapa tiene una o varias familias de capas. Y estas a su vez una o varias capas
 	*/
 	function createGeoserverMap($mapId,$mapName){
-		$connection = new ServerConnection($mapName,$mapName);
-		$dbconn = pg_connect("host=".$connection->dbHost." dbname=".$connection->dbName." user=".$connection->dbUser." password=".$connection->dbPass)  or die('Error: '.pg_last_error());
-		pg_query($dbconn, 'CREATE SCHEMA "'.$connection->dsName.'" AUTHORIZATION '.$connection->dbUser);
-
-		#Creación del WS y el DS
+		$connection = new ServerConnection($mapName);
 		$geoserver = new ApiRest('http://'.$connection->gsHost.':8080/geoserver',$connection->gsUser, $connection->gsPassword);
-
+		pg_query($connection->dbConn, 'CREATE SCHEMA "'.$connection->dsName.'" AUTHORIZATION '.$connection->dbUser);
+		print(pg_last_error());
+		#Creación del WS y el DS
 		if(($result=$geoserver->createWorkspace($connection->wsName))!="")
 			print("Advice".$result."\n");
 		else
@@ -56,54 +55,9 @@
 				$layerName=$layer[0];
 				$layerId=$layer[1];
 				print $layerName.": #".$layerId."\n";
-				$query = "SELECT selectquery FROM queries WHERE id_layer='".$layerId."'";
-				$result = pg_query($query) or die('Error: '.pg_last_error());
-				$select_layer = pg_fetch_result($result, 0,0);
-				
-				//print $select_layer."\n";
-				$select_layer=str_replace("?T","'".$projection."'",$select_layer);
-				$select_layer=str_replace("?M","'".$town."'",$select_layer);
-				//print $select_layer."\n";
-				pg_query($dbconn, 'CREATE OR REPLACE VIEW "'.$connection->dsName.'"."'.$layerName.'" AS '.$select_layer);
-
-				//Comprobamos que la tabla está vacia: Si lo está hay que incluir el srs, ya que geoserver no puede extraerlo al no haber datos geoespaciales.
-				$q_select=pg_query($dbconn, $select_layer);
-				$proj=pg_fetch_all($q_select);
-
-				if($proj!=null){
-					//print_r($connection->wsName.", ".$connection->dsName.", ".$layerName.", ".$layerDescription."\n");
-					if(($result=$geoserver->addLayer($connection->wsName, $connection->dsName, $layerName, $layerDescription, $proj))!=""){
-						print("Advice: ".$result."\n");
-					}
-					else
-						print("Capa añadida\n");
-					//print($geoserver->addLayer($connection->wsName, $connection->dsName, $layerName, $layerDescription)."\n");	
-
-					//Asociamos el estilo
-					$query = "SELECT l.stylename, s.xml FROM layers_styles as l, styles as s WHERE l.id_style=s.id_style AND id_layer='".$layerId."' AND id_map='".$mapId."'";
-					$result = pg_query($query) or die('Error: '.pg_last_error());
-					$styles = array();
-					while ($line = pg_fetch_array($result, null, PGSQL_ASSOC)) {
-						print "Se establece estilo\n";
-					    $styleName = $line["stylename"];
-						$SLD = $line["xml"];
-						$numSld=substr_count($SLD,"<UserStyle>");
-						$exp=explode("<UserStyle>",$SLD);
-						$header=$exp[0];
-						$end=explode("</UserStyle>",$SLD)[$numSld];
-						for($i=1;$i<=$numSld;$i++){
-							$sld_xml=$header."<UserStyle>".$exp[$i];
-							if($i!=$numSld)
-								$sld_xml.=$end;
-							$geoserver->createStyle($sld_xml, $styleName."_".$i, $connection->wsName);
-							$geoserver->addStyleToLayer($layerName, $styleName."_".$i, $connection->wsName);
-						}
-						//Toma por defecto el primero
-						$geoserver->defaultStyleToLayer($layerName, $styleName."_1", $connection->wsName);
-					}
-				}
+				addLayer($layerId,$layerName,$mapId,$mapName,$town,$projection,$connection,$geoserver);
 			}
 		}
-		pg_close($dbconn);
+		pg_close($connection->dbConn);
 	}
 ?>

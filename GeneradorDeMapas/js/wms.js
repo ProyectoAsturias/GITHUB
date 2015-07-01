@@ -2,7 +2,7 @@ function showListWms() {
 	menuDatosWms();
 	$('#selector').html("<div id=\"inputWms\" class=\"col-md-6\">" +
 			"<select id=\"selectWms\" class=\"chosen-select\" tabindex=\"1\" ></select>"+
-			"<input type=\"text\"  id=\"wms\" value=\"Introduzca un WMS\" style=\"width:100%; border-radius: 7px; \"/>" +
+			"<input type=\"text\"  id=\"wms\" placeholder=\"Introduzca un WMS\" style=\"width:100%; border-radius: 7px; \"/>" +
 			"<button onclick='loadWms()' id=\"loadWms\" class=\"btn btn-primary btn-block\" >Importar Wms</button>"+
 		"</div>");
 		
@@ -25,7 +25,7 @@ function showListWms() {
 
 function loadWms() {
 	var wms;
-	if($('#wms').val()!="Introduzca un WMS")
+	if($('#wms').val()!="")
 		wms=$('#wms').val();
 	else if($("#selectWms").val()!=null)
 		wms=$("#selectWms").val();

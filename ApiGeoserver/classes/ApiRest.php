@@ -189,21 +189,6 @@ class ApiRest {
 		return "Workspace or Datastore don't exists";
 	}
 
-	public function createLayer($workspaceName, $datastoreName, $layerName, $description = '') {
-		// Add the store's feature type:
-		// If layerName is a shapefile, the shapefile should exist in store already; uploaded via external means
-		// If layerName is a postgis database table, that table should already exist
-
-		// Just in case it's a .shp and the .shp was included
-		$layerName = str_replace('.shp', '', str_replace('.SHP', '', $layerName));
-		return $this->runApi('workspaces/'.urlencode($workspaceName).'/datastores/'.urlencode($datastoreName).'/featuretypes.xml', 'POST', '<featureType>
-			<name>'.$layerName.'</name>
-			<nativeName>'.$layerName.'</nativeName>
-			<description>'.htmlentities($description, ENT_COMPAT).'</description>
-			<store class="dataStore"><name>'.htmlentities($datastoreName, ENT_COMPAT).'</name></store>
-			</featureType>');
-	}
-
 	public function deleteLayer($workspaceName, $datastoreName, $layerName) {
 		$this->runApi('layers/'.urlencode($layerName), 'DELETE');
 		return $this->runApi('workspaces/'.urlencode($workspaceName).'/datastores/'.urlencode($datastoreName).'/featuretypes/'.urlencode($layerName), 'DELETE');
@@ -326,8 +311,8 @@ class ApiRest {
 	}
 
 // Style APIs
-	public function listStyles() {	
-		return json_decode($this->runApi('styles.json'));
+	public function listStyles($layerName,$workspaceName) {	
+		return json_decode($this->runApi('layers/'.urlencode($workspaceName).":".urlencode($layerName).'/styles.json'));
 	}
 
 	public function createStyle($SLD, $styleName, $workspaceName) {
@@ -363,7 +348,8 @@ class ApiRest {
 		return $this->runApi('layers/'.htmlentities($workspaceName, ENT_COMPAT).':'.htmlentities($layerName, ENT_COMPAT), 'PUT', '<layer><defaultStyle><name>'.htmlentities($workspaceName, ENT_COMPAT).':'.htmlentities($styleName, ENT_COMPAT).'</name></defaultStyle></layer>');
 	}
 
-	public function deleteStyle($styleName) {
-		return $this->runApi('styles/'.htmlentities($styleName, ENT_COMPAT), 'DELETE');
+	public function deleteStyle($styleName,$workspaceName) {
+		print($styleName."...".$workspaceName);
+		return $this->runApi('workspaces/'.htmlentities($workspaceName, ENT_COMPAT)."/styles/".htmlentities($styleName, ENT_COMPAT), 'DELETE');
 	}
 }

@@ -1,14 +1,9 @@
-
 <?php
-
-	include "classes/ApiRest.php";
 	include "classes/Connection.php";
 	include "classes/LocalgisMap.php";
-
 	
 	print(getMaps());
 	
-
 	function getMaps() {
 		$connection = new ServerConnection();
 		$query = 'SELECT * FROM maps';
@@ -22,7 +17,7 @@
 		//Ordenación (Burbuja)
 		for($i=1;$i<sizeof($maps);$i++){
 			for($j=0;$j<sizeof($maps)-$i;$j++){
-				if($maps[$j]->mapName>$maps[$j+1]->mapName){
+				if($maps[$j]->name>$maps[$j+1]->name){
 					$aux=$maps[$j];
 					$maps[$j]=$maps[$j+1];
 					$maps[$j+1]=$aux;
