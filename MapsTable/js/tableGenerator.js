@@ -1,32 +1,7 @@
 $(document).ready(function(){
-    var data = [{
-        id: "1",
-        image: "<img src='../../GeneradorMapas/images/CabeceraLogoAsturias.gif'/>",
-        mapName: "Mapa 1",
-        mapDescription: "Primer mapa de prueba",
-        fecha_mod: "16/7/2011"
-    }, {
-        id: "2",
-        image: "<img src='../../GeneradorMapas/images/CabeceraLogoAsturias.gif'/>",
-        mapName: "Mapa 2",
-        mapDescription: "Segundo mapa de prueba, esta descripción es algo más larga para comprobar como se comporta al exportar un PDF.",
-        fecha_mod: "16/7/2012"
-    },{
-        id: "3",
-        image: "<img src='../../GeneradorMapas/images/CabeceraLogoAsturias.gif'/>",
-        mapName: "Mapa 3",
-        mapDescription: "Segundo mapa de prueba, esta descripción es algo más larga para comprobar como se comporta al exportar un PDF.",
-        fecha_mod: "16/7/2012"
-    },{
-        id: "4",
-        image: "<img src='../../GeneradorMapas/images/CabeceraLogoAsturias.gif'/>",
-        mapName: "Mapa 4",
-        mapDescription: "Segundo mapa de prueba, esta descripción es algo más larga para comprobar como se comporta al exportar un PDF.",
-        fecha_mod: "16/7/2012"
-    }];
-    createMapsTable($("#table"), data);
-    createMapsTable($("#table2"), data);
-    createMapsTable($("#table3"), data);
+    createMapsTable($("#table"));
+    //createMapsTable($("#table2"), data);
+    //createMapsTable($("#table3"), data);
 });
 
 function createTable(target, columns, data){
@@ -37,17 +12,19 @@ function createTable(target, columns, data){
     });
 }
 
-function createMapsTable(target, data){
-    retrieveUserMaps(function(response){
-        console.log(response);
+function createMapsTable(target){
+    retrieveUserMaps(function(jsonMaps){
+        var mapsData = JSON.parse(jsonMaps);
+        var columns = [{checkbox: "true"},{field:"image", title: ""}, {field: "id", title: "ID Mapa", sortable: "true"},{field:"name", title:"Nombre", sortable: "true"},
+            {field:"description", title:"Descripción"},{field:"date_update", title:"Última modificación", sortable: "true"}, {field:"date_creation", title:"Fecha creación", sortable: "true"}];
+        mapsData = convertBinaryDataToImages(mapsData);
+        createTable(target, columns, mapsData);
     });
-    var columns = [{checkbox: "true"},{field:"image", title: ""}, {field: "id", title: "ID Mapa", sortable: "true"},{field:"mapName", title:"Nombre", sortable: "true"} ,{field:"mapDescription", title:"Descripción"},{field:"fecha_mod", title:"Última modificación", sortable: "true"}];
-    createTable(target, columns, data);
 }
 
 function retrieveUserMaps(callback){
     $.ajax({
-        url: "http://localhost:63342/TestTemplatesAsturias/AsturiasWMS/MapsTable/php/userContent.php",
+        url: "./userContent.php",
         data: {
             "tag": "userMaps"
         },
@@ -56,4 +33,11 @@ function retrieveUserMaps(callback){
             callback(response);
         }
     });
+}
+
+function convertBinaryDataToImages(mapsData){
+    mapsData.forEach(function (map){
+        map.image = "<img src='../../GeneradorMapas/images/CabeceraLogoAsturias.gif'/>";
+    })
+    return mapsData;
 }
