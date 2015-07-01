@@ -10,7 +10,7 @@ $twig->addExtension(new Twig_Extension_Debug());
 
 session_start();
 if(isset($_SESSION['username'])){
-    echo $twig->render("mapIndex.html.twig", array(
+    echo $twig->render("tableIndex.html.twig", array(
 
     ));
 }else{
