@@ -38,6 +38,22 @@ function createTable(target, columns, data){
 }
 
 function createMapsTable(target, data){
+    retrieveUserMaps(function(response){
+        console.log(response);
+    });
     var columns = [{checkbox: "true"},{field:"image", title: ""}, {field: "id", title: "ID Mapa", sortable: "true"},{field:"mapName", title:"Nombre", sortable: "true"} ,{field:"mapDescription", title:"Descripción"},{field:"fecha_mod", title:"Última modificación", sortable: "true"}];
     createTable(target, columns, data);
+}
+
+function retrieveUserMaps(callback){
+    $.ajax({
+        url: "http://localhost:63342/TestTemplatesAsturias/AsturiasWMS/MapsTable/php/userContent.php",
+        data: {
+            "tag": "userMaps"
+        },
+        method: "POST",
+        success: function (response) {
+            callback(response);
+        }
+    });
 }
