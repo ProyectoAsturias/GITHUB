@@ -14,6 +14,8 @@ function initMap() {
 			zoom : 8
 		})
 	});
+	//map.name=;
+	//map.id=;
 }
 
 /*function newLayer(name,wms) {

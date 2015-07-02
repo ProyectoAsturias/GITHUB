@@ -19,7 +19,6 @@ function loadWmsTree(wms) {
 
 			for(var i=0; i<capabilities.Layer.Layer.length; i++){
 				if (!searchLayerByName(capabilities.Layer.Layer[i].Name)){
-					console.log("No entiendo nada");
 					var layer = newLayer(capabilities.Layer.Layer[i].Name,wms);
 					layers.push(layer);
 				}
@@ -34,6 +33,7 @@ function loadWmsTree(wms) {
 				map.addLayer(osmLayer);
 			};
 			updateTreeLayer();
+
 		},
 		error:function(error){
 			alert("Error: "+error);
