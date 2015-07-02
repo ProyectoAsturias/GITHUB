@@ -13,7 +13,7 @@
 
 		public function __construct($mapName=""){
 			$this->dbSchema="public";
-			$this->dbName="Localgis";
+			$this->dbName="postgis";
 			$this->dbUser="postgres";
 			$this->dbPass="1234";
 			$this->dbHost="localhost";

@@ -17,13 +17,6 @@ function loadWmsTree(wms) {
 			var layers = [];
 			console.log(wms+"?request=getCapabilities&service=wms");
 
-			for(var i=0; i<capabilities.Layer.Layer.length; i++){
-				if (!searchLayerByName(capabilities.Layer.Layer[i].Name)){
-					var layer = newLayer(capabilities.Layer.Layer[i].Name,wms);
-					layers.push(layer);
-				}
-			}
-
 			//TEMPORAL
 			if (!searchLayerByName("OpenStreet Maps")){
 				var osmLayer = new ol.layer.Tile({
@@ -32,6 +25,14 @@ function loadWmsTree(wms) {
 				osmLayer.name = "OpenStreet Maps";
 				map.addLayer(osmLayer);
 			};
+
+			for(var i=0; i<capabilities.Layer.Layer.length; i++){
+				if (!searchLayerByName(capabilities.Layer.Layer[i].Name)){
+					var layer = newLayer(capabilities.Layer.Layer[i].Name,wms);
+					layers.push(layer);
+				}
+			}
+
 			updateTreeLayer();
 
 		},

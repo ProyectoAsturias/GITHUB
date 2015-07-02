@@ -2,6 +2,7 @@
 * Muestra el listado de mapas de localgis disponibles
 **/
 function showListMaps(){
+	console.log(apiPath);
 	menuDatosMapLocalgis();
 	$('#selector').html("<div id=\"inputMaps\" class=\"col-md-6\">" +
 			"<select id=\"selectMap\" class=\"chosen-select\" ></select>"+
@@ -12,6 +13,7 @@ function showListMaps(){
 		url: apiPath+"getMaps.php",
 		success: function(response) {
 			var mapList=JSON.parse(response);
+			console.log(mapList);
 			for(var i=0;i<mapList.length; i++){
 				var mapName= mapList[i].name;
 				var mapId = mapList[i].id;
