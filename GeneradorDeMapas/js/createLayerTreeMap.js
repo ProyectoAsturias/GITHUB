@@ -1,92 +1,69 @@
+function makeNodesSortable(){
+	var indexFrom, indexTo;
+
+	$("#layersList ol").sortable({
+		group: 'simple_with_animation',
+		pullPlaceholder: false,
+		onDrop: function  ($item, container, _super) {
+			var $clonedItem = $('<li/>').css({height: 0});
+			$item.before($clonedItem);
+			$clonedItem.animate({'height': $item.height()});
+
+			$item.animate($clonedItem.position(), function  () {
+				$clonedItem.detach();
+				_super($item, container);
+			});
+		},
+		onDragStart: function ($item, container, _super, event) {
+			var offset = $item.offset(),
+				pointer = container.rootGroup.pointer;
+			adjustment = {
+				left: pointer.left - offset.left,
+				top: pointer.top - offset.top
+			};
+			_super($item, container);
+			indexFrom = map.getLayers().getLength()-1-$item.index();
+		},
+		onDrag: function ($item, position) {
+			$item.css({
+				left: position.left - adjustment.left,
+				top: position.top - adjustment.top
+			});
+		},
+		onDrop: function ($item, container, _super, event) {
+			$item.removeClass(container.group.options.draggedClass).removeAttr("style");
+			$("body").removeClass(container.group.options.bodyClass);
+			var indexTo =  map.getLayers().getLength()-1-$item.index();
+			reorderOpenlayersMap(indexFrom, indexTo);
+		}
+	});
+}
+
 function updateTreeLayer() {
-	var treeData = generateTreeData();
-	createLayerTree(treeData);
+	generateLayerListHTML();
+	makeNodesSortable();
+	assignEventsHandlers();
 }
 
-function generateNode(layer) {
-	console.log(layer.name);
-	var node = {
-		text : layer.name,
-		nodes : [],
-		layer : layer,
-		state : {
-			checked : true
-		}
-	};
-	if (layer instanceof ol.layer.Group) {
-		layer.getLayers().forEach(function (subLayer, indexInGroup) {
-			node.nodes.push(generateNode(subLayer));
-		});
-	} else {
-		var legend = create_legend(layer);
-		var prueba = {
-			text : legend
-		}
-		node.nodes.push(prueba);
-	}
-	return node;
-}
-
-function generateTreeData() {
-	var treeData = [{
-			text : "Mapa",
-			nodes : [],
-			state : {
-				checked : true
-			}
-		}
-	];
-	map.getLayers().forEach(function (layer, index) {
-		treeData[0].nodes.push(generateNode(layer));
+function generateLayerListHTML(){
+	$("#layersList ol").html("");
+	map.getLayers().getArray().forEach(function (layer){
+		console.log(layer.name);
+	})
+	var reverseLayers = map.getLayers().getArray().slice(0).reverse();
+	reverseLayers.forEach(function (layer) {
+		generateNode(layer);
 	});
-	return treeData;
+	makeNodesSortable();
 }
 
-function createLayerTree(data) {
-	$("#layersTree").treeview({
-		data : data,
-		showCheckbox : true,
-		onNodeChecked : function (event, node) {
-			if (node.layer)
-				node.layer.setVisible(true);
-			checkNodeChildrens(node);
-			removeCheckboxLegendIcon()
-		},
-		onNodeUnchecked : function (event, node) {
-			if (node.layer)
-				node.layer.setVisible(false);
-			uncheckNodeChildrens(node);
-			removeCheckboxLegendIcon()
-		},
-		onNodeExpanded : function (event, node) {
-			removeCheckboxLegendIcon();
-		},
-		onNodeSelected : function (event, node) {
-			removeCheckboxLegendIcon();
-		}
-	});
-
-}
-
-function uncheckNodeChildrens(node) {
-	if (!node.nodes) {
-		return;
-	}
-	node.nodes.forEach(function (childrenNode) {
-		$('#layersTree').treeview("uncheckNode", childrenNode.nodeId);
-	});
-}
-
-function checkNodeChildrens(node) {
-	if (!node.nodes) {
-		return;
-	}
-	node.nodes.forEach(function (childrenNode) {
-		$('#layersTree').treeview("checkNode", childrenNode.nodeId);
-	});
-}
-function removeCheckboxLegendIcon() {
-	setTimeout(function () {
-		$(".legendIcon").siblings(".check-icon").css("visibility", "hidden");
-	}, 0);
+function generateNode(layer){
+	var node = $("<li>"+layer.name +
+	"<span class='glyphicon glyphicon-remove' style='margin:0px 3px 0px 3px; float: right; color:#000000;'></span>" +
+	"<span class='glyphicon glyphicon-eye-open' style='margin:0px 3px 0px 3px; float: right; color:#000000;'></span>" +
+	"<span class='glyphicon glyphicon-cog' style='margin:0px 3px 0px 3px; float: right; color:#000000;'></span>" +
+	"<span class='glyphicon glyphicon-tint' style='margin:0px 3px 0px 3px; float: right; color:#000000;'></span>" +
+	"</li>")
+		.data("layer", layer)
+		.appendTo($("#layersList ol"));
 }

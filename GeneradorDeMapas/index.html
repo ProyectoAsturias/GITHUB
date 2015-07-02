@@ -15,6 +15,8 @@
 		<script src='../Common/js/attachMap.js'></script>
 		<script src='../Common/js/createMap.js'></script>
 		<script src="../Common/bootstrap-3.3.4/js/bootstrap.min.js"></script>
+        <script src="../Common/js/jquery-ui.min.js"></script>
+        <script src="../Common/js/jquery-sortable.js"></script>
 
 		<script src='./js/configuration.js'></script>
 		<script src='./js/createTreeMap.js'></script>
@@ -26,8 +28,8 @@
 		<script src='./js/localgis.js'></script>
 		<script src='./js/wms.js'></script>
 		<script src='./js/menuFuentesDatos.js'></script>
+        <script src='./js/loadingBar.js'></script>
 
-	
 	</head>
 	<body>
 		<div>
@@ -38,7 +40,10 @@
 							<img src="/GITHUB-Alikornio/Common/images/cabeceraLogoAsturias.gif">
 						</div>
 						<div id="leftBar">
-							<div id="layersTree"></div>
+							<div id="layersList">
+								<ol class="simple_with_animation vertical">
+								</ol>
+							</div>
 							<div class="btn-group btn-group-justified" role="group">
 								<a href="#" id="saveMapButton" class="btn btn-lg btn-success"><span class="glyphicon glyphicon-floppy-disk"></span> Guardar Mapa</a>
 								<a href="#" id="cancelMapButton" class="btn btn-lg btn-danger"><span class="glyphicon glyphicon-remove"></span>  </a>
@@ -71,76 +76,8 @@
 		</div>
 
 <script>
-/**
- * Renders a progress bar.
- * @param {Element} el The target element.
- * @constructor
- */
-function Progress(el) {
-  this.el = el;
-  this.loading = 0;
-  this.loaded = 0;
-}
 
-
-/**
- * Increment the count of loading tiles.
- */
-Progress.prototype.addLoading = function() {
-  if (this.loading === 0) {
-    this.show();
-  }
-  ++this.loading;
-  this.update();
-};
-
-
-/**
- * Increment the count of loaded tiles.
- */
-Progress.prototype.addLoaded = function() {
-  setTimeout(function() {
-    ++this.loaded;
-    this.update();
-  }.bind(this), 100);
-};
-
-
-/**
- * Update the progress bar.
- */
-Progress.prototype.update = function() {
-  var width = (this.loaded / this.loading * 100).toFixed(1) + '%';
-  this.el.style.width = width;
-  if (this.loading === this.loaded) {
-    this.loading = 0;
-    this.loaded = 0;
-    setTimeout(this.hide.bind(this), 500);
-  }
-};
-
-
-/**
- * Show the progress bar.
- */
-Progress.prototype.show = function() {
-  this.el.style.visibility = 'visible';
-};
-
-
-/**
- * Hide the progress bar.
- */
-Progress.prototype.hide = function() {
-  if (this.loading === this.loaded) {
-    this.el.style.visibility = 'hidden';
-    this.el.style.width = 0;
-  }
-};
-
-var progress = new Progress(document.getElementById('progress'));
-
-
+loadingBar();
 initMenu();
 initMap();
 </script>

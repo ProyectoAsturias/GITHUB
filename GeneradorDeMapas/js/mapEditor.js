@@ -23,17 +23,8 @@ function newLayer(name,wms) {
 		})
 	var layer = new ol.layer.Tile({source:source})
 	layer.name = name;
-	source.on('tileloadstart', function(event) {
-	  progress.addLoading();
-	});
-
-	source.on('tileloadend', function(event) {
-	  progress.addLoaded();
-	});
-	source.on('tileloaderror', function(event) {
-	  progress.addLoaded();
-	});
-	
+	updateLoadingBar(source);
+	map.addLayer(layer);
 	return layer;
 }
 
@@ -92,7 +83,7 @@ function addLayer(layerId,layerName,mapId,mapName) {
 				});
 				layer.name = name;
 				map.addLayer(layer);
-				updateTreeLayer();
+				generateNode(layer);
 			}
 		},
 		error:function(error){
