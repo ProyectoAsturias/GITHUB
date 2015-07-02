@@ -72,6 +72,8 @@ function importMap(){
 	var id=$("#selectMap").val();
 	var mapName=$("#selectMap").find('option:selected').attr("name");
 
+	map.mapName = mapName;
+
 	console.log(id);
 	console.log(mapName);
 
@@ -88,7 +90,7 @@ function importMap(){
 				console.log("Mapa creado correctamente "+response);
 				var wms=server+"geoserver/"+mapName+"/wms";
 				console.log(wms+"?request=getCapabilities&service=wms");
-				loadWmsTree(wms);
+				//loadWmsTree(wms);
 			}
 			else
 				console.log("El mapa no ha podido crearse");

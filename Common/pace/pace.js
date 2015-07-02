@@ -242,6 +242,8 @@
         if (!targetElement) {
           throw new NoTargetError;
         }
+		targetElement.className="pace-running pace-running"
+		console.log(targetElement)
         this.el = document.createElement('div');
         this.el.className = "pace pace-active";
         document.body.className = document.body.className.replace(/pace-done/g, '');

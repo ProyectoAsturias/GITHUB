@@ -3,18 +3,22 @@
 	<head>
 		<title>Generador de Mapas</title>
 		<link href="../Common/images/favicon-96x96.png" rel="icon" sizes="96x96">
-		<link href="../Common/bootstrap-3.3.4/css/bootstrap.min.css" rel="stylesheet" media="screen">
+		<link href="../Common/bootstrap-3.3.4/css/bootstrap.css" rel="stylesheet" media="screen">
+
 		<link href="css/creadorMapas.css" rel="stylesheet" media="screen">
-		<link href="../Common/css/ol.css" rel='stylesheet'>
-		<link href="../Common/css/chosen.css" rel='stylesheet'>
-		
-		<script src="../Common/js/ol.js"></script>
+		<link rel='stylesheet' href='../Common/css/ol.css'>
+		<link rel='stylesheet' href='../Common/css/chosen.css'>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/ol3/3.6.0/ol.js"></script>
+		<!--<script src="../Common/js/ol.js"></script>-->
 		<script src='../Common/js/jquery.min.js'></script>
 		<script src='../Common/js/bootstrap-treeview.js'></script>
 		<script src="../Common/js/chosen.jquery.js"></script>
 		<script src='../Common/js/attachMap.js'></script>
 		<script src='../Common/js/createMap.js'></script>
 		<script src="../Common/bootstrap-3.3.4/js/bootstrap.min.js"></script>
+
+		<script src="../Common/js/jquery-ui.min.js"></script>
+		<script src="../Common/js/jquery-sortable.js"></script>
 
 		<script src='./js/configuration.js'></script>
 		<script src='./js/createTreeMap.js'></script>
@@ -26,17 +30,27 @@
 		<script src='./js/localgis.js'></script>
 		<script src='./js/wms.js'></script>
 		<script src='./js/menuFuentesDatos.js'></script>
+
+		<script src="../GeneradorVisores/js/Map%20Functions/createLayersJSON.js"></script>
+		<script src="../Common/Jsonix/Jsonix-all.js"></script>
+		<script src="../Common/Jsonix/XLINK_1.0.js"></script>
+		<script src="../Common/Jsonix/XSD_1.0.0.js"></script>
+
 		<script>
-			paceOptions = {
+			window.paceOptions = {
 				startOnPageLoad: false,
 				elements: false,
+				target: 'div #layersList',
 				restartOnRequestAfter: 40,
 			}
-        </script>
-  		<script src="../Common/pace/pace.js"></script>
-  		<link href="../Common/pace/themes/blue/pace-theme-loading-bar.css" rel="stylesheet" />
-	</head>
+		</script>
 
+		<script src="../Common/pace/pace.js"></script>
+		<link href="../Common/pace/themes/blue/pace-theme-loading-bar.css" rel="stylesheet" />
+	</head>
+        <script src='./js/loadingBar.js'></script>
+
+	</head>
 	<body>
 		<div>
 			<div id="menucapas" class="col-xs-2">
@@ -46,7 +60,11 @@
 							<img src="../Common/images/cabeceraLogoAsturias.gif">
 						</div>
 						<div id="leftBar">
-							<div id="layersTree"></div>
+
+							<div id="layersList">
+								<ol class="simple_with_animation vertical">
+								</ol>
+							</div>
 							<div class="btn-group btn-group-justified" role="group">
 								<a href="#" id="saveMapButton" class="btn btn-lg btn-success"><span class="glyphicon glyphicon-floppy-disk"></span> Guardar Mapa</a>
 								<a href="#" id="cancelMapButton" class="btn btn-lg btn-danger"><span class="glyphicon glyphicon-remove"></span>  </a>
@@ -71,20 +89,35 @@
 						</div>
 					</div>
 					<div id="mapContainer">
+						<div id="progress"></div>
 						<div id="map" class="map"></div>
-						<div class="ol-overlay-container">
-							<div id="areaOverlay"></div>
-						</div>
-						<div class="ol-overlay-container">
-							<div id="coordinatesOverlay"></div>
-						</div>
 					</div>
 				</div>  
 			</div>
 		</div>
-	</body>
+
+		<!-- Modal -->
+		<div id="modalAttributes" class="modal fade" role="dialog">
+			<div class="modal-dialog">
+				<!-- Modal content-->
+				<div class="modal-content">
+					<div class="modal-header">
+						<button type="button" class="close" data-dismiss="modal">&times;</button>
+						<h4 class="modal-title">Seleccionar atributos</h4>
+					</div>
+					<div class="modal-body">
+					</div>
+					<div class="modal-footer">
+						<button type="button" class="btn btn-success" data-dismiss="modal">Guardar</button>
+						<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+					</div>
+				</div>
+			</div>
+		</div>
 	<script>
+		loadingBar();
 		initMenu();
 		initMap();
 	</script>
+</body>
 </html>
