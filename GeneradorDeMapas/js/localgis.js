@@ -71,7 +71,9 @@ function showListLayers(idFamily){
 function importMap(){
 	var id=$("#selectMap").val();
 	var mapName=$("#selectMap").find('option:selected').attr("name");
+
 	map.mapName = mapName;
+
 	console.log(id);
 	console.log(mapName);
 
