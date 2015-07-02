@@ -1,3 +1,7 @@
+$(document).ready(function(){
+	assignEventsHandlers();
+});
+
 function loadWmsTree(wms) {
 	var parser = new ol.format.WMSCapabilities();
 	$.ajax({

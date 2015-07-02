@@ -4,17 +4,19 @@
 		<title>Generador de Mapas</title>
 		<link href="../Common/images/favicon-96x96.png" rel="icon" sizes="96x96">
 		<link href="../Common/bootstrap-3.3.4/css/bootstrap.css" rel="stylesheet" media="screen">
+
 		<link href="css/creadorMapas.css" rel="stylesheet" media="screen">
-		<link href="../Common/css/ol.css" rel='stylesheet'>
-		<link href="../Common/css/chosen.css" rel='stylesheet'>
-		
-		<script src="../Common/js/ol.js"></script>
+		<link rel='stylesheet' href='../Common/css/ol.css'>
+		<link rel='stylesheet' href='../Common/css/chosen.css'>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/ol3/3.6.0/ol.js"></script>
+		<!--<script src="../Common/js/ol.js"></script>-->
 		<script src='../Common/js/jquery.min.js'></script>
 		<script src='../Common/js/bootstrap-treeview.js'></script>
 		<script src="../Common/js/chosen.jquery.js"></script>
 		<script src='../Common/js/attachMap.js'></script>
 		<script src='../Common/js/createMap.js'></script>
 		<script src="../Common/bootstrap-3.3.4/js/bootstrap.min.js"></script>
+
 		<script src="../Common/js/jquery-ui.min.js"></script>
 		<script src="../Common/js/jquery-sortable.js"></script>
 
@@ -43,14 +45,16 @@
   		<script src="../Common/pace/pace.js"></script>
   		<link href="../Common/pace/themes/blue/pace-theme-loading-bar.css" rel="stylesheet" />
 	</head>
+        <script src='./js/loadingBar.js'></script>
 
+	</head>
 	<body>
 		<div>
 			<div id="menucapas" class="col-xs-2">
 				<div>
 					<div>
 						<div id="logo" class="">
-							<img src="../Common/images/cabeceraLogoAsturias.gif">
+							<img src="/GITHUB-Alikornio/Common/images/cabeceraLogoAsturias.gif">
 						</div>
 						<div id="leftBar">
 
@@ -82,13 +86,8 @@
 						</div>
 					</div>
 					<div id="mapContainer">
+						<div id="progress"></div>
 						<div id="map" class="map"></div>
-						<div class="ol-overlay-container">
-							<div id="areaOverlay"></div>
-						</div>
-						<div class="ol-overlay-container">
-							<div id="coordinatesOverlay"></div>
-						</div>
 					</div>
 				</div>  
 			</div>
@@ -118,4 +117,10 @@
 		initMenu();
 		initMap();
 	</script>
+<script>
+loadingBar();
+initMenu();
+initMap();
+</script>
+</body>
 </html>

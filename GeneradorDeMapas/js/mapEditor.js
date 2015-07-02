@@ -19,6 +19,9 @@ function initMap() {
 /*function newLayer(name,wms) {
 	var layer = new ol.layer.Tile({
 		source : new ol.source.TileWMS({
+function newLayer(name,wms) {
+	
+	var source = new ol.source.TileWMS({
 			preload : Infinity,
 			url : wms,
 			params : {
@@ -74,21 +77,41 @@ function addGroup(name,wms,layers) {
 		});
 	}
 }
-
-function addLayer(name,wms) {
-	console.log(name);
-	var layer = new ol.layer.Tile({
-		source : new ol.source.TileWMS({
-			preload : Infinity,
-			url : wms,
-			params : {
-				'LAYERS' : name,
-				'TILED' : true
+/*
+*	addLayer primero llama a addLayer.php para introducir la capa en el ws de geoserver
+*	Hay que cambiar la url del source de ol.
+*/
+function addLayer(layerId,layerName,mapId,mapName) {
+	$.ajax({
+		type : "GET",
+		url : apiPath+"addLayer.php",
+		data:{
+			layerId: layerId,
+			layerName: layerName,
+			mapId: mapId,
+			mapName: mapName,
+		},
+		success:function (response) {
+			if(response !="0"){
+				var layer = new ol.layer.Tile({
+					source : new ol.source.TileWMS({
+						preload : Infinity,
+						url : wms,
+						params : {
+							'LAYERS' : name,
+							'TILED' : true
+						}
+					})
+				});
+				layer.name = name;
+				map.addLayer(layer);
+				generateNode(layer);
 			}
-		})
+		},
+		error:function(error){
+			alert("Error: "+error);
+		}
 	});
-	layer.name = name;
-	map.addLayer(layer);
 }
 
 function requestLayersForGroup(groupName, wms, callback) {
@@ -173,22 +196,36 @@ function attributesClickHandler(){
 	});
 }
 
-function removeLayer(layer, callback){
+function removeLayer(layer, callback) {
 	console.log(map.title);
 	$.ajax({
-		type : "GET",
+		type: "GET",
 		//url : apiPath+"delLayer.php",
 		url: "",
-		data:{
+		data: {
 			layerName: layer.name,
 			mapName: map.mapName
 		},
-		success:function (response) {
+		success: function (response) {
 			map.removeLayer(layer);
 			callback(response);
+		}
+	});
+}
+/*
+function editFeatures(layer){
+	//desplegar una ventana modal para seleccionar las features
+	
+	//llamada a editFeatures.php para indicar que features se han seleccionado
+	$.ajax({
+		type : "GET",
+		url : apiPath+"editFeatures.php",
+		success:function (response) {
+
 		},
 		error:function(error){
 			alert("Error: "+error);
 		}
 	});
 }
+*/
