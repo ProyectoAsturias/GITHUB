@@ -24,7 +24,6 @@
 				}
 			}
 		}
-		//return json_encode($maps);
-		return "pene";
+		return json_encode($maps);
 	}
 ?>

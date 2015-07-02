@@ -20,6 +20,7 @@ if(isset($_GET["requestURL"])){
     $redirectURL = "http://$_SERVER[HTTP_HOST]$_SERVER[REQUEST_URI]";
 }
 
+$redirectURL = "../../Tables/php/tables.php";
 
 session_start();
 if(isset($_SESSION['username'])){

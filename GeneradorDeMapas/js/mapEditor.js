@@ -175,10 +175,14 @@ function eyeIconClickHandler(){
 function deleteIconClickHandler(){
 	$(".glyphicon-remove").click(function(event){
 		var parent = $(this).parent();
-		removeLayer(parent.data("layer"),function(response){
-			parent.fadeOut("slow", function(){
-				$(this).remove();
-			});
+		bootbox.confirm("¿Realmente desea eliminar esta capa?", function(result) {
+			if (result){
+				removeLayer(parent.data("layer"),function(response){
+					parent.fadeOut("slow", function(){
+						$(this).remove();
+					});
+				});
+			}
 		});
 	});
 }

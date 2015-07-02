@@ -18,6 +18,7 @@
     <script src="../../Common/bootstrap-table/src/extensions/export/tableExport.jquery.plugin.js"></script>
     <script src="../../Common/bootstrap-table/src/extensions/export/bootstrap-table-export.js"></script>
 
+    <script src="../../GeneradorDeMapas/js/configuration.js"></script>
 
     <script src="../js/tableGenerator.js"></script>
 
@@ -27,6 +28,25 @@
 
 
 {% include "accordion.html.twig" %}
+
+<div id="modalNewMap" class="modal fade" role="dialog">
+    <div class="modal-dialog">
+        <!-- Modal content-->
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title">Crear nuevo mapa</h4>
+            </div>
+            <div class="modal-body">
+                <input type="text" id="newMapName"/>
+            </div>
+            <div class="modal-footer">
+                <button type="button" id="createMapModal" class="btn btn-success" data-dismiss="modal">Seguir</button>
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
 
 
 </body>

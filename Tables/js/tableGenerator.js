@@ -1,6 +1,20 @@
 $(document).ready(function(){
     createMapsTable($("#table"));
     createVisorsTable($("#table2"));
+    $("#newMap").click(function(){
+        $("#modalNewMap").modal("show");
+    });
+    $("#createMapModal").click(function(){
+        $.ajax({
+            url: "../"+apiPath+"createEmptyMap.php",
+            data:{
+                name: $("#modalNewMap .modal-body input").val()
+            },
+            success: function(response){
+                window.location.replace("../../GeneradorDeMapas/php/mapGenerator.php?mapName="+$("#modalNewMap .modal-body input").val());
+            }
+        })
+    })
 });
 
 function createTable(target, columns, data){
@@ -67,7 +81,7 @@ function convertBinaryDataToImages(mapsData){
 
 function synchronizedFormatter(value, row, index){
     if (index == 2){
-        return "<span class='glyphicon glyphicon-refresh' style='color:red; font-size: 1.2em;'></span>";
+        return "<span class='glyphicon glyphicon-refresh' style='color:green; font-size: 1.2em;'></span>";
     }
     return "<span class='glyphicon glyphicon-refresh' style='color:green; font-size: 1.2em;'></span>";
 }
