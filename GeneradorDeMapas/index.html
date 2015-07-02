@@ -15,6 +15,8 @@
 		<script src='../Common/js/attachMap.js'></script>
 		<script src='../Common/js/createMap.js'></script>
 		<script src="../Common/bootstrap-3.3.4/js/bootstrap.min.js"></script>
+		<script src="../Common/js/jquery-ui.min.js"></script>
+		<script src="../Common/js/jquery-sortable.js"></script>
 
 		<script src='./js/configuration.js'></script>
 		<script src='./js/createTreeMap.js'></script>
@@ -46,7 +48,10 @@
 							<img src="../Common/images/cabeceraLogoAsturias.gif">
 						</div>
 						<div id="leftBar">
-							<div id="layersTree"></div>
+							<div id="layersList">
+								<ol class="simple_with_animation vertical">
+								</ol>
+							</div>
 							<div class="btn-group btn-group-justified" role="group">
 								<a href="#" id="saveMapButton" class="btn btn-lg btn-success"><span class="glyphicon glyphicon-floppy-disk"></span> Guardar Mapa</a>
 								<a href="#" id="cancelMapButton" class="btn btn-lg btn-danger"><span class="glyphicon glyphicon-remove"></span>  </a>

@@ -20,10 +20,9 @@ function newLayer(name,wms) {
 				'LAYERS' : name,
 				'TILED' : true
 			}
-		}),
+		})
 	});
 	layer.name = name;
-	console.log(layer);
 	return layer;
 }
 
@@ -56,6 +55,7 @@ function addGroup(name,wms,layers) {
 }
 
 function addLayer(name,wms) {
+	console.log(name);
 	var layer = new ol.layer.Tile({
 		source : new ol.source.TileWMS({
 			preload : Infinity,
@@ -68,7 +68,6 @@ function addLayer(name,wms) {
 	});
 	layer.name = name;
 	map.addLayer(layer);
-	updateTreeLayer();
 }
 
 function requestLayersForGroup(groupName, wms, callback) {

@@ -51,14 +51,6 @@ function createMap() {
         }catch (error){
             console.log("WOP");
         }
-
-        //TEMPORAL
-        var osmLayer = new ol.layer.Tile({
-            source: new ol.source.OSM()
-        });
-        osmLayer.name = "OpenStreet Maps";
-        map.addLayer(osmLayer);
-
     }else{
         var osmLayer = new ol.layer.Tile({
             source: new ol.source.OSM()
@@ -103,10 +95,6 @@ function addLayersAndGroupsFromWMS(WMSUrl){
 
             }
             for(var j = 0; j < layersNames.length; j ++) {
-                if(grupos[j] && grupos[j].includes("Layer-Group")){
-                    addGroupToMap(j, WMSUrl);
-                    continue;
-                }
                 addLayerToMap(j, WMSUrl);
             }
         });
@@ -162,6 +150,7 @@ function requestLayersForGroup(groupName, WMSUrl, callback){
 */
 function addLayerToMap(layerIndex, WMSUrl){
     var nombre = layersNames[layerIndex];
+    console.log(nombre);
     if (layersGroupedNames.indexOf(nombre) != -1){
         return;
     }

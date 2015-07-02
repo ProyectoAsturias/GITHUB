@@ -60,7 +60,7 @@ function retrieveUserVisors(callback){
 
 function convertBinaryDataToImages(mapsData){
     mapsData.forEach(function (map){
-        map.image = "<img src='../../GeneradorMapas/images/CabeceraLogoAsturias.gif'/>";
+        map.image = "<img src='../../Common/images/CabeceraLogoAsturias.gif'/>";
     })
     return mapsData;
 }
