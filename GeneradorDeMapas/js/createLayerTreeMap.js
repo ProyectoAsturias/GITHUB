@@ -46,7 +46,7 @@ function updateTreeLayer() {
 }
 
 function generateLayerListHTML(){
-	$("#layersList ol").html("");
+	$("#layersList ol").empty();
 	var reverseLayers = map.getLayers().getArray().slice(0).reverse();
 	reverseLayers.forEach(function (layer) {
 		generateNode(layer);

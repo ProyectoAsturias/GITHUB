@@ -89,7 +89,7 @@ function addLayer(layerId,layerName,mapId,mapName) {
 			layerId: layerId,
 			layerName: layerName,
 			mapId: mapId,
-			mapName: mapName,
+			mapName: mapName
 		},
 		success:function (response) {
 			if(response !="0"){
@@ -109,7 +109,7 @@ function addLayer(layerId,layerName,mapId,mapName) {
 			}
 		},
 		error:function(error){
-			alert("Error: "+error);
+			console.log("No funcionó el servidor");
 		}
 	});
 }

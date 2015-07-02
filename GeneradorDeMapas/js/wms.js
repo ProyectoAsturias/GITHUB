@@ -21,7 +21,7 @@ function showListWms() {
 			});
 		},
 		error:function(error){
-			alert("Error: "+error);
+			console.log("Ocurrió un error. Compruebe su conexión al servidor.");
 		}
 	});
 }

@@ -64,6 +64,13 @@ function destroyMap(){
     map.setTarget(null);
 }
 
+function removeAllLayersMap(){
+    map.getLayers().forEach(function (layer){
+        console.log(map.getLayers().getLength());
+       map.removeLayer(layer);
+    });
+}
+
 function updateMap(){
     destroyMap();
     createMap();
@@ -169,10 +176,19 @@ function addLayerToMap(layerIndex, WMSUrl){
     return newlayer;
 }
 
+function searchLayerByName(layerName){
+    for (var i=0; i<map.getLayers().getLength(); i++){
+        if (map.getLayers().getArray()[i].name == layerName){
+            return map.getLayers().getArray()[i];
+        }
+    }
+    return false;
+}
+
 function searchAndRemoveLayer(layerToRemove){
-    map.getLayers().forEach(function(layer){
-       if (layer.name == layerToRemove.name){
-           map.removeLayer(layer);
-       }
-    });
+    if (searchLayerByName(layerToRemove.name) != false){
+        map.removeLayer(layerToRemove);
+        return true;
+    };
+    return false;
 }
