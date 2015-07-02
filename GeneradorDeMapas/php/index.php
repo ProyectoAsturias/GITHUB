@@ -10,8 +10,7 @@
 	<link rel='stylesheet' href='../../Common/css/chosen.css'>
 	<link href="../../Common/pace/themes/blue/pace-theme-loading-bar.css" rel="stylesheet" />
 
-	<script src="https://cdnjs.cloudflare.com/ajax/libs/ol3/3.6.0/ol.js"></script>
-	<!--<script src="../Common/js/ol.js"></script>-->
+	<script src="../../Common/js/ol.js"></script>
 	<script src='../../Common/js/jquery.min.js'></script>
 	<script src='../../Common/js/bootstrap-treeview.js'></script>
 	<script src="../../Common/js/chosen.jquery.js"></script>

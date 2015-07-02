@@ -15,6 +15,22 @@ $(document).ready(function(){
             }
         })
     })
+    $("#newVisor").click(function(){
+        $("#modalNewVisor").modal("show");
+    });
+    $("#createVisorModal").click(function(){
+        $.ajax({
+            //TEMPORAL
+            //url: "../"+apiPath+"createVisor.php",
+            url: "../../GeneradorVisores/php/generateVisor.php",
+            data:{
+                visorName: $("#modalNewVisor .modal-body input").val()
+            },
+            success: function(response){
+                window.location.replace("../../GeneradorVisores/php/generateVisor.php?visorName="+$("#modalNewVisor .modal-body input").val());
+            }
+        })
+    })
 });
 
 function createTable(target, columns, data){
