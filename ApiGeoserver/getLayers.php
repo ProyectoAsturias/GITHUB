@@ -8,7 +8,7 @@
 	}
 	else
 		print(json_encode("Error: falta idFamily"));
-	//print(getLayers(3));
+	//print(getLayers(17));
 
 	function getLayers($idFamily) {
 		$connection = new ServerConnection();
@@ -19,7 +19,6 @@
 		$i=0;
 		while ($row = pg_fetch_row($result))
 		    $layers[$i++]= new LocalgisLayer($row[0],$row[1],$row[2],$row[3],false);
-
 		//Ordenación (Burbuja)
 		for($i=1;$i<sizeof($layers);$i++){
 			for($j=0;$j<sizeof($layers)-$i;$j++){

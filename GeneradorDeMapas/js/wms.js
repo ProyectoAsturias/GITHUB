@@ -3,7 +3,7 @@ function showListWms() {
 	$('#selector').html("<div id=\"inputWms\" class=\"col-md-6\">" +
 			"<select id=\"selectWms\" class=\"chosen-select\" tabindex=\"1\" ></select>"+
 			"<input type=\"text\"  id=\"wms\" placeholder=\"Introduzca un WMS\" style=\"width:100%; border-radius: 7px; \"/>" +
-			"<button onclick='loadWms()' id=\"loadWms\" class=\"btn btn-primary btn-block\" >Importar Wms</button>"+
+			"<button onclick='loadWms()' id=\"loadWms\" class=\"btn btn-info btn-block\" style=\"padding:0;\" >Importar Wms</button>"+
 		"</div>");
 		
 	$.ajax({

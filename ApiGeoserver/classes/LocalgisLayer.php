@@ -9,7 +9,7 @@
 		//var $styles;
 
 		public function __construct($id,$name,$acl,$id_default_style,$getStyles=null){
-			print($id.",".$name.",".$acl.",".$id_default_style);
+			//print($id.",".$name.",".$acl.",".$id_default_style);
 			$this->id=$id;
 			$this->name=$name;
 			$this->acl=$acl;

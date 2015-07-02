@@ -13,8 +13,8 @@
 		$connection = new ServerConnection();
 		$where="";
 		if($idMap!=null)
-			$where=" AND r.id_map = '".$idMap;
-		$query = "SELECT lf.id_layerfamily, d.traduccion FROM maps_layerfamilies_relations as r, layerfamilies as lf , dictionary d WHERE r.id_layerfamily=lf.id_layerfamily AND lf.id_name=d.id_vocablo".$where;
+			$where=" AND r.id_map = '".$idMap."'";
+		$query = "SELECT DISTINCT(lf.id_layerfamily), d.traduccion FROM maps_layerfamilies_relations as r, layerfamilies as lf , dictionary d WHERE r.id_layerfamily=lf.id_layerfamily AND lf.id_name=d.id_vocablo".$where;
 		$result = pg_query($query) or die('Error: '.pg_last_error());
 		$connection->dbClose();
 		$families = array();

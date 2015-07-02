@@ -3,7 +3,7 @@
 	<head>
 		<title>Generador de Mapas</title>
 		<link href="../Common/images/favicon-96x96.png" rel="icon" sizes="96x96">
-		<link href="../Common/bootstrap-3.3.4/css/bootstrap.min.css" rel="stylesheet" media="screen">
+		<link href="../Common/bootstrap-3.3.4/css/bootstrap.css" rel="stylesheet" media="screen">
 		<link href="css/creadorMapas.css" rel="stylesheet" media="screen">
 		<link href="../Common/css/ol.css" rel='stylesheet'>
 		<link href="../Common/css/chosen.css" rel='stylesheet'>
@@ -14,7 +14,19 @@
 		<script src="../Common/js/chosen.jquery.js"></script>
 		<script src='../Common/js/attachMap.js'></script>
 		<script src='../Common/js/createMap.js'></script>
+		<script src="../Common/pace/pace.js"></script>
 		<script src="../Common/bootstrap-3.3.4/js/bootstrap.min.js"></script>
+		<script src="../Common/js/bootbox.min.js"></script>
+		<script src='./js/wms.js'></script>
+		<script src='./js/menuFuentesDatos.js'></script>
+
+		<script>
+			paceOptions = {
+				startOnPageLoad: false,
+				elements: false,
+				restartOnRequestAfter: 40,
+			}
+        </script>
 
 		<script src='./js/configuration.js'></script>
 		<script src='./js/createTreeMap.js'></script>
@@ -24,20 +36,28 @@
 		<script src='./js/maps.js'></script>
 		<script src='./js/mapEditor.js'></script>
 		<script src='./js/localgis.js'></script>
-		<script src='./js/wms.js'></script>
-		<script src='./js/menuFuentesDatos.js'></script>
-		<script>
-			paceOptions = {
-				startOnPageLoad: false,
-				elements: false,
-				restartOnRequestAfter: 40,
-			}
-        </script>
-  		<script src="../Common/pace/pace.js"></script>
+	
   		<link href="../Common/pace/themes/blue/pace-theme-loading-bar.css" rel="stylesheet" />
 	</head>
 
 	<body>
+		<script>
+			function confirmSaveMap(){
+				bootbox.prompt("Introduzca el nombre del mapa.", function(result) {                
+					if (result != null)                                            
+						success("Mapa guardado correctamente.");                             
+				});
+			}
+			function confirmCleanMap(){
+				bootbox.confirm("El contenido del mapa será eliminado", function(result) {
+				    if (result)
+				     	success("El contenido del mapa ha sido eliminado.");
+				});
+			}
+			function success(message){
+				bootbox.alert(message, function() {});
+			}
+        </script>
 		<div>
 			<div id="menucapas" class="col-xs-2">
 				<div>
@@ -48,8 +68,8 @@
 						<div id="leftBar">
 							<div id="layersTree"></div>
 							<div class="btn-group btn-group-justified" role="group">
-								<a href="#" id="saveMapButton" class="btn btn-lg btn-success"><span class="glyphicon glyphicon-floppy-disk"></span> Guardar Mapa</a>
-								<a href="#" id="cancelMapButton" class="btn btn-lg btn-danger"><span class="glyphicon glyphicon-remove"></span>  </a>
+								<a href="#" id="saveMapButton" class="btn btn-lg btn-success" onclick="confirmSaveMap()"><span class="glyphicon glyphicon-floppy-disk"></span> Guardar Mapa</a>
+								<a href="#" id="cancelMapButton" class="btn btn-lg btn-danger" onclick="confirmCleanMap()"><span class="glyphicon glyphicon-remove"></span>  </a>
 							</div>
 							<div class="separator"></div>
 							<div id="logout">

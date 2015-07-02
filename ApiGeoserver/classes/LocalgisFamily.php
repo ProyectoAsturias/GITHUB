@@ -8,7 +8,7 @@
 
 		public function __construct($id, $name, $getLayers=true){
 			$this->id=$id;
-			$this->name=utf8_decode($name);
+			$this->name=utf8_encode($name);
 			//if($getLayers)
 				//$this->layers=getLayers($this->id);
 		}
