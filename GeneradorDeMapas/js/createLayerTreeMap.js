@@ -47,9 +47,6 @@ function updateTreeLayer() {
 
 function generateLayerListHTML(){
 	$("#layersList ol").html("");
-	map.getLayers().getArray().forEach(function (layer){
-		console.log(layer.name);
-	})
 	var reverseLayers = map.getLayers().getArray().slice(0).reverse();
 	reverseLayers.forEach(function (layer) {
 		generateNode(layer);
@@ -59,10 +56,10 @@ function generateLayerListHTML(){
 
 function generateNode(layer){
 	var node = $("<li>"+layer.name +
-	"<span class='glyphicon glyphicon-remove' style='margin:0px 3px 0px 3px; float: right; color:#000000;'></span>" +
-	"<span class='glyphicon glyphicon-eye-open' style='margin:0px 3px 0px 3px; float: right; color:#000000;'></span>" +
-	"<span class='glyphicon glyphicon-cog' style='margin:0px 3px 0px 3px; float: right; color:#000000;'></span>" +
-	"<span class='glyphicon glyphicon-tint' style='margin:0px 3px 0px 3px; float: right; color:#000000;'></span>" +
+	"<span class='glyphicon glyphicon-remove'></span>" +
+	"<span class='glyphicon glyphicon-eye-open' ></span>" +
+	"<span class='glyphicon glyphicon-cog'></span>" +
+	"<span class='glyphicon glyphicon-tint'></span>" +
 	"</li>")
 		.data("layer", layer)
 		.appendTo($("#layersList ol"));

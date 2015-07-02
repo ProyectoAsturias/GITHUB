@@ -37,6 +37,7 @@ function getDescribeFeatureType(url, layers, callback){
         data: {
             "SERVICE": "WFS",
             "REQUEST": "DescribeFeatureType",
+            "Version": "1.1.0",
             "typeName": layers
         },
         method: "GET",
@@ -54,7 +55,6 @@ function parseDescribeFeatureType(XMLResponse){
     try {
         var featureAttributes = [];
         var elementNames = [];
-        console.log(responseObject);
         responseObject.value.element.forEach(function(element){
             elementNames.push(element.name);
         });

@@ -3,7 +3,7 @@
 	<head>
 		<title>Generador de Mapas</title>
 		<link href="../Common/images/favicon-96x96.png" rel="icon" sizes="96x96">
-		<link href="../Common/bootstrap-3.3.4/css/bootstrap.min.css" rel="stylesheet" media="screen">
+		<link href="../Common/bootstrap-3.3.4/css/bootstrap.css" rel="stylesheet" media="screen">
 		<link href="css/creadorMapas.css" rel="stylesheet" media="screen">
 		<link href="../Common/css/ol.css" rel='stylesheet'>
 		<link href="../Common/css/chosen.css" rel='stylesheet'>
@@ -28,11 +28,16 @@
 		<script src='./js/localgis.js'></script>
 		<script src='./js/wms.js'></script>
 		<script src='./js/menuFuentesDatos.js'></script>
+
+		<script src="../GeneradorVisores/js/Map%20Functions/createLayersJSON.js"></script>
+		<script src="../Common/Jsonix/Jsonix-all.js"></script>
+		<script src="../Common/Jsonix/XLINK_1.0.js"></script>
+		<script src="../Common/Jsonix/XSD_1.0.0.js"></script>
 		<script>
 			paceOptions = {
 				startOnPageLoad: false,
 				elements: false,
-				restartOnRequestAfter: 40,
+				restartOnRequestAfter: 40
 			}
         </script>
   		<script src="../Common/pace/pace.js"></script>
@@ -48,6 +53,7 @@
 							<img src="../Common/images/cabeceraLogoAsturias.gif">
 						</div>
 						<div id="leftBar">
+
 							<div id="layersList">
 								<ol class="simple_with_animation vertical">
 								</ol>
@@ -87,6 +93,26 @@
 				</div>  
 			</div>
 		</div>
+
+		<!-- Modal -->
+		<div id="modalAttributes" class="modal fade" role="dialog">
+			<div class="modal-dialog">
+				<!-- Modal content-->
+				<div class="modal-content">
+					<div class="modal-header">
+						<button type="button" class="close" data-dismiss="modal">&times;</button>
+						<h4 class="modal-title">Seleccionar atributos</h4>
+					</div>
+					<div class="modal-body">
+					</div>
+					<div class="modal-footer">
+						<button type="button" class="btn btn-success" data-dismiss="modal">Guardar</button>
+						<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+					</div>
+				</div>
+			</div>
+		</div>
+
 	</body>
 	<script>
 		initMenu();

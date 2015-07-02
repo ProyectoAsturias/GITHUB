@@ -1,5 +1,10 @@
 var map;
 
+$(document).ready(function(){
+	assignEventsHandlers();
+});
+
+
 function initMap() {
 	map = new ol.Map({
 		target : 'map',
@@ -11,7 +16,7 @@ function initMap() {
 	});
 }
 
-function newLayer(name,wms) {
+/*function newLayer(name,wms) {
 	var layer = new ol.layer.Tile({
 		source : new ol.source.TileWMS({
 			preload : Infinity,
@@ -23,6 +28,22 @@ function newLayer(name,wms) {
 		})
 	});
 	layer.name = name;
+	return layer;
+}*/
+
+function newLayer(name,wms) {
+	var source = new ol.source.TileWMS({
+		preload : Infinity,
+		url : wms,
+		params : {
+			'LAYERS' : name,
+			'TILED' : true
+		}
+	})
+	var layer = new ol.layer.Tile({source:source});
+	layer.name = name;
+	updateLoadingBar(source);
+	map.addLayer(layer);
 	return layer;
 }
 
@@ -64,7 +85,7 @@ function addLayer(name,wms) {
 				'LAYERS' : name,
 				'TILED' : true
 			}
-		}),
+		})
 	});
 	layer.name = name;
 	map.addLayer(layer);
@@ -99,6 +120,75 @@ function requestLayersForGroup(groupName, wms, callback) {
 				groupLayers.push(groupLayer);
 			});
 			callback(groupLayers);
+		}
+	});
+}
+
+function reorderOpenlayersMap(indexFrom, indexTo){
+	var movedLayer = map.getLayers().removeAt(indexFrom);
+	map.getLayers().insertAt(indexTo, movedLayer);
+}
+
+function assignEventsHandlers(){
+	eyeIconClickHandler();
+	deleteIconClickHandler();
+	attributesClickHandler();
+}
+
+function eyeIconClickHandler(){
+	$(".glyphicon-eye-open").click(function(event){
+		if ($(this).parent().data().layer.getVisible()){
+			$(this).css("color", "lightgray");
+			$(this).parent().data().layer.setVisible(false);
+		}else{
+			$(this).css("color", "black");
+			$(this).parent().data().layer.setVisible(true);
+		}
+	});
+}
+
+function deleteIconClickHandler(){
+	$(".glyphicon-remove").click(function(event){
+		var parent = $(this).parent();
+		removeLayer(parent.data("layer"),function(response){
+			parent.fadeOut("slow", function(){
+				$(this).remove();
+			});
+		});
+	});
+}
+
+function attributesClickHandler(){
+	$(".glyphicon-cog").click(function(event){
+		var parent = $(this).parent();
+		getJSONLayer(parent.data("layer"), function(attributes){
+			var modalHTML = "";
+			attributes.features.forEach(function (feature){
+				console.log(feature);
+				modalHTML += "<div><input type='checkbox' style='vertical-align: middle'/><label>&nbsp;&nbsp;&nbsp;"+feature+"</label></div>"
+			})
+			$("#modalAttributes .modal-body").html(modalHTML);
+			$("#modalAttributes").modal("show");
+		})
+	});
+}
+
+function removeLayer(layer, callback){
+	console.log(map.title);
+	$.ajax({
+		type : "GET",
+		//url : apiPath+"delLayer.php",
+		url: "",
+		data:{
+			layerName: layer.name,
+			mapName: map.mapName
+		},
+		success:function (response) {
+			map.removeLayer(layer);
+			callback(response);
+		},
+		error:function(error){
+			alert("Error: "+error);
 		}
 	});
 }
