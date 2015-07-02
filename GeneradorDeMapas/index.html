@@ -2,21 +2,13 @@
 <html lang="es">
 	<head>
 		<title>Generador de Mapas</title>
-<<<<<<< HEAD
 		<link rel="favicon/favicon-96x96" sizes="96x96" href="../Common/images/favicon-96x96.png">
 		<link href="../Common/bootstrap-3.3.4/css/bootstrap.min.css" rel="stylesheet" media="screen">
 		<link href="css/creadorMapas.css" rel="stylesheet" media="screen">
 		<link rel='stylesheet' href='../Common/css/ol.css'>
 		<link rel='stylesheet' href='../Common/css/chosen.css'>
-=======
-		<link href="../Common/images/favicon-96x96.png" rel="icon" sizes="96x96">
-		<link href="../Common/bootstrap-3.3.4/css/bootstrap.min.css" rel="stylesheet" media="screen">
-		<link href="css/creadorMapas.css" rel="stylesheet" media="screen">
-		<link href="../Common/css/ol.css" rel='stylesheet'>
-		<link href="../Common/css/chosen.css" rel='stylesheet'>
->>>>>>> Alikornio
-		
-		<script src="../Common/js/ol.js"></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/ol3/3.6.0/ol.js"></script>
+		<!--<script src="../Common/js/ol.js"></script>-->
 		<script src='../Common/js/jquery.min.js'></script>
 		<script src='../Common/js/bootstrap-treeview.js'></script>
 		<script src="../Common/js/chosen.jquery.js"></script>
@@ -34,24 +26,16 @@
 		<script src='./js/localgis.js'></script>
 		<script src='./js/wms.js'></script>
 		<script src='./js/menuFuentesDatos.js'></script>
-		<script>
-			paceOptions = {
-				startOnPageLoad: false,
-				elements: false,
-				restartOnRequestAfter: 40,
-			}
-        </script>
-  		<script src="../Common/pace/pace.js"></script>
-  		<link href="../Common/pace/themes/blue/pace-theme-loading-bar.css" rel="stylesheet" />
-	</head>
 
+	
+	</head>
 	<body>
 		<div>
 			<div id="menucapas" class="col-xs-2">
 				<div>
 					<div>
 						<div id="logo" class="">
-							<img src="../Common/images/cabeceraLogoAsturias.gif">
+							<img src="/GITHUB-Alikornio/Common/images/cabeceraLogoAsturias.gif">
 						</div>
 						<div id="leftBar">
 							<div id="layersTree"></div>
@@ -79,20 +63,86 @@
 						</div>
 					</div>
 					<div id="mapContainer">
+						<div id="progress"></div>
 						<div id="map" class="map"></div>
-						<div class="ol-overlay-container">
-							<div id="areaOverlay"></div>
-						</div>
-						<div class="ol-overlay-container">
-							<div id="coordinatesOverlay"></div>
-						</div>
 					</div>
 				</div>  
 			</div>
 		</div>
-	</body>
-	<script>
-		initMenu();
-		initMap();
-	</script>
+
+<script>
+/**
+ * Renders a progress bar.
+ * @param {Element} el The target element.
+ * @constructor
+ */
+function Progress(el) {
+  this.el = el;
+  this.loading = 0;
+  this.loaded = 0;
+}
+
+
+/**
+ * Increment the count of loading tiles.
+ */
+Progress.prototype.addLoading = function() {
+  if (this.loading === 0) {
+    this.show();
+  }
+  ++this.loading;
+  this.update();
+};
+
+
+/**
+ * Increment the count of loaded tiles.
+ */
+Progress.prototype.addLoaded = function() {
+  setTimeout(function() {
+    ++this.loaded;
+    this.update();
+  }.bind(this), 100);
+};
+
+
+/**
+ * Update the progress bar.
+ */
+Progress.prototype.update = function() {
+  var width = (this.loaded / this.loading * 100).toFixed(1) + '%';
+  this.el.style.width = width;
+  if (this.loading === this.loaded) {
+    this.loading = 0;
+    this.loaded = 0;
+    setTimeout(this.hide.bind(this), 500);
+  }
+};
+
+
+/**
+ * Show the progress bar.
+ */
+Progress.prototype.show = function() {
+  this.el.style.visibility = 'visible';
+};
+
+
+/**
+ * Hide the progress bar.
+ */
+Progress.prototype.hide = function() {
+  if (this.loading === this.loaded) {
+    this.el.style.visibility = 'hidden';
+    this.el.style.width = 0;
+  }
+};
+
+var progress = new Progress(document.getElementById('progress'));
+
+
+initMenu();
+initMap();
+</script>
+</body>
 </html>

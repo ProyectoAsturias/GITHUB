@@ -1,7 +1,7 @@
 function showListWms() {
 	menuDatosWms();
 	$('#selector').html("<div id=\"inputWms\" class=\"col-md-6\">" +
-			"<select id=\"selectWms\" class=\"chosen-select\" tabindex=\"1\" ></select>"+
+			"<select id=\"selectWms\" class=\"chosen-select\" tabindex=\"1\" data-placeholder=\"Seleccione un Wms\"></select>"+
 			"<input type=\"text\"  id=\"wms\" value=\"Introduzca un WMS\" style=\"width:100%; border-radius: 7px; \"/>" +
 			"<button onclick='loadWms()' id=\"loadWms\" class=\"btn btn-primary btn-block\" >Importar Wms</button>"+
 		"</div>");
@@ -15,7 +15,10 @@ function showListWms() {
 			for(var i=0; i<wmsList.length; i++)
 				$("#selectWms").append("<option value=\""+wmsList[i]+"\">"+wmsList[i]+"</option>");
 			$('#selectWms').prop('selectedIndex', -1);
-			$('.chosen-select').chosen({width:"100%"});
+			$('.chosen-select').chosen({
+				width:"100%",
+				search_contains: true,
+			});
 		},
 		error:function(error){
 			alert("Error: "+error);

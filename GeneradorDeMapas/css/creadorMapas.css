@@ -76,6 +76,16 @@
 	margin-top:1.8vh;
 }
 
+#progress {
+  position: absolute;
+  bottom: 627px;
+  left: 0;
+  height: 2px;
+  background: blue;
+  width: 0;
+  transition: width 250ms;
+}
+
 body,
 .navbar-fixed-top,
 .navbar-fixed-bottom {

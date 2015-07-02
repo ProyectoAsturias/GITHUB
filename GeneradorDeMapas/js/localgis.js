@@ -88,7 +88,7 @@ function importMap(){
 				console.log("Mapa creado correctamente "+response);
 				var wms=server+"geoserver/"+mapName+"/wms";
 				console.log(wms+"?request=getCapabilities&service=wms");
-				loadWmsTree(wms);
+				//loadWmsTree(wms);
 			}
 			else
 				console.log("El mapa no ha podido crearse");
