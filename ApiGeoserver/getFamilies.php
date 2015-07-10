@@ -1,6 +1,5 @@
 <?php
 	include "classes/Connection.php";
-	include "classes/LocalgisFamily.php";
 
 	if(isset($_POST['idMap'])){ //Las familias de un mapa
 		$idMap=$_POST['idMap'];
@@ -9,7 +8,12 @@
 	else //Todas las familias
 		print(getFamilies());
 
-	function getFamilies($idMap=null) {
+/**
+ * Obtiene las familias de un mapa de LocalGis a través de su ID.
+ * @param $idMap
+ * @return string
+ */
+function getFamilies($idMap=null) {
 		$connection = new ServerConnection();
 		$where="";
 		if($idMap!=null)

@@ -29,8 +29,19 @@
 		addLayer($layerId,$layerName,$mapId,$mapName,$town,$projection,$connection,$geoserver);
 		$connection->dbClose();
 	}
-		
-	function addLayer($layerId,$layerName,$mapId,$mapName,$town,$projection,$connection,$geoserver){
+
+/**
+ * Esta función conecta a la base de datos de LocalGis, de la que descarga y ejecuta las Querys necesarias para obtener la información de las capas y añadirlas a Geoserver.
+ * @param $layerId
+ * @param $layerName
+ * @param $mapId
+ * @param $mapName
+ * @param $town
+ * @param $projection
+ * @param $connection
+ * @param $geoserver
+ */
+function addLayer($layerId,$layerName,$mapId,$mapName,$town,$projection,$connection,$geoserver){
 		//Se rescata la query que forma la capa de Localgis
 		$query = "SELECT selectquery FROM queries WHERE id_layer='".$layerId."'";
 		$result = pg_query($query) or die('Error: '.pg_last_error());
@@ -58,32 +69,49 @@
 		}
 	}
 
-	function addStyles($layerId,$layerName,$mapId,$connection,$geoserver){
-		$query = "SELECT l.stylename, s.xml FROM layers_styles as l, styles as s WHERE l.id_style=s.id_style AND id_layer='".$layerId."' AND id_map='".$mapId."'";
-		$result = pg_query($query) or die('Error: '.pg_last_error());
+/**
+ * Conecta a LocalGis para obtener los estilos de una capa, importarlos a Geoserver y asignarselos a una capa.
+ * @param $layerId
+ * @param $layerName
+ * @param $mapId
+ * @param $connection
+ * @param $geoserver
+ */
+function addStyles($layerId,$layerName,$mapId,$connection,$geoserver)
+{
+	$where = "";
+	if ($mapId < 0)
+		$where = "' AND id_map='" . $mapId . "'";
+	$query = "SELECT l.stylename, s.xml FROM layers_styles as l, styles as s WHERE l.id_style=s.id_style AND id_layer='" . $layerId . $where;
+	$result = pg_query($query) or die('Error: ' . pg_last_error());
+	$styles = array();
+	$numRows = pg_num_rows($result);
+	if ($numRows > 0) {
+		//var_dump($line);
 		$styles = array();
 		while ($line = pg_fetch_array($result, null, PGSQL_ASSOC)) {
-		    $styleName = $line["stylename"];
+			$styleName = $line["stylename"];
 			$SLD = $line["xml"];
-			$numSld=substr_count($SLD,"<UserStyle>");
-			$exp=explode("<UserStyle>",$SLD);
-			$header=$exp[0];
-			$end=explode("</UserStyle>",$SLD)[$numSld];
-			for($i=1;$i<=$numSld;$i++){
-				$sld_xml=$header."<UserStyle>".$exp[$i];
-				if($i!=$numSld)
-					$sld_xml.=$end;
-				if(($result=$geoserver->createStyle($sld_xml, $styleName."_".$i, $connection->wsName))!="")
-					print("Advice: ".$result."\n");
-				if(($result=$geoserver->addStyleToLayer($layerName, $styleName."_".$i, $connection->wsName))!="")
-					print("Advice: ".$result."\n");
+			$numSld = substr_count($SLD, "<UserStyle>");
+			$exp = explode("<UserStyle>", $SLD);
+			$header = $exp[0];
+			$end = explode("</UserStyle>", $SLD)[$numSld];
+			for ($i = 1; $i <= $numSld; $i++) {
+				$sld_xml = $header . "<UserStyle>" . $exp[$i];
+				if ($i != $numSld)
+					$sld_xml .= $end;
+				if (($res = $geoserver->createStyle($sld_xml, $styleName . "_" . $i, $connection->wsName)) != "")
+					print("Advice: " . $res . "\n");
+				if (($res = $geoserver->addStyleToLayer($layerName, $styleName . "_" . $i, $connection->wsName)) != "")
+					print("Advice: " . $res . "\n");
 				//print("Estilo añadido");
 			}
 			//Toma por defecto el primero
-			if(($result=$geoserver->defaultStyleToLayer($layerName, $styleName."_1", $connection->wsName))!="")
-				print("Advice: ".$result."\n");
+			if (($res = $geoserver->defaultStyleToLayer($layerName, $styleName . "_1", $connection->wsName)) != "")
+				print("Advice: " . $res . "\n");
 			//print("Estilo por defecto establecido");
 			print(0);
 		}
 	}
+}
 ?>

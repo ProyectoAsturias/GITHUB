@@ -10,7 +10,12 @@
 		print(json_encode("Error: falta idFamily"));
 	//print(getLayers(17));
 
-	function getLayers($idFamily) {
+/**
+ * Obtiene todas las capas de una familia de LocalGis a través de su Id.
+ * @param $idFamily
+ * @return string
+ */
+function getLayers($idFamily) {
 		$connection = new ServerConnection();
 		$query = "SELECT l.id_layer,l.name,l.acl,l.id_styles FROM layerfamilies_layers_relations as r,layers as l WHERE r.id_layerfamily='".$idFamily."' AND r.id_layer=l.id_layer";
 		$result = pg_query($query) or die('Error: '.pg_last_error());

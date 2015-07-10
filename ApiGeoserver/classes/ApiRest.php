@@ -2,12 +2,33 @@
 ini_set("display_errors", "On");
 error_reporting(E_ALL);
 
+/**
+ * Clase principal para la comunicación con Geoserver. Todas las acciones ejecutadas en éste pasan por esta clase que ejecutará los CURL necesarios.
+ */
 class ApiRest {
+	/**
+	 * @var string
+	 * Url que apunta a Geoserver
+     */
 	var $serverUrl = '';
+	/**
+	 * @var string
+	 * Usuario de Geoserver con el que se ejecutarán las acciones.
+     */
 	var $username = '';
+	/**
+	 * @var string
+	 * Contraseña del usuario.
+     */
 	var $password = '';
 
 // Internal stuff
+	/**
+	 * Constructor de la clase.
+	 * @param $serverUrl
+	 * @param string $username
+	 * @param string $password
+     */
 	public function __construct($serverUrl, $username = '', $password = '') {
 		if (substr($serverUrl, -1) !== '/') $serverUrl .= '/';
 		$this->serverUrl = $serverUrl;
@@ -15,6 +36,11 @@ class ApiRest {
 		$this->password = $password;
 	}
 
+	/**
+	 * Comprobación de la autenticación del usuario/contraseña proporcionadas en el constructor.
+	 * @param $apiPath Ruta hasta la API de Geoserver.
+	 * @return mixed|string Devuelve el resultado de la petición de autenticación si tiene éxito, si se produce un error de autenticación devuelve una String.
+     */
 	private function authGet($apiPath) {
 		$ch = curl_init();
 		curl_setopt($ch, CURLOPT_URL, $this->serverUrl.$apiPath);
@@ -31,6 +57,14 @@ class ApiRest {
 		}
 	}
 
+	/**
+	 * Ejecución de operaciones sobre la API de Geoserver a través de peticiones CURL.
+	 * @param $apiPath	Ruta hasta la API de Geoserver.
+	 * @param string $method	Método que ejecutar sobre la API de Geoserver.
+	 * @param string $data	Información a envíar en la petición CURL.
+	 * @param string $contentType	Tipo de la información enviada.
+	 * @return mixed|string Devuelve la respuesta a la petición o una String en caso de no tener los permisos necesarios.
+     */
 	private function runApi($apiPath, $method = 'GET', $data = '', $contentType = 'text/xml') {
 		$ch = curl_init();
 		curl_setopt($ch, CURLOPT_URL, $this->serverUrl.'rest/'.$apiPath);
@@ -61,18 +95,37 @@ class ApiRest {
 	}
 
 // Workspace APIs
+	/**
+	 * Devuelve un listado de todos los workspaces existentes en el servidor Geoserver.
+	 * @return mixed
+     */
 	public function listWorkspaces() {
 		return json_decode($this->runApi('workspaces.json'));
 	}
 
+	/**
+	 * Crea un workspace en el servidor Geoserver.
+	 * @param $workspaceName
+	 * @return mixed|string	Devuelve una String con el resultado de la petición
+     */
 	public function createWorkspace($workspaceName) {
 		return $this->runApi('workspaces', 'POST', '<workspace><name>'.htmlentities($workspaceName, ENT_COMPAT).'</name></workspace>');
 	}
 
+	/**
+	 * Elimina un workspace del servidor Geoserver.
+	 * @param $workspaceName
+	 * @return mixed|string	Devuelve una String con el resultado de la petición
+     */
 	public function deleteWorkspace($workspaceName) {
 		return $this->runApi('workspaces/'.urlencode($workspaceName), 'DELETE');
 	}
 
+	/**
+	 * Comprueba si existe o no un workspace en el servidor Geoserver.
+	 * @param $workspaceName
+	 * @return bool
+     */
 	public function existsWorkspace($workspaceName){
 		$listWorkspaces=$this->listWorkspaces();
 		if(isset($listWorkspaces->workspaces->workspace)){
@@ -84,19 +137,47 @@ class ApiRest {
 		}
 		return false;
 	}
+
+	/**
+	 * Activa el servicio WMS para un Workspace existente en Geoserver.
+	 * @param $workspaceName
+	 * @return mixed|string Devuelve una String con el resultado de la petición
+     */
 	public function enableWms($workspaceName){
 		return $this->runApi('services/wms/workspaces/'.urlencode($workspaceName).'/settings.xml', 'PUT', '<wms><enabled>true</enabled></wms>');
 	}
 
+	/**
+	 * Desactiva el servicio WMS para un Workspace existente en Geoserver.
+	 * @param $workspaceName
+	 * @return mixed|string
+     */
 	public function disableWms($workspaceName){
 		return $this->runApi('services/wms/workspaces/'.urlencode($workspaceName).'/settings.xml', 'PUT', '<wms><enabled>false</enabled></wms>');
 	}
 
 // Datastore APIs
+	/**
+	 * Lista todos los DataStores asociados a un Workspace.
+	 * @param $workspaceName
+	 * @return mixed
+     */
 	public function listDataStores($workspaceName) {
 		return json_decode($this->runApi('workspaces/'.urlencode($workspaceName).'/datastores.json'));
 	}
 
+	/**
+	 * Creación de un almacen de datos vinculado a una tabla en una base de datos postgresl.
+	 * @param $workspaceName
+	 * @param $datastoreName
+	 * @param $databaseSchema
+	 * @param $databaseName
+	 * @param $databaseUser
+	 * @param $databasePass
+	 * @param string $databaseHost
+	 * @param string $databasePort
+	 * @return mixed|string
+     */
 	public function createPostGISDataStore($workspaceName, $datastoreName, $databaseSchema, $databaseName, $databaseUser, $databasePass, $databaseHost = 'localhost', $databasePort = '5432') {
 		return $this->runApi('workspaces/'.urlencode($workspaceName).'/datastores', 'POST', '<dataStore>
 			<name>'.htmlentities($datastoreName, ENT_COMPAT).'</name>
@@ -126,6 +207,12 @@ class ApiRest {
 			</dataStore>');
 	}
 
+	/**
+	 * @return mixed|string
+	 * @param $workspaceName
+	 * @param $datastoreName
+	 * @param $location
+     */
 	public function createShpDirDataStore($workspaceName, $datastoreName, $location) {
 		return $this->runApi('workspaces/'.urlencode($workspaceName).'/datastores', 'POST', '<dataStore>
 			<name>'.htmlentities($datastoreName, ENT_COMPAT).'</name>
@@ -144,10 +231,22 @@ class ApiRest {
 			</dataStore>');
 	}
 
+	/**
+	 * Elimina un DataStore perteneciente a un Workspace.
+	 * @param $workspaceName
+	 * @param $datastoreName
+	 * @return mixed|string
+     */
 	public function deleteDataStore($workspaceName, $datastoreName) {
 		return $this->runApi('workspaces/'.urlencode($workspaceName).'/datastores/'.urlencode($datastoreName), 'DELETE');
 	}
 
+	/**
+	 * Comprueba la existencia de un DataStore asignado a un Workspace.
+	 * @param $workspaceName
+	 * @param $datastoreName
+	 * @return bool
+     */
 	public function existsDatastore($workspaceName, $datastoreName){
 		$listDatastores=$this->listDataStores($workspaceName);
 		if(isset($listDatastores->dataStores->dataStore)){
@@ -162,10 +261,25 @@ class ApiRest {
 
 
 // Layer APIs
+	/**
+	 * Lista todas las capas de un DataStore asociado a un WorkSpace.
+	 * @param $workspaceName
+	 * @param $datastoreName
+	 * @return mixed
+     */
 	public function listLayers($workspaceName, $datastoreName) {
 		return json_decode($this->runApi('workspaces/'.urlencode($workspaceName).'/datastores/'.urlencode($datastoreName).'/featuretypes.json'));
 	}
 
+	/**
+	 * Añade una capa nueva a un DataStore asignado a un Workspace.
+	 * @param $workspaceName	Workspace al que está asociado el DataStore.
+	 * @param $datastoreName	DataStore en el que almacenar la capa.
+	 * @param $layerName	Nombre de la capa.
+	 * @param string $description	Descripción de la capa.
+	 * @param $proj Proyección de la capa.
+	 * @return mixed|string
+     */
 	public function addLayer($workspaceName, $datastoreName, $layerName, $description = '', $proj){
 		/*return 'workspaces/'.urlencode($workspaceName).'/datastores/'.urlencode($datastoreName).'/featuretypes.xml'.' # POST # <featureType>'.
 			'<name>'.$layerName.'</name>'.
@@ -189,11 +303,27 @@ class ApiRest {
 		return "Workspace or Datastore don't exists";
 	}
 
+	/**
+	 * Elimina una capa de un DataStore asignado a un Workspace.
+	 * @param $workspaceName
+	 * @param $datastoreName
+	 * @param $layerName
+	 * @return mixed|string
+     */
 	public function deleteLayer($workspaceName, $datastoreName, $layerName) {
 		$this->runApi('layers/'.urlencode($layerName), 'DELETE');
 		return $this->runApi('workspaces/'.urlencode($workspaceName).'/datastores/'.urlencode($datastoreName).'/featuretypes/'.urlencode($layerName), 'DELETE');
 	}
 
+	/**
+	 * Obtiene las Features asignadas a una Capa.
+	 * @param $layerName
+	 * @param $workspaceName
+	 * @param string $format
+	 * @param int $maxGMLFeatures
+	 * @param string $overrideServerURL
+	 * @return mixed|string
+     */
 	public function viewLayer($layerName, $workspaceName, $format = 'GML', $maxGMLFeatures = 1000000, $overrideServerURL = '') {
 		// overrideServerURL = useful if using reverseproxy-like configurations
 		if ($format == 'GML') {
@@ -204,10 +334,24 @@ class ApiRest {
 		}
 	}
 
+	/**
+	 * Obtiene la Leyenda de una Capa.
+	 * @param $workspaceName
+	 * @param int $width
+	 * @param int $height
+	 * @param $layerName
+	 * @return mixed|string
+     */
 	public function viewLayerLegend($workspaceName, $width = 20, $height = 20, $layerName) {
 		return $this->authGet("wms?REQUEST=GetLegendGraphic&VERSION=1.0.0&FORMAT=image/png&WIDTH=$width&HEIGHT=$height&LAYER=".urlencode($workspaceName).':'.urlencode($layerName));
 	}
 
+	/**
+	 * Ejecuta una petición Post sobre el servicio WFS de la API de Geoserver.
+	 * @param $apiPath
+	 * @param $post
+	 * @return mixed|string
+     */
 	public function wfsPost($apiPath, $post) {
 		$ch = curl_init();
 		curl_setopt($ch, CURLOPT_URL, $this->serverUrl.'wfs'.$apiPath);
@@ -232,20 +376,43 @@ class ApiRest {
 		}
 	}
 
+	/**
+	 * Ejecuta una petición sobre el servicio WFS.
+	 * @param $WFSTRequest
+	 * @return mixed|string
+     */
 	public function executeWFSTransaction($WFSTRequest) {
 		// WFS-T is just WFS really...
 		return $this->wfsPost('', $WFSTRequest);
 	}
 
 // Group APIs
+	/**
+	 * Lista todos los grupos de Capas de un Workspace.
+	 * @param $workspaceName
+	 * @return mixed
+     */
 	public function listLayerGroups($workspaceName){
 		return json_decode($this->runApi('workspaces/'.urlencode($workspaceName).'/layergroups.json'));
 	}
 
+	/**
+	 * Lista todas las capas de un grupo perteneciente a un Workspace.
+	 * @param $workspaceName
+	 * @param $groupName
+	 * @return mixed
+     */
 	public function listLayerGroup($workspaceName, $groupName){
 		return json_decode($this->runApi('workspaces/'.urlencode($workspaceName).'/layergroups/'.urlencode($groupName).'/featuretypes.json'));
 	}
 
+	/**
+	 * Crea un Grupo asignado a un Workspace conteniendo las Capas indicadas por parámetro.
+	 * @param $workspaceName
+	 * @param $groupName
+	 * @param $layers Objeto que contiene el nombre de las capas que formarán el grupo.
+	 * @return mixed|string
+     */
 	public function createLayerGroup($workspaceName, $groupName, $layers){
 		$layersXml="";
 		$stylesXml="";
@@ -266,11 +433,24 @@ class ApiRest {
 			  <styles>'.$stylesXml.'</styles>
 			</layerGroup>');
 	}
-	
+
+	/**
+	 * Elimina un Grupo de un Workspace.
+	 * @param $workspaceName
+	 * @param $groupName
+	 * @return mixed
+     */
 	public function deleteLayerGroup($workspaceName, $groupName){
 		return json_decode($this->runApi('workspaces/'.urlencode($workspaceName).'/layergroups/'.urlencode($groupName), 'DELETE'));
 	}
 
+	/**
+	 * Añade una capa a un grupo ya existente.
+	 * @param $workspaceName
+	 * @param $groupName
+	 * @param $layerName
+	 * @return mixed|string
+     */
 	public function addLayerToLayerGroup($workspaceName, $groupName, $layerName){
 		$layersXml="";
 		$stylesXml="";
@@ -299,6 +479,13 @@ class ApiRest {
 			  </layerGroup>');
 	}
 
+	/**
+	 * Añade un estilo a un Grupo de Capas.
+	 * @param $workspaceName
+	 * @param $groupName
+	 * @param $styleName
+	 * @return mixed|string
+     */
 	public function addStyleToLayerGroup($workspaceName, $groupName, $styleName){
 		return $this->runApi('workspaces/'.urlencode($workspaceName).'/layergroups/'.urlencode($groupName), 'PUT','
 			  <styles>
@@ -306,15 +493,34 @@ class ApiRest {
 			  </styles>');
 	}
 
+	/**
+	 * Elimina una Capa de un Grupo ya existente.
+	 * @param $workspaceName
+	 * @param $groupName
+	 * @return mixed
+     */
 	public function deleleLayerFromLayerGroup($workspaceName, $groupName){
 		return json_decode($this->runApi('workspaces/'.urlencode($workspaceName).'/layergroups/'.urlencode($groupName), 'DELETE'));
 	}
 
 // Style APIs
-	public function listStyles($layerName,$workspaceName) {	
+	/**
+	 * Lista los estilos de una Capa.
+	 * @param $layerName
+	 * @param $workspaceName
+	 * @return mixed
+     */
+	public function listStyles($layerName,$workspaceName) {
 		return json_decode($this->runApi('layers/'.urlencode($workspaceName).":".urlencode($layerName).'/styles.json'));
 	}
 
+	/**
+	 * Crea un estilo que se almacena en un Workspace.
+	 * @param $SLD
+	 * @param $styleName
+	 * @param $workspaceName
+	 * @return mixed|string
+     */
 	public function createStyle($SLD, $styleName, $workspaceName) {
 		//curl -v -u admin:geoserver -XPOST -H 'Content-type: application/xml' -d '<style><name>tmp</name><filename>sld.prueba</filename></style>' http://localhost:8080/geoserver/rest/workspaces/Arbolado/styles
 		$dir='styles/';
@@ -334,20 +540,46 @@ class ApiRest {
 			$this->uploadSldStyle($dir.$file_sld, $styleName, $workspaceName);
 	}
 
+	/**
+	 * Sube un fichero SLD para ser asignado a un estilo de un Workspace.
+	 * @param $url_file
+	 * @param $styleName
+	 * @param $workspaceName
+     */
 	public function uploadSldStyle($url_file, $styleName, $workspaceName) {
 		$curl='curl -u admin:geoserver -XPUT -H "Content-type: application/vnd.ogc.sld +xml" -d @'.$url_file.' http://localhost:8080/geoserver/rest/workspaces/'.$workspaceName.'/styles/'.$styleName;
 		shell_exec($curl);
 		//return $this->runApi('workspaces/'.htmlentities($workspaceName, ENT_COMPAT).'/styles/'.htmlentities($styleName, ENT_COMPAT), 'PUT', '@'.htmlentities($url_file, ENT_COMPAT));
 	}
 
+	/**
+	 * Añade un estilo a una capa.
+	 * @param $layerName
+	 * @param $styleName
+	 * @param $workspaceName
+	 * @return mixed|string
+     */
 	public function addStyleToLayer($layerName, $styleName, $workspaceName) {
 		return $this->runApi('layers/'.htmlentities($workspaceName, ENT_COMPAT).':'.htmlentities($layerName, ENT_COMPAT).'/styles', 'POST', '<style><name>'.htmlentities($workspaceName, ENT_COMPAT).':'.htmlentities($styleName, ENT_COMPAT).'</name></style>');
 	}
 
+	/**
+	 * Asigna un estilo de una capa como Estilo por defecto.
+	 * @param $layerName
+	 * @param $styleName
+	 * @param $workspaceName
+	 * @return mixed|string
+     */
 	public function defaultStyleToLayer($layerName, $styleName, $workspaceName) {
 		return $this->runApi('layers/'.htmlentities($workspaceName, ENT_COMPAT).':'.htmlentities($layerName, ENT_COMPAT), 'PUT', '<layer><defaultStyle><name>'.htmlentities($workspaceName, ENT_COMPAT).':'.htmlentities($styleName, ENT_COMPAT).'</name></defaultStyle></layer>');
 	}
 
+	/**
+	 * Elimina un estilo de un Workspace.
+	 * @param $styleName
+	 * @param $workspaceName
+	 * @return mixed|string
+     */
 	public function deleteStyle($styleName,$workspaceName) {
 		print($styleName."...".$workspaceName);
 		return $this->runApi('workspaces/'.htmlentities($workspaceName, ENT_COMPAT)."/styles/".htmlentities($styleName, ENT_COMPAT), 'DELETE');

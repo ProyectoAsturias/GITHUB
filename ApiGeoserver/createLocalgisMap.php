@@ -1,4 +1,7 @@
 <?php
+/**
+ * Crea un mapa en Geoserver con el ID y el nombre de un mapa de LocalGis.
+ */
 	include "createMap.php";
 	if(isset($_POST['id']) && isset($_POST['mapName'])){
 		$mapId=$_POST['id'];

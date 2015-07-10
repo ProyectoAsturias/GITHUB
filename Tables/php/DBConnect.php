@@ -9,8 +9,8 @@ class DBConnect {
     var $dbPass;
 
     public function __construct(){
-        $this->dbName = "Asturias";
-        $this->dbHost = "localhost";
+        $this->dbName = "UserContent";
+        $this->dbHost = "192.168.1.38";
         $this->dbSchema = "public";
         $this->dbUser = "postgres";
         $this->dbPass = "1234";

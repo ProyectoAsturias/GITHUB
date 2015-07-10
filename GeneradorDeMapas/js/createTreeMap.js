@@ -1,5 +1,6 @@
 $(document).ready(function(){
 	assignEventsHandlers();
+	loadWmsTree(server + "geoserver/" + mapName +"/wms");
 });
 
 function loadWmsTree(wms) {
@@ -37,7 +38,7 @@ function loadWmsTree(wms) {
 
 		},
 		error:function(error){
-			alert("Error: "+error);
+			//alert("Error: "+error);
 		}
 	});
 }

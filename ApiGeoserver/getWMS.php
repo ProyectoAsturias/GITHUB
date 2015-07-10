@@ -3,9 +3,13 @@ include "classes/ApiRest.php";
 include "classes/Connection.php";
 include "classes/LocalgisMap.php";
 //$connection = new ServerConnection();
-print(getMaps());
+print(getCommonWms());
 //$connection->dbClose();
-function getMaps() {
+/**
+ * Devuelve en formato JSON una lista con los mapas más comunmente utilizados.
+ * @return string
+ */
+function getCommonWms() {
     /*$query = 'SELECT * FROM wms';
     $result = pg_query($query) or die('Error: '.pg_last_error());*/
     $wms = array();

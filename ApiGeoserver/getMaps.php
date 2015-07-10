@@ -3,8 +3,12 @@
 	include "classes/LocalgisMap.php";
 	
 	print(getMaps());
-	
-	function getMaps() {
+
+/**
+ * Devuelve una lista con todos los mapas existentes en Localgis.
+ * @return string
+ */
+function getMaps() {
 		$connection = new ServerConnection();
 		$query = 'SELECT * FROM maps';
 		$result = pg_query($query) or die('Error: '.pg_last_error());

@@ -2,7 +2,10 @@
 <?php
 	//include "getFamilies.php";
 
-	class LocalgisMap {
+/**
+ * Clase que representa un mapa de LocalGis.
+ */
+class LocalgisMap {
 		var $id;
 		var $description;
 		var $usnits;

@@ -14,6 +14,7 @@ function initMap() {
 			zoom : 8
 		})
 	});
+	console.log(mapName);
 	//map.name=;
 	//map.id=;
 }
@@ -161,7 +162,7 @@ function assignEventsHandlers(){
 }
 
 function eyeIconClickHandler(){
-	$(".glyphicon-eye-open").click(function(event){
+	$(".visibilityLayer").click(function(event){
 		if ($(this).parent().data().layer.getVisible()){
 			$(this).css("color", "lightgray");
 			$(this).parent().data().layer.setVisible(false);
@@ -173,10 +174,11 @@ function eyeIconClickHandler(){
 }
 
 function deleteIconClickHandler(){
-	$(".glyphicon-remove").click(function(event){
+	$(".removeLayer").click(function(event){
 		var parent = $(this).parent();
 		bootbox.confirm("¿Realmente desea eliminar esta capa?", function(result) {
 			if (result){
+				//TODO: Ajax al fichero delLayer con el nombre de la capa y el del mapa.
 				removeLayer(parent.data("layer"),function(response){
 					parent.fadeOut("slow", function(){
 						$(this).remove();
@@ -188,7 +190,7 @@ function deleteIconClickHandler(){
 }
 
 function attributesClickHandler(){
-	$(".glyphicon-cog").click(function(event){
+	$(".attributesLayer").click(function(event){
 		var parent = $(this).parent();
 		getJSONLayer(parent.data("layer"), function(attributes){
 			var modalHTML = "";
@@ -218,6 +220,7 @@ function removeLayer(layer, callback) {
 		}
 	});
 }
+
 /*
 function editFeatures(layer){
 	//desplegar una ventana modal para seleccionar las features

@@ -6,7 +6,12 @@
 	/*
 		Un mapa tiene una o varias familias de capas. Y estas a su vez una o varias capas
 	*/
-	function createGeoserverMap($mapId,$mapName){
+/**
+ * Crea un mapa en Geoserver. Si el ID del mapa pertenece a uno de LocalGis, se conecta a la base de datos y a través de Querys importa las capas del mapa de LocalGis.
+ * @param $mapId
+ * @param $mapName
+ */
+function createGeoserverMap($mapId,$mapName){
 		$connection = new ServerConnection($mapName);
 		$geoserver = new ApiRest('http://'.$connection->gsHost.':8080/geoserver',$connection->gsUser, $connection->gsPassword);
 		pg_query($connection->dbConn, 'CREATE SCHEMA "'.$connection->dsName.'" AUTHORIZATION '.$connection->dbUser);

@@ -8,9 +8,14 @@
 		$mapName=$_POST['mapName'];
 		delLayer($layerName,$mapName);
 	}
-	delLayer("scbarbol1","Map_Arbolado");
+	//delLayer("scbarbol1","Map_Arbolado");
 
-	function delLayer($layerName,$mapName){
+/**
+ * Elimina una capa de un mapa de Geoserver.
+ * @param $layerName
+ * @param $mapName
+ */
+function delLayer($layerName,$mapName){
 		$connection = new ServerConnection($mapName);
 		$geoserver = new ApiRest('http://'.$connection->gsHost.':8080/geoserver',$connection->gsUser, $connection->gsPassword);
 		//Borrado de los estilos asociados
@@ -25,7 +30,13 @@
 		$connection->dbClose();
 	}
 
-	function delStyle($name,$wsName,$geoserver){
+/**
+ * Elimina un estilo de un Workspace de Geoserver.
+ * @param $name
+ * @param $wsName
+ * @param $geoserver
+ */
+function delStyle($name,$wsName,$geoserver){
 		if(($result=$geoserver->deleteStyle($name,$wsName))!="")
 			print(1); //El estilo no se ha borrado porque otra capa hace uso de él.
 			//print("Advice: ".$result."\n");
