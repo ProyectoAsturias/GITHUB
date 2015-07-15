@@ -1,6 +1,11 @@
 var map;
 
-function initMap() {
+$(document).ready(function(){
+	assignEventsHandlers();
+});
+
+
+function initMap(mapName) {
 	map = new ol.Map({
 		target : 'map',
 		renderer : 'canvas',
@@ -9,8 +14,13 @@ function initMap() {
 			zoom : 8
 		})
 	});
+	map.name= mapName;
+	//map.id=;
 }
 
+/*function newLayer(name,wms) {
+	var layer = new ol.layer.Tile({
+		source : new ol.source.TileWMS({
 function newLayer(name,wms) {
 	
 	var source = new ol.source.TileWMS({
@@ -21,7 +31,21 @@ function newLayer(name,wms) {
 				'TILED' : true
 			}
 		})
-	var layer = new ol.layer.Tile({source:source})
+	});
+	layer.name = name;
+	return layer;
+}*/
+
+function newLayer(name,wms) {
+	var source = new ol.source.TileWMS({
+		preload : Infinity,
+		url : wms,
+		params : {
+			'LAYERS' : name,
+			'TILED' : true
+		}
+	})
+	var layer = new ol.layer.Tile({source:source});
 	layer.name = name;
 	updateLoadingBar(source);
 	map.addLayer(layer);
@@ -67,7 +91,7 @@ function addLayer(layerId,layerName,mapId,mapName) {
 			layerId: layerId,
 			layerName: layerName,
 			mapId: mapId,
-			mapName: mapName,
+			mapName: mapName
 		},
 		success:function (response) {
 			if(response !="0"){
@@ -79,7 +103,7 @@ function addLayer(layerId,layerName,mapId,mapName) {
 							'LAYERS' : name,
 							'TILED' : true
 						}
-					}),
+					})
 				});
 				layer.name = name;
 				map.addLayer(layer);
@@ -87,28 +111,7 @@ function addLayer(layerId,layerName,mapId,mapName) {
 			}
 		},
 		error:function(error){
-			alert("Error: "+error);
-		}
-	});
-}
-
-function delLayer(layerName,mapName){
-	//primero debemos confirmar la operación de borrado de capa.
-	
-	//llamada a delLayer.php una vez confirmado el borrado de la capa
-	$.ajax({
-		type : "GET",
-		url : apiPath+"delLayer.php",
-		data:{
-			layerName: layerName,
-			mapName: mapName,
-		},
-		success:function (response) {
-			//eliminamos la capa de ol
-			map.removeLayer(layer);
-		},
-		error:function(error){
-			alert("Error: "+error);
+			console.log("No funcionó el servidor");
 		}
 	});
 }
@@ -145,6 +148,85 @@ function requestLayersForGroup(groupName, wms, callback) {
 		}
 	});
 }
+
+function reorderOpenlayersMap(indexFrom, indexTo){
+	var movedLayer = map.getLayers().removeAt(indexFrom);
+	map.getLayers().insertAt(indexTo, movedLayer);
+}
+
+function assignEventsHandlers(){
+	eyeIconClickHandler();
+	deleteIconClickHandler();
+	attributesClickHandler();
+	layerInfoClickHandler();
+}
+
+function eyeIconClickHandler(){
+	$(".glyphicon-eye-open").click(function(event){
+		if ($(this).parent().data().layer.getVisible()){
+			$(this).css("color", "lightgray");
+			$(this).parent().data().layer.setVisible(false);
+		}else{
+			$(this).css("color", "black");
+			$(this).parent().data().layer.setVisible(true);
+		}
+	});
+}
+
+function deleteIconClickHandler(){
+	$(".glyphicon-remove").click(function(event){
+		var parent = $(this).parent();
+		bootbox.confirm("¿Realmente desea eliminar esta capa?", function(result) {
+			if (result){
+				removeLayer(parent.data("layer"),function(response){
+					parent.fadeOut("slow", function(){
+						$(this).remove();
+					});
+				});
+			}
+		});
+	});
+}
+
+function attributesClickHandler(){
+	$(".glyphicon-cog").click(function(event){
+		var parent = $(this).parent();
+		getJSONLayer(parent.data("layer"), function(attributes){
+			var modalHTML = "";
+			attributes.features.forEach(function (feature){
+				console.log(feature);
+				modalHTML += "<div><input type='checkbox' style='vertical-align: middle'/><label>&nbsp;&nbsp;&nbsp;"+feature+"</label></div>"
+			})
+			$("#modalAttributes .modal-body").html(modalHTML);
+			$("#modalAttributes").modal("show");
+		})
+	});
+}
+
+
+function layerInfoClickHandler(){
+	$(".glyphicon-list-alt").click(function(event){
+		var parent = $(this).parent();
+		appendModalLayer(map.name,parent.data("layer"));
+	});
+}
+
+function removeLayer(layer, callback) {
+	console.log(map.title);
+	$.ajax({
+		type: "GET",
+		//url : apiPath+"delLayer.php",
+		url: "",
+		data: {
+			layerName: layer.name,
+			mapName: map.mapName
+		},
+		success: function (response) {
+			map.removeLayer(layer);
+			callback(response);
+		}
+	});
+}
 /*
 function editFeatures(layer){
 	//desplegar una ventana modal para seleccionar las features
@@ -154,7 +236,7 @@ function editFeatures(layer){
 		type : "GET",
 		url : apiPath+"editFeatures.php",
 		success:function (response) {
-			
+
 		},
 		error:function(error){
 			alert("Error: "+error);

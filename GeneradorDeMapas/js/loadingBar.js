@@ -63,7 +63,6 @@ function loadingBar(){
 	Progress.prototype.hide = function() {
 	  if (this.loading === this.loaded) {
 		this.el.style.visibility = 'hidden';
-		this.el.style.width = 0;
 	  }
 	};
 	

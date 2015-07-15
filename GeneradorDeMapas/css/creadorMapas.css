@@ -1,5 +1,5 @@
 #logo{
-	margin-top: 0.5vh;
+    margin-top: 0.5vh;
     margin-bottom: 1vh;
 }
 
@@ -10,18 +10,19 @@
 #logo img{
     height: 12vh;
     width: 100%;
-	min-height:14ex;
+    min-height:14ex;
 }
 
 #leftBar{
-    height: 86vh;
-	min-height:740px ;
+    height: 84.5vh;
+	padding-top:0.7vh;
+    min-height:740px ;
     background-color: lightgray
 }
 
 #saveMapButton{
     width: 80%;
-	font-size:12pt;
+    font-size:12pt;
 }
 
 #cancelMapButton{
@@ -33,63 +34,82 @@
     text-align: center;
 }
 
+#mapName{
+	height: 6h;
+	width:95%;
+	margin-left:2.5%;
+	margin-right:2.5%;
+	background-color:#4E7AB1;
+	border-radius:7px;
+	overflow:hidden;
+	text-align:center;
+	border:solid 2px black;
+}
+
+h2{
+	font-family:"Franklin Gothic Medium";
+	display:inline;
+	color:white;
+}
+
 #layersList{
-    height: 67vh;
-	min-height:584px;
-	overflow:auto;
+    height: 60h;
+    min-height:584px;
+    overflow:auto;
 }
 
 #mapContainer{
     min-height: 740px;
-	height: 86vh;
+    height: 84.5vh;
 }
 
 #allTools{
     height: 12vh;
     margin-top: 0.5vh;
-    margin-bottom: 1vh;
+    margin-bottom: 0.3vh;
     background-color: #eee;
-	min-height:14ex;
+    min-height:14ex;
 }
 
 #fuentesDatos{
-	height: 100%;
+    height: 100%;
 }
 
 #inputWms{
-	margin-top:1.2vh;
+    margin-top:1.2vh;
 }
 
 #wms{
-	margin-top:0.2vh;
+    margin-top:0.2vh;
 }
 
 #loadWms{
-	margin-top:0.2vh;
+    margin-top:0.2vh;
 }
 
 #inputMaps{
-	margin-top:1.8vh;
+    margin-top:1.8vh;
 }
 
 #importMap{
-	margin-top:1.8vh;
+    margin-top:1.8vh;
 }
 
 #progress {
-	position:relative;
-	float:left;
-	height: 6px;
-	background: blue;
-	width: 0;
-	transition: width 250ms;
+
+    position:relative;
+    float:left;
+    height: 7px;
+    background: blue;
+    width: 0;
+    transition: width 250ms;
 }
 
 body,
 .navbar-fixed-top,
 .navbar-fixed-bottom {
-  min-width: 1500px;
-  min-height: 850px;
+    min-width: 1500px;
+    min-height: 850px;
 }
 
 /* Non-responsive overrides
@@ -100,8 +120,8 @@ body,
 
 /* Reset the container */
 .container {
-  width: 970px;
-  max-width: none !important;
+    width: 970px;
+    max-width: none !important;
 }
 
 
@@ -115,11 +135,13 @@ body.dragging, body.dragging * {
     opacity: .5;
     z-index: 2000;
 }
+
 ol {
     padding: 10px 5px 0px 5px;
     margin-bottom: 10px;
     min-height: 10px;
 }
+
 li{
     display: block;
     padding: 5px;
@@ -150,4 +172,11 @@ li.placeholder:before{
 
 li .glyphicon {
     cursor: pointer;
+    margin:0px 3px 0px 3px;
+    float: right;
+    color:#000000;
+}
+
+textarea {
+	resize: none;
 }

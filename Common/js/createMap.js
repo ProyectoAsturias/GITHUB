@@ -51,14 +51,6 @@ function createMap() {
         }catch (error){
             console.log("WOP");
         }
-
-        //TEMPORAL
-        var osmLayer = new ol.layer.Tile({
-            source: new ol.source.OSM()
-        });
-        osmLayer.name = "OpenStreet Maps";
-        map.addLayer(osmLayer);
-
     }else{
         var osmLayer = new ol.layer.Tile({
             source: new ol.source.OSM()
@@ -70,6 +62,13 @@ function createMap() {
 
 function destroyMap(){
     map.setTarget(null);
+}
+
+function removeAllLayersMap(){
+    map.getLayers().forEach(function (layer){
+        console.log(map.getLayers().getLength());
+       map.removeLayer(layer);
+    });
 }
 
 function updateMap(){
@@ -103,10 +102,6 @@ function addLayersAndGroupsFromWMS(WMSUrl){
 
             }
             for(var j = 0; j < layersNames.length; j ++) {
-                if(grupos[j] && grupos[j].includes("Layer-Group")){
-                    addGroupToMap(j, WMSUrl);
-                    continue;
-                }
                 addLayerToMap(j, WMSUrl);
             }
         });
@@ -162,6 +157,7 @@ function requestLayersForGroup(groupName, WMSUrl, callback){
 */
 function addLayerToMap(layerIndex, WMSUrl){
     var nombre = layersNames[layerIndex];
+    console.log(nombre);
     if (layersGroupedNames.indexOf(nombre) != -1){
         return;
     }
@@ -180,10 +176,19 @@ function addLayerToMap(layerIndex, WMSUrl){
     return newlayer;
 }
 
+function searchLayerByName(layerName){
+    for (var i=0; i<map.getLayers().getLength(); i++){
+        if (map.getLayers().getArray()[i].name == layerName){
+            return map.getLayers().getArray()[i];
+        }
+    }
+    return false;
+}
+
 function searchAndRemoveLayer(layerToRemove){
-    map.getLayers().forEach(function(layer){
-       if (layer.name == layerToRemove.name){
-           map.removeLayer(layer);
-       }
-    });
+    if (searchLayerByName(layerToRemove.name) != false){
+        map.removeLayer(layerToRemove);
+        return true;
+    };
+    return false;
 }
