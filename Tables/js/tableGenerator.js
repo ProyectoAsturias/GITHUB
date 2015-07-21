@@ -26,12 +26,12 @@ function createMapsTable(target){
 }
 
 function createVisorsTable(target){
-    retrieveUserVisors(function(jsonVisors){
+    /*retrieveUserVisors(function(jsonVisors){
         var visorsData = JSON.parse(jsonVisors);
         var columns = [{checkbox: "true"}, {field: "id", title: "ID Visor", sortable: "true"},{field:"name", title:"Nombre", sortable: "true"},
             {field:"description", title:"Descripción"},{field:"date_update", title:"Última modificación", sortable: "true"}, {field:"date_creation", title:"Fecha creación", sortable: "true"}];
         createTable(target, columns, visorsData);
-    });
+    });*/
 }
 
 function retrieveUserMaps(callback){
@@ -86,7 +86,7 @@ function linkToEditMaps(){
 }
 
 function getImageMap(mapName) {
-    var html="";
+   /* var html="";
     var parser = new ol.format.WMSCapabilities();
     var urlWms = server+'geoserver/'+mapName+'/wms';
     $.ajax({
@@ -112,5 +112,5 @@ function getImageMap(mapName) {
         }           
     });
     console.log(html);
-    return html;
+    return html;*/
 }

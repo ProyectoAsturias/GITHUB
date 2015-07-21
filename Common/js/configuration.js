@@ -1,4 +1,4 @@
-var serverIp = "10.0.0.165";
+var serverIp = "192.168.127.129";
 var port = "8080";
 var server = "http://"+serverIp+":"+port+"/";
 var installationPath = "../../";//"/srv/www/htdocs/";

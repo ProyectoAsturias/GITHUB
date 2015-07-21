@@ -132,8 +132,9 @@ function mapModalPublicateButtonHandler(){
     $("#publicateMapsModal").click(function(){
         $("#table").bootstrapTable('getSelections').forEach(function (row){
             publicateMap(row).then(function(response){
+                row.published = "t";
                 $("#modalPublicateMaps").modal("hide");
-                $("#table").bootstrapTable('refresh');
+                $("#table").bootstrapTable('updateRow', {index: getMapRowIndexById(row.id), row: row});
             })
         })
         /*$( document ).ajaxStop(function() {
@@ -154,7 +155,7 @@ function publicateMap(map){
             if(response==0)
                 console.log("Publicado ->" + map.name)
             else
-                console.log(response);
+                console.log();
             $.ajax({
                 url: "./userContent.php",
                 data: {
@@ -182,14 +183,11 @@ function mapModalUnpublicateButtonHandler(){
     $("#unpublicateMapsModal").click(function(){
         $("#table").bootstrapTable('getSelections').forEach(function (row){
             unpublicateMap(row).then(function(response){
+                row.published = "f";
                 $("#modalUnpublicateMaps").modal("hide");
-                $("#table").bootstrapTable('refresh');
+                $("#table").bootstrapTable('updateRow', {index: getMapRowIndexById(row.id), row: row});
             })
         })
-        /*$( document ).ajaxStop(function() {
-        	alert("HUE");
-  			$("#table").bootstrapTable('refresh');
-		});*/
     })
 }
 
@@ -201,11 +199,10 @@ function unpublicateMap(map){
         },
         method: "POST",
         success: function(response){
-            console.log(response);
             if(response=="")
                 console.log("Despublicado ->" + map.name)
             else
-                console.log(response);
+                console.log();
             $.ajax({
                 url: "./userContent.php",
                 data: {
@@ -219,4 +216,12 @@ function unpublicateMap(map){
             });
         }
     });
+}
+
+function getMapRowIndexById(mapId){
+    $("#table").find("tr").each(function (rowIndex, row){
+        if ($(row).find("td")[2] != undefined && $(row).find("td").eq(2).html() == mapId){
+            return ($(row).data("index"));
+        }
+    })
 }

@@ -85,6 +85,9 @@ function makeNodesSortable(){
 				top: position.top - adjustment.top
 			});
 		},
+		over: function (event, ui) {
+			$( this ).addClass( "ui-state-highlight" );
+		},
 		onDrop: function ($item, container, _super, event) {
 			$item.removeClass(container.group.options.draggedClass).removeAttr("style");
 			$("body").removeClass(container.group.options.bodyClass);
@@ -110,7 +113,7 @@ function generateLayerListHTML(){
 }
 
 function generateNode(layer){
-	var node = $("<li>"+layer.name +
+	var node = $("<li><div class='layerName'>"+layer.name +"</div>" +
 	"<span class='glyphicon glyphicon-remove removeLayer'></span>" +
 	"<span class='glyphicon glyphicon-eye-open visibilityLayer' ></span>" +
 	"<span class='glyphicon glyphicon-cog attributesLayer'></span>" +

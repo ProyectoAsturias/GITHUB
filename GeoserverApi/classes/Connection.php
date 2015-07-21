@@ -76,7 +76,7 @@
 		 * @param string $mapName
 		 */
 		public function __construct($mapName="",$dbSchema=null){
-			$this->dbHost="localhost";
+			$this->dbHost="192.168.127.129";
 			//$this->dbHost="avanzastore.dyndns.org";
 			$this->dbPort="5432";
 			//$this->dbPort="15432";
@@ -92,7 +92,7 @@
 			
 
 
-			$this->gsHost="localhost";
+			$this->gsHost="192.168.127.129";
 			$this->gsUser="admin";
 			$this->gsPassword="geoserver";
 			$this->wsName=$mapName;
