@@ -1,0 +1,15 @@
+<div class="panel panel-default">
+    <div class="panel-heading" role="tab">
+        <a id="listMapsCollapse" role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+            <h4 class="panel-title">
+                <i id="listMapsCollapseIcon" class="glyphicon glyphicon-collapse-up"></i>
+                Listado de mapas.
+            </h4>
+        </a>
+    </div>
+    <div id="collapseOne" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="headingOne">
+        <div class="panel-body">
+            {% include "mapTable.html.twig" %}
+        </div>
+    </div>
+</div>
