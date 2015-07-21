@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+
+    <link rel="stylesheet" href="../../Common/css/ol.css" type="text/css">
+    <link rel="stylesheet" href="../../Common/bootstrap-3.3.4/css/bootstrap.min.css" type="text/css">
+    <link rel="stylesheet" href="../../Common/bootstrap-3.3.4/css/bootstrap-theme.min.css" type="text/css">
+    <link rel="stylesheet" href="../css/visorGeneratorStyle.css" type="text/css">
+    <link rel="stylesheet" href="../../Common/css/bootstrap-treeview.css" type="text/css">
+
+    <script src="../../Common/js/jquery.min.js" type="text/javascript"></script>
+    <script src="../../Common/js/jquery-ui.min.js" type="text/javascript"></script>
+    <script src="../../Common/js/ol.js" type="text/javascript"></script>
+    <script src="../../Common/bootstrap-3.3.4/js/bootstrap.min.js"></script>
+    <script src="../../Common/js/bootstrap-treeview.js" type="text/javascript"></script>
+
+    <script src="../js/Map Functions/createMap.js" type="text/javascript"></script>
+    <script src="../js/Map Functions/toolsDraggable.js" type="text/javascript"></script>
+
+    <script src="../js/Visor Generator/createLayerTree.js" type="text/javascript"></script>
+    <script src="../js/Visor Generator/functionDataAssigner.js" type="text/javascript"></script>
+    <script src="../js/Visor Generator/saveVisor.js" type="text/javascript"></script>
+    <script src="../js/Visor Generator/attachMap.js" type="text/javascript"></script>
+
+    <title>Generador de visores</title>
+</head>
+<body>
+
+            <div class="col-md-12 column">
+                <div class="col-md-2">
+                    {% include "Visor Generator/visorgeneratorleftbar.html.twig" %}
+                </div>
+                <div id="toolBarMax" class="col-md-10">
+                    <div class="row clearfix">
+                        {% include "Visor Generator/alltools.html.twig" %}
+                        <div id="mapContainer">
+                            {% include "Visor Generator/functionBar.html.twig" %}
+                            {% include "Visor Generator/visorgeneratormap.html.twig" %}
+                        </div>
+
+                    </div>
+
+                </div>
+            </div>
+</body>
+</html>
