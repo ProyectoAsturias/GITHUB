@@ -6,6 +6,11 @@
     height: 85vh;
 }
 
+.treeview{
+    overflow-y: scroll;
+    overflow-x: hidden;
+}
+
 #logo img{
     height: 12vh;
     width: 100%;
@@ -16,28 +21,28 @@
     background-color: lightgray
 }
 
-#mapInsert{
+#attachMap{
     height: 20vh;
     padding-top: 15%;
     text-align: center
 }
 
-#mapInsertText{
+#mapAttachText{
     margin-bottom: 10%
 }
 
-/*.separator{
+.separator{
     height: 2px;
     background-color: darkblue;
     margin-top: 5px;
     margin-bot: 5px;
-}*/
+}
 
-#saveMapButton{
+#saveVisorButton{
     width: 80%;
 }
 
-#cancelMapButton{
+#cancelVisorButton{
     width: 20%;
 }
 
@@ -47,8 +52,7 @@
 }
 
 #layersTree{
-    height: 67vh;
-	overflow:auto;
+    height: 47vh;
 }
 
 #mapContainer{
@@ -144,19 +148,5 @@
      background-image:url("../templates/images/zoomOut.png");
      background-repeat:no-repeat;
  }
- #botonInsertar{
-    margin-left:10px;
-}
-#addCapas{
-	margin-top:15px;
-	
-}
 
-#addGrupos{
-	margin-top:10px;
-	
-}
-#listLayers
-{
-	overflow:auto;
-}
+

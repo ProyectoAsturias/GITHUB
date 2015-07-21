@@ -10,14 +10,24 @@
 		print(json_encode("Error: falta idFamily"));
 	//print(getLayers(17));
 
+<<<<<<< HEAD:ApiGeoserver/getLayers.php
 /**
  * Obtiene todas las capas de una familia de LocalGis a través de su Id.
  * @param $idFamily
  * @return string
  */
 function getLayers($idFamily) {
+=======
+	/**
+	 * Obtiene todas las capas de una familia de LocalGis a través de su Id.
+	 * @param $idFamily
+	 * @return string
+	 */
+	function getLayers($idFamily) {
+>>>>>>> 04d14dffc2e79ec43ba250c936359274ca287bd1:GeoserverApi/getLayers.php
 		$connection = new ServerConnection();
 		$query = "SELECT l.id_layer,l.name,l.acl,l.id_styles FROM layerfamilies_layers_relations as r,layers as l WHERE r.id_layerfamily='".$idFamily."' AND r.id_layer=l.id_layer";
+		//$query = "SELECT l.id_layer,l.acl,l.id_styles, d.traduccion FROM layerfamilies_layers_relations as r,layers as l , dictionary d WHERE r.id_layerfamily='".$idFamily."' AND r.id_layer=l.id_layer AND l.id_name=d.id_vocablo AND d.locale='es_ES';
 		$result = pg_query($query) or die('Error: '.pg_last_error());
 		$connection->dbClose();
 		$layers = array();

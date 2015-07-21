@@ -8,16 +8,26 @@
 	else //Todas las familias
 		print(getFamilies());
 
+<<<<<<< HEAD:ApiGeoserver/getFamilies.php
 /**
  * Obtiene las familias de un mapa de LocalGis a través de su ID.
  * @param $idMap
  * @return string
  */
 function getFamilies($idMap=null) {
+=======
+	/**
+	 * Obtiene las familias de LocalGis.
+	 * @param $idMap
+	 * @return string
+	 */
+	function getFamilies($idMap=null) {
+>>>>>>> 04d14dffc2e79ec43ba250c936359274ca287bd1:GeoserverApi/getFamilies.php
 		$connection = new ServerConnection();
 		$where="";
 		if($idMap!=null)
 			$where=" AND r.id_map = '".$idMap."'";
+		//$query = "SELECT DISTINCT (lf.id_layerfamily) , d.traduccion FROM maps_layerfamilies_relations as r, layerfamilies as lf , dictionary d WHERE r.id_layerfamily=lf.id_layerfamily AND lf.id_name=d.id_vocablo AND r.id_entidad=96 AND d.locale='es_ES' ".$where." ORDER By lf.id_layerfamily";
 		$query = "SELECT DISTINCT(lf.id_layerfamily), d.traduccion FROM maps_layerfamilies_relations as r, layerfamilies as lf , dictionary d WHERE r.id_layerfamily=lf.id_layerfamily AND lf.id_name=d.id_vocablo".$where;
 		$result = pg_query($query) or die('Error: '.pg_last_error());
 		$connection->dbClose();

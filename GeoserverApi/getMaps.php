@@ -3,14 +3,24 @@
 	include "classes/LocalgisMap.php";
 	
 	print(getMaps());
+<<<<<<< HEAD:ApiGeoserver/getMaps.php
 
 /**
  * Devuelve una lista con todos los mapas existentes en Localgis.
  * @return string
  */
 function getMaps() {
+=======
+	
+	/**
+	 * Devuelve una lista con todos los mapas existentes en Localgis.
+	 * @return string
+	 */
+	function getMaps() {
+>>>>>>> 04d14dffc2e79ec43ba250c936359274ca287bd1:GeoserverApi/getMaps.php
 		$connection = new ServerConnection();
-		$query = 'SELECT * FROM maps';
+		$query = "SELECT * FROM maps";
+		//$query="SELECT m.id_map, d.traduccion ,m.xml, m.image, m.id_entidad, m.projection_id, m.fecha_ins, m.fecha_mod  FROM maps as m , dictionary as d WHERE m.id_name=d.id_vocablo AND d.locale='es_ES' AND m.id_entidad=96 ORDER BY d.traduccion";
 		$result = pg_query($query) or die('Error: '.pg_last_error());
 		$connection->dbClose();
 		$maps = array();

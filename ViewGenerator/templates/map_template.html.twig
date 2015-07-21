@@ -1,0 +1,18 @@
+<div id="mapContainer" class="span12">
+    <div class="row-fluid">
+        <div id="map" class="map"></div>
+        <div class="ol-overlay-container" style="position: absolute; display: none;">
+            <div id="areaOverlay"></div>
+        </div>
+        <div class="ol-overlay-container" style="position: absolute; display: none;">
+            <div id="coordinatesOverlay"></div>
+        </div>
+    </div>
+</div>
+<div id="layertree"></div>
+<div id="layertree2"></div>
+
+<script type="text/javascript">
+    setMapDetails({{ visorData.mapDetails|json_encode|raw }})
+    createMap();
+</script>
