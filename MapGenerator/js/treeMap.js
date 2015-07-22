@@ -58,6 +58,7 @@ function makeNodesSortable(){
 
 	$("#layersList ol").sortable({
 		group: 'simple_with_animation',
+		handle: '.layerName',
 		pullPlaceholder: false,
 		onDrop: function  ($item, container, _super) {
 			var $clonedItem = $('<li/>').css({height: 0});
