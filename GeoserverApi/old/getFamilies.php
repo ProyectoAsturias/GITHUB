@@ -10,7 +10,7 @@
 		print(getFamilies());
 
 	/**
-	 * Obtiene las familias de LocalGis.
+	 * Obtiene las familias de LocalGis para uno o todos los mapas.
 	 * @param $idMap
 	 * @return string
 	 */
@@ -19,8 +19,8 @@
 		$where="";
 		if($idMap!=null)
 			$where=" AND r.id_map = '".$idMap."'";
-		//$query = "SELECT DISTINCT (lf.id_layerfamily) , d.traduccion FROM maps_layerfamilies_relations as r, layerfamilies as lf , dictionary d WHERE r.id_layerfamily=lf.id_layerfamily AND lf.id_name=d.id_vocablo AND r.id_entidad=96 AND d.locale='es_ES' ".$where." ORDER By lf.id_layerfamily";
-		$query = "SELECT DISTINCT(lf.id_layerfamily), d.traduccion FROM maps_layerfamilies_relations as r, layerfamilies as lf , dictionary d WHERE r.id_layerfamily=lf.id_layerfamily AND lf.id_name=d.id_vocablo".$where;
+		//$query = "SELECT DISTINCT(lf.id_layerfamily), d.traduccion FROM maps_layerfamilies_relations as r, layerfamilies as lf , dictionary d WHERE r.id_layerfamily=lf.id_layerfamily AND lf.id_name=d.id_vocablo".$where;
+		$query = "SELECT DISTINCT (lf.id_layerfamily) , d.traduccion FROM maps_layerfamilies_relations as r, layerfamilies as lf , dictionary d WHERE r.id_layerfamily=lf.id_layerfamily AND lf.id_name=d.id_vocablo AND r.id_entidad=96 AND d.locale='es_ES' ".$where." ORDER By lf.id_layerfamily";
 		$result = pg_query($query) or die('Error: '.pg_last_error());
 		$connection->dbClose();
 		$families = array();

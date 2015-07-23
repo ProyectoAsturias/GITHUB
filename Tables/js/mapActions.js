@@ -30,9 +30,10 @@ function mapModalSaveButtonHandler(){
     $("#createMapModal").click(function(){
         var mapName = $("#modalNewMap .modal-body input").val();
         $.ajax({
-            url: apiPath+"createMap.php",
+            url: apiPath + "apiGeoserver.php",
             data:{
-                mapName: mapName
+                mapName: mapName,
+                tag: "createMap"
             },
             method: "POST",
             success: function(response){
@@ -60,14 +61,17 @@ function saveNewMap (mapName, mapDescription, mapOwner){
     return $.ajax({
         url: "./userContent.php",
         data: {
-            "tag" : "saveMap",
-            "mapName" : mapName,
-            "mapDescription" : mapDescription,
-            "mapOwner" : mapOwner
+            tag : "saveMap",
+            mapName : mapName,
+            mapDescription : mapDescription,
+            mapOwner : mapOwner
         },
         method: "POST",
         success: function (response) {
             console.log(response);
+        },
+        error: function (error){
+            console.log("Error al guardar el mapa:"+error);
         }
     });
 }
@@ -95,9 +99,10 @@ function mapModalDeleteButtonHandler(){
 
 function removeMap(map){
     return $.ajax({
-        url: apiPath + "removeMap.php",
-        data: {
-            "mapName" : map.name
+        url: apiPath + "apiGeoserver.php",
+        data:{
+            mapName: map.name,
+            tag: "removeMap"
         },
         method: "POST",
         success: function(response){
@@ -108,15 +113,19 @@ function removeMap(map){
             $.ajax({
                 url: "./userContent.php",
                 data: {
-                    "tag" : "deleteMap",
-                    "mapName" : map.name
+                    tag : "deleteMap",
+                    mapName : map.name
                 },
                 method: "POST",
                 success: function (response) {
                     console.log(response);
                 }
             });
+        },
+        error: function (error){
+            console.log("Error al eliminar el mapa:"+error);
         }
+
     });
 }
 
@@ -132,9 +141,8 @@ function mapModalPublicateButtonHandler(){
     $("#publicateMapsModal").click(function(){
         $("#table").bootstrapTable('getSelections').forEach(function (row){
             publicateMap(row).then(function(response){
-                row.published = "t";
                 $("#modalPublicateMaps").modal("hide");
-                $("#table").bootstrapTable('updateRow', {index: getMapRowIndexById(row.id), row: row});
+                $("#table").bootstrapTable('refresh');
             })
         })
         /*$( document ).ajaxStop(function() {
@@ -146,27 +154,34 @@ function mapModalPublicateButtonHandler(){
 
 function publicateMap(map){
     return $.ajax({
-        url: apiPath + "enableWms.php",
-        data: {
-            "mapName" : map.name
+        url: apiPath + "apiGeoserver.php",
+        data:{
+            mapName: map.name,
+            tag: "enableWms"
         },
         method: "POST",
         success: function(response){
-            if(response==0)
-                console.log("Publicado ->" + map.name)
+            if(response==""){  
+                $.ajax({
+                    url: "./userContent.php",
+                    data: {
+                        mapName : map.name,
+                        tag : "publicateMap"
+                    },
+                    method: "POST",
+                    success: function (response) {
+                        console.log("Mapa "+response+" publicado.");
+                    },
+                    error: function (error){
+                        console.log("Error al publicar el mapa:"+error);
+                    }
+                });
+            }
             else
-                console.log();
-            $.ajax({
-                url: "./userContent.php",
-                data: {
-                    "tag" : "publicateMap",
-                    "mapName" : map.name
-                },
-                method: "POST",
-                success: function (response) {
-                    console.log(response);
-                }
-            });
+                console.log("Error al publicar el mapa:"+response);
+        },
+        error: function (error){
+            console.log("Error al publicar el mapa:"+error);
         }
     });
 }
@@ -183,45 +198,47 @@ function mapModalUnpublicateButtonHandler(){
     $("#unpublicateMapsModal").click(function(){
         $("#table").bootstrapTable('getSelections').forEach(function (row){
             unpublicateMap(row).then(function(response){
-                row.published = "f";
                 $("#modalUnpublicateMaps").modal("hide");
-                $("#table").bootstrapTable('updateRow', {index: getMapRowIndexById(row.id), row: row});
+                $("#table").bootstrapTable('refresh');
             })
         })
+        /*$( document ).ajaxStop(function() {
+        	alert("HUE");
+  			$("#table").bootstrapTable('refresh');
+		});*/
     })
 }
 
 function unpublicateMap(map){
     return $.ajax({
-        url: apiPath + "disableWms.php",
-        data: {
-            "mapName" : map.name
+        url: apiPath + "apiGeoserver.php",
+        data:{
+            mapName: map.name,
+            tag: "disableWms"
         },
         method: "POST",
         success: function(response){
-            if(response=="")
-                console.log("Despublicado ->" + map.name)
+            if(response==""){
+                $.ajax({
+                    url: "./userContent.php",
+                    data: {
+                        tag : "unpublicateMap",
+                        mapName : map.name
+                    },
+                    method: "POST",
+                    success: function (response) {
+                        console.log("Mapa "+response+" despublicado.");
+                    },
+                    error: function (error){
+                        console.log("Error al despublicar el mapa:"+error);
+                    }
+                });
+            }
             else
-                console.log();
-            $.ajax({
-                url: "./userContent.php",
-                data: {
-                    "tag" : "unpublicateMap",
-                    "mapName" : map.name
-                },
-                method: "POST",
-                success: function (response) {
-                    console.log(response);
-                }
-            });
+                console.log("Error al despublicar el mapa:"+response);
+        },
+        error: function (error){
+            console.log("Error al despublicar el mapa:"+error);
         }
     });
-}
-
-function getMapRowIndexById(mapId){
-    $("#table").find("tr").each(function (rowIndex, row){
-        if ($(row).find("td")[2] != undefined && $(row).find("td").eq(2).html() == mapId){
-            return ($(row).data("index"));
-        }
-    })
 }

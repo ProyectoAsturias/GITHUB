@@ -30,10 +30,10 @@ function back(){
 	window.location="http://"+serverIp+"/Tables/php/tables.php";
 }
 
-function confirmCleanMap(){
+function confirmClearMap(){
 	bootbox.confirm("El contenido del mapa será eliminado", function(result) {
 		if (result)
-			success("El contenido del mapa ha sido eliminado.");
+			clearMap();
 	});
 }
 
@@ -44,16 +44,19 @@ function success(message){
 function showListWms() {
 	menuDatosWms();
 	$('#selector').html("<div id=\"inputWms\" class=\"col-md-6\">" +
-
 			"<select id=\"selectWms\" class=\"chosen-select\" tabindex=\"1\" ></select>"+
 			"<input type=\"text\"  id=\"wms\" placeholder=\"Introduzca un WMS\" style=\"width:100%; border-radius: 7px; \"/>" +
 			"<button onclick='importWms()' id=\"importWms\" class=\"btn btn-info btn-block\" style=\"padding:0;\" >Importar Wms</button>"+
 		"</div>");
 		
 	$.ajax({
-		type : "GET",
-		url : apiPath+"getWms.php",
+		type : "POST",
+		url : apiPath+"apiLocalgis.php",
+		data : {
+			tag:"getWms"
+		},
 		success:function (response) {
+			console.log(response)
 			var wmsList = JSON.parse(response);
 			$("#selectWms").empty();
 			for(var i=0; i<wmsList.length; i++)
@@ -71,6 +74,7 @@ function showListWms() {
 				search_contains: true,
 			});
 			console.log("Ocurrió un error. Compruebe su conexión al servidor.");
+			alert("Error al mostrar la lista de wms: "+error);
 		}
 	});
 }
@@ -85,7 +89,7 @@ function showListMaps(){
 			"<button onclick='importMap()' id=\"importMap\" class=\"btn btn-info btn-block\" style=\"padding:0;\">Importar Mapa</button>"+
 		"</div>");
 	$.ajax({
-		type: "GET",
+		type: "POST",
 		url: apiPath+"getMaps.php",
 		success: function(response) {
 			var mapList=JSON.parse(response);
@@ -98,7 +102,7 @@ function showListMaps(){
 			$('.chosen-select').chosen({width:"100%"});
 		},
 		error:function(error){
-			alert("Error: "+error);
+			alert("Error al mostrar la lista de mapas: "+error);
 		}
 	});
 }
@@ -112,7 +116,7 @@ function showListFamilies(){
 			"<button onclick='importLayer()' id=\"importLayers\" class=\"btn btn-info btn-block\" style=\"padding:0;\">Importar Capa</button>"+
 		"</div>");
 	$.ajax({
-		type : "GET",
+		type : "POST",
 		url : apiPath+"getFamilies.php",
 		success : function (response) {
 			var familyList = JSON.parse(response);
@@ -125,6 +129,9 @@ function showListFamilies(){
 			$('#selectFamily').prop('selectedIndex', -1);
 			$(".chosen-select").trigger("chosen:updated");
 			$('.chosen-select').chosen({width:"100%"});			
+		},
+		error:function(error){
+			alert("Error al mostrar la lista de familias: "+error);
 		}
 	})
 }
@@ -151,6 +158,9 @@ function showListLayers(){
 			$('#selectLayer').prop('selectedIndex', -1);
 			$(".chosen-select").trigger("chosen:updated");
 			//$('.chosen-select').chosen({width:"100%"});
+		},
+		error:function(error){
+			alert("Error al mostrar la lista de capas: "+error);
 		}
 	})
 }

@@ -8,7 +8,7 @@ $(document).ready(function(){
 * Inicialización de la variable map de openlayers 3
 **/
 function initMap() {
-	console.log(mapName);
+	//console.log(mapName);
 	$("#editWmsButton").append("<h2>"+mapName+"</h2>");
 	$("#userName").append(userName);
 	map = new ol.Map({
@@ -29,8 +29,8 @@ function initMap() {
 * Añade una capa sobre el objeto map
 **/
 function addLayer(name,wms) {
-	console.log(map.name+":"+name);
-	console.log(wms);
+	//console.log(map.name+":"+name);
+	//console.log(wms);
 	var source = new ol.source.TileWMS({
 		preload : Infinity,
 		url : wms,
@@ -150,7 +150,7 @@ function attributesClickHandler(){
 		getJSONLayer(parent.data("layer"), function(attributes){
 			var modalHTML = "";
 			attributes.features.forEach(function (feature){
-				console.log(feature);
+				//console.log(feature);
 				modalHTML += "<div><input type='checkbox' style='vertical-align: middle'/><label>&nbsp;&nbsp;&nbsp;"+feature+"</label></div>"
 			})
 			$("#modalAttributes .modal-body").html(modalHTML);
@@ -168,7 +168,7 @@ function layerInfoClickHandler(){
 
 function removeLayer(layer, callback) {
 	if(!layer.wms){
-		console.log("Capa Normal");
+		//console.log("Capa Normal");
 		$.ajax({
 			type: "POST",
 			url : apiPath+"delLayer.php",
@@ -177,7 +177,7 @@ function removeLayer(layer, callback) {
 				layerName: layer.name
 			},
 			success: function (response) {
-				console.log(response);
+				//console.log(response);
 				if(response==0)
 					map.removeLayer(layer);
 				callback(response);
@@ -185,7 +185,7 @@ function removeLayer(layer, callback) {
 		});
 	}
 	else{
-		console.log("Capa WMS");
+		//console.log("Capa WMS");
 		$.ajax({
 			type: "POST",
 			url : apiPath+"delWmsLayer.php",
@@ -195,7 +195,7 @@ function removeLayer(layer, callback) {
 				layerName: layer.name
 			},
 			success: function (response) {
-				console.log(response);
+				//console.log(response);
 				if(response==0)
 					map.removeLayer(layer);
 				callback(response);
@@ -229,6 +229,7 @@ function importWms() {
 			var title = service.Service.Title;
 			title=title.replace(/ /gi,'_');
 			var listLayers = [];
+			console.log("Importando wms: #"+title);
 			for(var i=0; i<capabilities.Layer.Layer.length; i++)
 				listLayers.push(capabilities.Layer.Layer[i].Name);
 			$.ajax({
@@ -241,7 +242,7 @@ function importWms() {
 					listLayers: listLayers
 				},
 				success: function(response){
-					console.log(response);
+					//console.log(response);
 					drawTree();
 				},
 				error: function(error) {
@@ -251,7 +252,7 @@ function importWms() {
 
 		},
 		error:function(error){
-			alert("Error: "+error);
+			alert("Error al importar un wms: "+error);
 		}
 	});
 }
@@ -262,9 +263,10 @@ function importWms() {
 function importMap(){
 	if($("#selectMap").val()!=null){
 		var id=$("#selectMap").val();
+		console.log("Importando map: #"+id);
 		$.ajax({
 			type: "POST",
-			url: apiPath+"getFamilyLayers.php",
+			url: apiPath+"getMapLayers.php",
 			data:{
 				idMap: id
 			},
@@ -273,9 +275,11 @@ function importMap(){
 				for(var i=0; i<layerList.length; i++){
 					importFamily(layerList[i]);
 				}
+				//Importar ortofoto
 			},
 			error: function(error) {
 				console.log("Error al cargar el mapa: ".error);				 
+			
 			}
 		});
 	}
@@ -290,6 +294,7 @@ function importMap(){
 function importFamily(familyId){	
 	if($("#selectFamily").val()!=null || familyId!=null){
 		var id=$("#selectFamily").val() || familyId;
+		console.log("Importando familia: #"+id);
 		$.ajax({
 			type: "POST",
 			url: apiPath+"getLayers.php",
@@ -324,10 +329,11 @@ function importLayer(layer,mapId){
 		name=layer.name;
 	}
 	else{
-		var id=$("#selectLayer").val();
-		var name=$("#selectLayer").find('option:selected').attr("name");
+		id=$("#selectLayer").val();
+		name=$("#selectLayer").find('option:selected').attr("name");
 	}
 	if(id!=null){
+		console.log("Importando capa: #"+name);
 		$.ajax({
 			type: "POST",
 			url: apiPath+"addLayer.php",
@@ -340,6 +346,7 @@ function importLayer(layer,mapId){
 				projection: map.projection
 			},
 			success: function(response){
+				//console.log(response);
 				drawTree();
 			},
 			error: function(error) {
@@ -350,4 +357,25 @@ function importLayer(layer,mapId){
 	else{
 		console.log("Selector de capas vacío.");
 	}	
+}
+
+function clearMap(){
+	//var parent = //item lista $(this).parent();
+	var listLayers=map.getLayers();
+	//console.log(parent);
+	listLayers.forEach(function(layer){
+		//console.log("Eliminando:"+layer.name);
+		if(layer.name!="OpenStreet Maps"){
+			removeLayer(layer,function(response){
+				/*parent.fadeOut("slow", function(){
+					$(this).remove();
+				});*/
+				console.log(map.getLayers().b.length);
+				if(map.getLayers().b.length==1){
+					success("El contenido del mapa ha sido eliminado.");
+					drawTree();
+				}
+			});
+		}
+	});
 }

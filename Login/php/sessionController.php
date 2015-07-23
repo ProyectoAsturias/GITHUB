@@ -11,10 +11,23 @@ if($_POST["method"] == "login"){
 }
 
 function login($username, $password, $redirect=""){
-    $login= true; //Llamada al servicio de Localgis
+    $connection=new ServerConnection();
+    $query="SELECT id,id_entidad FROM iuseruserhdr WHERE name = '".$username."' AND password='".$password."'";
+    $result=pg_query($query) or die('Error: '.pg_last_error());
+    $row=pg_fetch_row($result);
+    $connection->dbClose();
+
+    $login=false;
+    if($row.lenght!=0){
+        $userid=$row[0];
+        $entityid=$row[0];
+        $login= true;
+    }
     if ($login){
         session_start();
-        $_SESSION["username"] = $username;
+        $_SESSION["username"]=$username;
+        $_SESSION["userid"]=$userid;
+        $_SESSION["entityid"]=$entityid;
         updateSession();
         $loginResponse = new stdClass();
         $loginResponse->logged = true;

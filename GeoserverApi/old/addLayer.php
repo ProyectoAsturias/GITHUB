@@ -30,7 +30,7 @@
 		$result = pg_query($query) or die('Error: '.pg_last_error());
 		$projection = pg_fetch_result($result, 0,0);*/
 		//$projection=23030;
-		print($projection);
+		//print($projection);
 		$geoserver = new ApiRest('http://'.$connection->gsHost.':8080/geoserver',$connection->gsUser, $connection->gsPassword);
 		addLayer($layerId,$layerName,$mapId,$mapName,$town,$projection,$connection,$geoserver);
 		$connection->dbClose();
@@ -116,6 +116,7 @@
 					//print("Estilo añadido");
 				}
 				//Toma por defecto el primero
+				print("Poniendo estilo por defecto:"+$styleName."_1");
 				if(($res=$geoserver->defaultStyleToLayer($layerName, $styleName."_1", $connection->wsName))!="")
 					print("Advice: ".$res."\n");
 				//print("Estilo por defecto establecido");

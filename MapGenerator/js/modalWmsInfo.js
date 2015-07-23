@@ -90,12 +90,13 @@ function updateWmsInfo(){
 	wmsInfo.keywords= keywords;
 
 	$.ajax({
-		type: "POST",
+		url:apiPath+'apiGeoserver.php',
 		data : {
 			wmsInfo: wmsInfo,
 			mapName: mapName,
+			tag: "updateWmsInfo"
 		},
-		url:apiPath+'updateWmsInfo.php',
+		method: "POST",
 		success: function (response) {
 			console.log(response);
 		},
@@ -179,13 +180,14 @@ function updateLayerInfo(){
 	}
 	layerInfo.keywords= keywords;
 	$.ajax({
-		type: "POST",
+		url: apiPath+"apiGeoserver.php",
 		data : {
 			layerInfo: layerInfo,
 			layerName: layerName,
 			mapName: mapName,
+			tag: "updateLayerInfo"
 		},
-		url: apiPath+"updateLayerInfo.php",
+		method: "POST",
 		success: function (response) {
 			console.log(response);
 		},

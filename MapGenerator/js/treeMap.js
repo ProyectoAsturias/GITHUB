@@ -11,7 +11,7 @@ function drawTree(){
     	map.addLayer(osmLayer);
    	};
 	var wms=server+"geoserver/"+map.name+"/wms";
-	console.log(wms);
+	//console.log(wms);
 	loadWmsTree(wms);
 }
 
@@ -24,12 +24,13 @@ function loadWmsTree(wms) {
 		url : wms+'?request=getCapabilities&service=wms',
 		crossDomain : true,
 		success:function (response) {
+			//console.log(response);
 			if(response.search("Service WMS is disabled")<0){
 				var service = parser.read(response);
 				var capabilities = service.Capability;
 				var title = service.Service.Title;
 				var layers = [];
-				console.log(wms+"?request=getCapabilities&service=wms");
+				//console.log(wms+"?request=getCapabilities&service=wms");
 				if(capabilities.Layer.Layer!=undefined){
 					for(var i=0; i<capabilities.Layer.Layer.length; i++){
 						if (!searchLayerByName(capabilities.Layer.Layer[i].Name)){
@@ -41,14 +42,14 @@ function loadWmsTree(wms) {
 							layers.push(layer);
 						}
 					}
-					updateTreeLayer();
 				}
+				updateTreeLayer();
 			}
 			else
 				alert("Debe activar el servicio WMS para acceder al mapa.");
 		},
 		error:function(error){
-			alert("Error: "+error);
+			alert("Error al cargar el arbol de capas: "+error);
 		}
 	});
 }

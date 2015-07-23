@@ -1,10 +1,10 @@
 <?php
-    require_once("../../Common/php/DBUserContentConnect.php");
+    require_once("../../Common/php/DBConnection.php");
     require_once("../../GeoserverApi/classes/ApiRest.php");
-    require_once("../../GeoserverApi/classes/Connection.php");
 
     if(isset($_POST["tag"])){
         session_start();
+        $dbConnection = new DBConnection("UserContent");
         switch ($_POST["tag"]) {
             case "userMaps":
                 echo json_encode(downloadUserMaps($_SESSION["username"]));
@@ -34,24 +34,22 @@
                 echo json_encode(unpublicateMap($_POST["mapName"]));
                 break;
         }
+        $dbConnection->close();
     }
 
     function downloadUserMaps($username){
-        $connection = new DBUserContentConnect();
         $query = "SELECT id, name, description, date_creation, date_update, published, image  FROM public.\"Maps\" WHERE owner='".$username."';";
         $result = pg_query($query) or die('Error: '.pg_last_error());
         return pg_fetch_all($result);
     }
 
     function downloadUserVisors($username){
-        $connection = new DBUserContentConnect();
         $query = "SELECT id, name, description, date_creation, date_update FROM public.\"Visors\" WHERE owner='".$username."';";
         $result = pg_query($query) or die('Error: '.pg_last_error());
         return pg_fetch_all($result);
     }
 
     function saveMap($mapName, $mapDescription, $username){
-        $connection = new DBUserContentConnect();
         $query = "INSERT INTO public.\"Maps\" (name, description, owner) VALUES ('".$mapName."','".$mapDescription."','".$username."');";
         $result = pg_query($query) or die('Error: '.pg_last_error());
         return $result;
@@ -65,7 +63,6 @@
     }
 
     function deleteMap($mapName){
-        $connection = new DBUserContentConnect();
         $query = "DELETE FROM public.\"Maps\" WHERE name='".$mapName."'";
         $result = pg_query($query) or die('Error: '.pg_last_error());
         return $result;
@@ -79,21 +76,18 @@
     }
 
     function cloneMap($mapName){
-        /*$connection = new DBUserContentConnect();
-        $query = "DELETE FROM public.\"Maps\" WHERE name='".$mapName."'";
+        /*$query = "DELETE FROM public.\"Maps\" WHERE name='".$mapName."'";
         $result = pg_query($query) or die('Error: '.pg_last_error());
         return $result;*/
     }
 
     function publicateMap($mapName){
-        $connection = new DBUserContentConnect();
         $query = "UPDATE \"Maps\" SET date_update=now(), published='true' WHERE name='".$mapName."'";
         $result = pg_query($query) or die('Error: '.pg_last_error());
         return $result;
     }
 
     function unpublicateMap($mapName){
-        $connection = new DBUserContentConnect();
         $query = "UPDATE \"Maps\" SET date_update=now(), published='false' WHERE name='".$mapName."'";
         $result = pg_query($query) or die('Error: '.pg_last_error());
         return $result;
