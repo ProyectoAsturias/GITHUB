@@ -1,4 +1,4 @@
-<?php/*
+<?php
     require_once("../../Common/php/DBUserContentConnect.php");
     require_once("../../GeoserverApi/classes/ApiRest.php");
     require_once("../../GeoserverApi/classes/Connection.php");
@@ -77,5 +77,5 @@
         $query = "UPDATE \"Maps\" SET date_update=now(), published='false' WHERE name='".$mapName."'";
         $result = pg_query($query) or die('Error: '.pg_last_error());
         return $result;
-    }*/
+    }
 ?>
