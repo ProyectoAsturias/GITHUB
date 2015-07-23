@@ -53,7 +53,7 @@ function mapModalSaveButtonHandler(){
     })
 }
 
-function saveNewMap (mapName, mapDescription, mapOwsner){
+function saveNewMap (mapName, mapDescription, mapOwner){
     return $.ajax({
         url: "./userContent.php",
         data: {
@@ -128,30 +128,30 @@ function publicateMapEventHandler(){
 function mapModalPublicateButtonHandler(){
     $("#publicateMapsModal").click(function(){
         $("#table").bootstrapTable('getSelections').forEach(function (row){
-            publicateMap(row).then(function(response){
+            publicateMap(row.name).then(function(response){
                 $("#modalPublicateMaps").modal("hide");
             })
         })
     })
 }
 
-function publicateMap(map){
+function publicateMap(mapName){
     return $.ajax({
         url: apiPath + "enableWms.php",
         data: {
-            "mapName" : map.name
+            "mapName" : mapName
         },
         method: "POST",
         success: function(response){
             if(response==0)
-                console.log("Publicado ->" + map.name)
+                console.log("Publicado ->" + mapName)
             else
                 console.log(response);
             $.ajax({
                 url: "./userContent.php",
                 data: {
                     "tag" : "publicateMap",
-                    "mapName" : map.name
+                    "mapName" : mapName
                 },
                 method: "POST",
                 success: function (response) {
@@ -208,4 +208,12 @@ function unpublicateMap(map){
             });
         }
     });
+}
+
+function activateWmsMap(mapName){
+	publicateMap(mapName);
+	$( document ).ajaxStop(function() {
+		console.log("se cambia");
+		window.location.href = mapPath+'php/mapGenerator.php?mapName='+mapName;
+	});
 }

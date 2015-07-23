@@ -56,7 +56,7 @@ function makeNodesSortable(){
 		group: 'simple_with_animation',
 		pullPlaceholder: false,
 		onDrop: function  ($item, container, _super) {
-			var $clonedItem = $('<ol/>').css({height: 0});
+			var $clonedItem = $('<li/>').css({height: 0});
 			$item.before($clonedItem);
 			$clonedItem.animate({'height': $item.height()});
 

@@ -114,6 +114,8 @@ function assignEventsHandlers(){
 	eyeIconClickHandler();
 	deleteIconClickHandler();
 	attributesClickHandler();
+	layerInfoClickHandler();
+	stylesClickHandler();
 }
 
 function eyeIconClickHandler(){
@@ -163,6 +165,13 @@ function layerInfoClickHandler(){
 		var parent = $(this).parent();
 		appendModalLayer(map.name,parent.data("layer"));
 	});
+}
+
+function stylesClickHandler(){
+        $(".stylesLayer").click(function(event){
+                var parent = $(this).parent();
+                appendModalStyles(map.name,parent.data("layer"));
+        });
 }
 
 function removeLayer(layer, callback) {
@@ -339,6 +348,7 @@ function importLayer(layer,mapId){
 				projection: map.projection
 			},
 			success: function(response){
+				console.log(response);
 				drawTree();
 			},
 			error: function(error) {

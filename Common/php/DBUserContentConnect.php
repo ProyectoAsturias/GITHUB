@@ -10,7 +10,7 @@ class DBUserContentConnect {
 
     public function __construct(){
         $this->dbName = "UserContent";
-        $this->dbHost = "10.0.0.165";
+        $this->dbHost = "192.168.1.2";
         $this->dbSchema = "public";
         $this->dbUser = "postgres";
         $this->dbPass = "1234";

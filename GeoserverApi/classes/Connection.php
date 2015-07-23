@@ -56,16 +56,16 @@
 		 * @param string $mapName
 		 */
 		public function __construct($mapName="",$dbSchema=null){
-			$this->dbName="Localgis";
+			$this->dbName="localgis";
 			if ($dbSchema==null)
 				$this->dbSchema="public";
 			else
 				$this->dbSchema=$dbSchema;
 			$this->dbUser="postgres";
 			$this->dbPass="1234";
-			$this->dbHost="localhost";
+			$this->dbHost="192.168.1.2";
 
-			$this->gsHost="localhost";
+			$this->gsHost="192.168.1.2";
 			$this->gsUser="admin";
 			$this->gsPassword="geoserver";
 			$this->wsName=$mapName;

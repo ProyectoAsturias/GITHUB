@@ -51,6 +51,7 @@
 		//Se rescata la query que forma la capa de Localgis
 		$query = "SELECT selectquery FROM queries WHERE id_layer='".$layerId."'";
 		$result = pg_query($query) or die('Error: '.pg_last_error());
+		echo ($result);
 		$select_layer = pg_fetch_result($result, 0,0);
 		$select_layer=str_replace("?T","'".$projection."'",$select_layer);
 		$select_layer=str_replace("?M","'".$town."'",$select_layer);
@@ -63,7 +64,6 @@
 		for($i=0;$i<sizeof($from);$i++)
 			$from_string=$from_string."public.".$from[$i];
 		print($select_string." FROM ".$from_string." WHERE ".$where_string);*/
-
 		pg_query($connection->dbConn, 'CREATE OR REPLACE VIEW visores."'.$layerName.'" AS '.$select_layer);
 
 		//Comprobamos que la tabla está vacia: Si lo está hay que incluir el srs, ya que geoserver no puede extraerlo al no haber datos geoespaciales.
