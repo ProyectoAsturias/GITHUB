@@ -143,6 +143,7 @@ function mapModalPublicateButtonHandler(){
         $("#table").bootstrapTable('getSelections').forEach(function (row){
             publicateMap(row).then(function(response){
                 $("#modalPublicateMaps").modal("hide");
+                row.published = "t";
                 $("#table").bootstrapTable('updateRow', {index: getMapRowIndexById(row.id), row: row});
             })
         })
@@ -201,6 +202,7 @@ function mapModalUnpublicateButtonHandler(){
         $("#table").bootstrapTable('getSelections').forEach(function (row){
             unpublicateMap(row).then(function(response){
                 $("#modalUnpublicateMaps").modal("hide");
+                row.published = "f";
                 $("#table").bootstrapTable('updateRow', {index: getMapRowIndexById(row.id), row: row});
             })
         })
