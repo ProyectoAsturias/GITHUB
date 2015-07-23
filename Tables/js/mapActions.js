@@ -162,6 +162,7 @@ function publicateMap(map){
         },
         method: "POST",
         success: function(response){
+            console.log(response);
             if(response==""){  
                 $.ajax({
                     url: "./userContent.php",
