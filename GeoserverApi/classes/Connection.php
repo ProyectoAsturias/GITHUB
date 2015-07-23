@@ -63,9 +63,9 @@
 				$this->dbSchema=$dbSchema;
 			$this->dbUser="postgres";
 			$this->dbPass="1234";
-			$this->dbHost="192.168.1.2";
+			$this->dbHost="192.168.127.129";
 
-			$this->gsHost="192.168.1.2";
+			$this->gsHost="192.168.127.129";
 			$this->gsUser="admin";
 			$this->gsPassword="geoserver";
 			$this->wsName=$mapName;
