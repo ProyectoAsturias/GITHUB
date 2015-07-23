@@ -143,7 +143,7 @@ function mapModalPublicateButtonHandler(){
         $("#table").bootstrapTable('getSelections').forEach(function (row){
             publicateMap(row).then(function(response){
                 $("#modalPublicateMaps").modal("hide");
-                $("#table").bootstrapTable('refresh');
+                $("#table").bootstrapTable('updateRow', {index: getMapRowIndexById(row.id), row: row});
             })
         })
         /*$( document ).ajaxStop(function() {
@@ -200,7 +200,7 @@ function mapModalUnpublicateButtonHandler(){
         $("#table").bootstrapTable('getSelections').forEach(function (row){
             unpublicateMap(row).then(function(response){
                 $("#modalUnpublicateMaps").modal("hide");
-                $("#table").bootstrapTable('refresh');
+                $("#table").bootstrapTable('updateRow', {index: getMapRowIndexById(row.id), row: row});
             })
         })
         /*$( document ).ajaxStop(function() {
@@ -250,4 +250,12 @@ function activateWmsMap(mapName){
 		console.log("se cambia");
 		window.location.href = mapPath+'php/mapGenerator.php?mapName='+mapName;
 	});
+}
+
+function getMapRowIndexById(mapId){
+    $("#table").find("tr").each(function (rowIndex, row){
+        if ($(row).find("td")[2] != undefined && $(row).find("td").eq(2).html() == mapId){
+            return ($(row).data("index"));
+        }
+    })
 }
