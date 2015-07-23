@@ -46,6 +46,7 @@ function createMap() {
     if (mapDetails["WMSUrl"]) {
         try {
             addLayersAndGroupsFromWMS(mapDetails["WMSUrl"]);
+            map.wmsURL = mapDetails["WMSUrl"];
         }catch (error){
             console.log("WOP");
         }
@@ -58,6 +59,8 @@ function createMap() {
         map.addLayer(osmLayer);
 
     }else{
+        map.mapURL = "";
+        //TEMPORAL
         var osmLayer = new ol.layer.Tile({
             source: new ol.source.OSM()
         });

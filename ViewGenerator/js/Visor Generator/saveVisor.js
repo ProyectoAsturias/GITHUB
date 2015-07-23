@@ -4,7 +4,7 @@ $(document).ready(function(){
 
 function JSONEventHandler() {
     $("#saveVisorButton").click(function () {
-        createJson();
+        saveVisorData(createJson());
     });
 }
 
@@ -18,7 +18,7 @@ function createJson() {
     var visorData = {};
     visorData["mapDetails"] = extractMapDetails();
     visorData["functionsBar"] = extractFunctionsBar();
-    saveVisorData(visorData);
+    return visorData;
 }
 
 function saveVisorData(visorData) {
@@ -31,7 +31,7 @@ function saveVisorData(visorData) {
  * @return ObjectExpression
  */
 function extractMapDetails(){
-    return {"center": map.getView().getCenter(), "zoom": map.getView().getZoom()};
+    return {"center": map.getView().getCenter(), "zoom": map.getView().getZoom(), "WMSUrl": map.mapURL};
 }
 
 /**

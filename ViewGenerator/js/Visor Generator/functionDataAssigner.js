@@ -11,6 +11,7 @@ function addDataAttributes(){
     fullScreenDataAssign();
     zoomControlDataAssign();
     zoomAreaDataAssign();
+    emptySpaceAssign();
 }
 
 function clickCoordinatesDataAssing(){
@@ -44,4 +45,8 @@ function zoomControlDataAssign(){
 
 function zoomAreaDataAssign(){
     $("#areaZoom").data("function", "areaZoom");
+}
+
+function emptySpaceAssign(){
+    $("#empty").data("function", "empty");
 }

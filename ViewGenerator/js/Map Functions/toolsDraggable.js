@@ -1,6 +1,9 @@
 $(document).ready(function(){
     makeFunctionsBarDraggable();
     makeToolsSortable();
+    $(".ol-scale-line").draggable({
+        containment: $(".ol-viewport")
+    })
 });
 
 /**
@@ -10,7 +13,7 @@ $(document).ready(function(){
  */
 function makeFunctionsBarDraggable() {
     $(".functionsBar").draggable({
-        containment: $("#map"),
+        containment: $(".ol-viewport"),
         cancel: ".functionContainer"
     });
 }

@@ -1,7 +1,8 @@
 $(document).ready(function(){
     createMapsTable($("#table"));
     linkToEditMaps();
-    createVisorsTable($("#table2"));
+    createVisorsTable($("#tableVisors"));
+    linkToEditVisors();
 });
 
 function createTable(target, columns, data){
@@ -26,12 +27,12 @@ function createMapsTable(target){
 }
 
 function createVisorsTable(target){
-    /*retrieveUserVisors(function(jsonVisors){
+    retrieveUserVisors(function(jsonVisors){
         var visorsData = JSON.parse(jsonVisors);
         var columns = [{checkbox: "true"}, {field: "id", title: "ID Visor", sortable: "true"},{field:"name", title:"Nombre", sortable: "true"},
             {field:"description", title:"Descripción"},{field:"date_update", title:"Última modificación", sortable: "true"}, {field:"date_creation", title:"Fecha creación", sortable: "true"}];
         createTable(target, columns, visorsData);
-    });*/
+    });
 }
 
 function retrieveUserMaps(callback){
@@ -82,6 +83,12 @@ function synchronizedFormatter(value, row, index){
 function linkToEditMaps(){
     $("#table").on("click-row.bs.table", function(event, row){
         window.location.href = mapPath+'php/mapGenerator.php?mapName='+row.name;
+    })
+}
+
+function linkToEditVisors(){
+    $("#tableVisors").on("click-row.bs.table", function(event, row){
+        window.location.href = viewPath + "php/generateVisor.php?visorName=" + row.name;
     })
 }
 

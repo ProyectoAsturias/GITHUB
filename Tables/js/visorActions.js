@@ -22,9 +22,18 @@ function createNewVisorEventsHandler(){
     visorModalSaveButtonHandler();
 }
 
-function visorModalSaveButtonHandler(){
-    $("#createVisorModal").click(function(){
+function visorModalSaveButtonHandler() {
+    $("#createVisorModal").click(function () {
         var visorName = $("#modalNewVisor .modal-body input").val();
+        saveNewVisor(visorName, "Descripción del visor", username).then(function (result) {
+            if (result != "") {
+                console.log("Ha ocurrido un error en la Base de Datos.");
+                return;
+            }
+            window.location.replace(viewPath + "php/generateVisor.php?visorName=" + visorName);
+        });
+    });
+}
         /*$.ajax({
             url: "../"+apiPath+"createEmptyMap.php",
             data:{
@@ -36,12 +45,11 @@ function visorModalSaveButtonHandler(){
                         console.log("Ha ocurrido un error en la Base de Datos.");
                         return;
                     }
-                    //window.location.replace(viewPath+"php/mapGenerator.php?mapName="+$("#modalNewVisor .modal-body input").val());
+                    window.location.replace(viewPath+"php/generateVisor.php?visorName="+visorName);
                 });
             }
-        })*/
-    })
-}
+        })
+    })*/
 
 function saveNewVisor (visorName, visorDescription, visorOwner){
     return $.ajax({
@@ -60,17 +68,17 @@ function saveNewVisor (visorName, visorDescription, visorOwner){
 }
 
 function deleteVisorEventHandler(){
-    $(".deletevisors").click(function(){
+    $(".deleteVisors").click(function(){
         deleteSelectedVisors();
     })
 }
 
 function deleteSelectedVisors(){
     var visorsId = [];
-    $("#table").bootstrapTable('getSelections').forEach(function (row){
+    $("#tableVisors").bootstrapTable('getSelections').forEach(function (row){
         removeVisor(row).then(function(response){
             visorsId.push(row.id);
-            $("#table").bootstrapTable('remove', {field: 'id', values: visorsId});
+            $("#tableVisors").bootstrapTable('remove', {field: 'id', values: visorsId});
         });
     })
 
@@ -78,11 +86,10 @@ function deleteSelectedVisors(){
 
 function removeVisor(visor){
     return $.ajax({
-        //url: apiPath + "/delMap.php",
-        url: "",
+        url: "./userContent.php",
         data: {
+            "tag": "deleteVisor",
             "visorName" : visor.name,
-            "visorId" : visor.id
         },
         method: "POST",
         success: function(response){
