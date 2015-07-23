@@ -11,7 +11,7 @@ function drawTree(){
     	map.addLayer(osmLayer);
    	};
 	var wms=server+"geoserver/"+map.name+"/wms";
-	//console.log(wms);
+	console.log(wms);
 	loadWmsTree(wms);
 }
 
@@ -24,32 +24,27 @@ function loadWmsTree(wms) {
 		url : wms+'?request=getCapabilities&service=wms',
 		crossDomain : true,
 		success:function (response) {
-			//console.log(response);
-			if(response.search("Service WMS is disabled")<0){
-				var service = parser.read(response);
-				var capabilities = service.Capability;
-				var title = service.Service.Title;
-				var layers = [];
-				//console.log(wms+"?request=getCapabilities&service=wms");
-				if(capabilities.Layer.Layer!=undefined){
-					for(var i=0; i<capabilities.Layer.Layer.length; i++){
-						if (!searchLayerByName(capabilities.Layer.Layer[i].Name)){
-							var layer = addLayer(capabilities.Layer.Layer[i].Name,wms);
-							if(capabilities.Layer.Layer[i].cascaded==1)
-								layer.wms=true;
-							else
-								layer.wms=false;
-							layers.push(layer);
-						}
+			var service = parser.read(response);
+			var capabilities = service.Capability;
+			var title = service.Service.Title;
+			var layers = [];
+			//console.log(wms+"?request=getCapabilities&service=wms");
+			if(capabilities.Layer.Layer!=undefined){
+				for(var i=0; i<capabilities.Layer.Layer.length; i++){
+					if (!searchLayerByName(capabilities.Layer.Layer[i].Name)){
+						var layer = addLayer(capabilities.Layer.Layer[i].Name,wms);
+						if(capabilities.Layer.Layer[i].cascaded==1)
+							layer.wms=true;
+						else
+							layer.wms=false;
+						layers.push(layer);
 					}
 				}
 				updateTreeLayer();
 			}
-			else
-				alert("Debe activar el servicio WMS para acceder al mapa.");
 		},
 		error:function(error){
-			alert("Error al cargar el arbol de capas: "+error);
+			alert("Error: "+error);
 		}
 	});
 }
@@ -59,8 +54,8 @@ function makeNodesSortable(){
 
 	$("#layersList ol").sortable({
 		group: 'simple_with_animation',
-		handle: '.layerName',
 		pullPlaceholder: false,
+		handle: '.layerName',
 		onDrop: function  ($item, container, _super) {
 			var $clonedItem = $('<li/>').css({height: 0});
 			$item.before($clonedItem);
@@ -125,3 +120,4 @@ function generateNode(layer){
 		.data("layer", layer)
 		.appendTo($("#layersList ol"));
 }
+

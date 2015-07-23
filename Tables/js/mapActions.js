@@ -72,6 +72,7 @@ function saveNewMap (mapName, mapDescription, mapOwner){
         },
         error: function (error){
             console.log("Error al guardar el mapa:"+error);
+
         }
     });
 }
@@ -241,4 +242,12 @@ function unpublicateMap(map){
             console.log("Error al despublicar el mapa:"+error);
         }
     });
+}
+
+function activateWmsMap(mapName){
+	publicateMap(mapName);
+	$( document ).ajaxStop(function() {
+		console.log("se cambia");
+		window.location.href = mapPath+'php/mapGenerator.php?mapName='+mapName;
+	});
 }

@@ -34,22 +34,6 @@ function visorModalSaveButtonHandler() {
         });
     });
 }
-        /*$.ajax({
-            url: "../"+apiPath+"createEmptyMap.php",
-            data:{
-                name: visorName
-            },
-            success: function(response){
-                saveNewVisor(visorName, "Descripción del visor", username).then(function(result){
-                    if (result != ""){
-                        console.log("Ha ocurrido un error en la Base de Datos.");
-                        return;
-                    }
-                    window.location.replace(viewPath+"php/generateVisor.php?visorName="+visorName);
-                });
-            }
-        })
-    })*/
 
 function saveNewVisor (visorName, visorDescription, visorOwner){
     return $.ajax({

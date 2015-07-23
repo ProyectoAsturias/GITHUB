@@ -196,3 +196,102 @@ function updateLayerInfo(){
 		}
 	});
 }
+
+function appendModalStyles(nameMap,layer){
+        mapName= nameMap;
+        globalLayer=layer;
+        var layerName= layer.name;
+        var parser = new ol.format.WMSCapabilities();
+        //llamada al GetCapabilities
+        $.ajax({
+                type: "GET",
+                dataType : 'text',
+                url: server+"geoserver/"+mapName+"/wms?request=getCapabilities&service=wms",
+                success: function (response) {
+                        var service = parser.read(response);
+                        var capabilities = service.Capability;
+                        var layers = [];
+			var styleSrc="";
+                        for(var i=0; i<capabilities.Layer.Layer.length; i++){
+                                if (layerName==capabilities.Layer.Layer[i].Name){
+                                        var pickLayer= capabilities.Layer.Layer[i];
+                                }
+                        }
+			var srcStyle =pickLayer.Style[0].LegendURL[0].OnlineResource;
+			var valueOpacity=globalLayer.getOpacity();
+                        var modalHTML="<label for=\"defaultStyle\">Estilo por defecto </label>"+
+					"<div><img id='legendStyle' src=\""+srcStyle+"\" /></div>"+
+                                        "<input type=\"text\" readonly  class=\"form-control\" id=\"defaultStyle\" value=\""+pickLayer.Style[0].Name+"\">"+
+					"<label for=\"opacityBar\">Transparencia</label>"+
+					"<input class='opacity' id=\"opacityBar\" onchange='setOpacity()' value=\""+valueOpacity+"\" type='range' min='0' max='1' step='0.01'/>"+
+                                        "<label for=\"styleList\">Estilos disponibles</label>"+
+                                        "<select multiple class=\"form-control\" id=\"styleList\" tabindex=\"1\">"
+                        for(var i=1; i<pickLayer.Style.length; i++){
+                        	modalHTML +="<option value=\""+pickLayer.Style[i].Name+"\">"+pickLayer.Style[i].Name+"</option>";
+				styleSrc +="<input type=\"hidden\" id=\""+pickLayer.Style[i].Name+"\" value=\""+pickLayer.Style[i].LegendURL[0].OnlineResource+"\" \>";
+			}
+                        modalHTML +="</select><div id=\"styleSrc\">"+styleSrc+"</div>"+
+                                        "<button onclick='selectStyle()' id=\"selectStyle\" class=\"btn btn-info btn-block\" style=\"padding:0;\" >Seleccionar estilo</button>"+
+					"<label for=\"inputSld\">Carga un archivo SLD</label>"+
+					"<input id=\"inputSld\" name=\"inputSld\" type=\"file\" class=\"file-loading\">"+
+					"<div id=\"buttonStyles\"></div>"+
+                                "</div>"
+			$("#modalStyles .modal-body").html(modalHTML);
+			$('#inputSld').fileinput({
+				uploadUrl: apiPath+"styleUpload.php", 
+				uploadAsync: true,
+				allowedFileExtensions: ["sld"],
+				previewClass:"bg-warning",
+				dropZoneEnabled: false,	
+			});
+			$("#inputSld").on('fileuploaded', function(event,data ) {
+        			//console.log(data);
+				var styleName= data.files[0].name.split(".");
+				//console.log(styleName[0]);
+				$("#modalStyles .modal-body").empty();
+				appendModalStyles(mapName,layer);
+			});
+                        $("#inputSld").on('fileuploaderror', function(event,data ) {
+                                //console.log(data);
+                                //console.log("error");
+                        });
+                        $("#modalStyles").modal("show");
+
+		},
+		error: function(error){
+			console.log(error);
+		}
+	})
+}
+
+function selectStyle(){
+	var newDefaultStyle=$("#styleList option:selected").val();
+	var newStyleSource=document.getElementById(newDefaultStyle).value;
+	document.getElementById("defaultStyle").value=newDefaultStyle;
+	var prueba=document.getElementById('legendStyle');
+	document.getElementById("legendStyle").src=newStyleSource;
+}
+
+function setOpacity(){
+	var opacity=document.getElementById('opacityBar').value
+	globalLayer.setOpacity(opacity);
+}
+
+function updateStyle(){
+	var newDefaultStyle=document.getElementById("defaultStyle").value;
+        $.ajax({
+                type: "POST",
+                data : {
+                        mapName: mapName,
+			layerName:globalLayer.name,
+			styleName:newDefaultStyle,
+                },
+                url:apiPath+'updateDefaultStyle.php',
+                success: function (response) {
+                        console.log(response);
+                },
+                error:function(error){
+                        console.log("error");
+                }
+        });
+}

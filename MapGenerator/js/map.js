@@ -115,6 +115,7 @@ function assignEventsHandlers(){
 	deleteIconClickHandler();
 	attributesClickHandler();
 	layerInfoClickHandler();
+	stylesClickHandler();
 }
 
 function eyeIconClickHandler(){
@@ -166,9 +167,17 @@ function layerInfoClickHandler(){
 	});
 }
 
+
+function stylesClickHandler(){
+        $(".stylesLayer").click(function(event){
+                var parent = $(this).parent();
+                appendModalStyles(map.name,parent.data("layer"));
+        });
+}
+
 function removeLayer(layer, callback) {
 	if(!layer.wms){
-		//console.log("Capa Normal");
+		console.log("Capa Normal");
 		$.ajax({
 			type: "POST",
 			url : apiPath+"delLayer.php",
@@ -229,7 +238,7 @@ function importWms() {
 			var title = service.Service.Title;
 			title=title.replace(/ /gi,'_');
 			var listLayers = [];
-			console.log("Importando wms: #"+title);
+			
 			for(var i=0; i<capabilities.Layer.Layer.length; i++)
 				listLayers.push(capabilities.Layer.Layer[i].Name);
 			$.ajax({
@@ -242,7 +251,9 @@ function importWms() {
 					listLayers: listLayers
 				},
 				success: function(response){
+
 					//console.log(response);
+
 					drawTree();
 				},
 				error: function(error) {
@@ -252,7 +263,9 @@ function importWms() {
 
 		},
 		error:function(error){
+
 			alert("Error al importar un wms: "+error);
+
 		}
 	});
 }
@@ -263,10 +276,12 @@ function importWms() {
 function importMap(){
 	if($("#selectMap").val()!=null){
 		var id=$("#selectMap").val();
+
 		console.log("Importando map: #"+id);
 		$.ajax({
 			type: "POST",
 			url: apiPath+"getMapLayers.php",
+
 			data:{
 				idMap: id
 			},
@@ -294,7 +309,9 @@ function importMap(){
 function importFamily(familyId){	
 	if($("#selectFamily").val()!=null || familyId!=null){
 		var id=$("#selectFamily").val() || familyId;
+
 		console.log("Importando familia: #"+id);
+
 		$.ajax({
 			type: "POST",
 			url: apiPath+"getLayers.php",
@@ -346,7 +363,9 @@ function importLayer(layer,mapId){
 				projection: map.projection
 			},
 			success: function(response){
+
 				//console.log(response);
+
 				drawTree();
 			},
 			error: function(error) {
@@ -379,3 +398,4 @@ function clearMap(){
 		}
 	});
 }
+

@@ -30,10 +30,16 @@ function back(){
 	window.location="http://"+serverIp+"/Tables/php/tables.php";
 }
 
-function confirmClearMap(){
+function confirmSaveMap(){
+	bootbox.prompt("Introduzca el nombre del mapa.", function(result) {
+		if (result != null)
+			success("Mapa guardado correctamente.");
+	});
+}
+function confirmCleanMap(){
 	bootbox.confirm("El contenido del mapa será eliminado", function(result) {
 		if (result)
-			clearMap();
+			success("El contenido del mapa ha sido eliminado.");
 	});
 }
 
