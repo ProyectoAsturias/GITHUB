@@ -4,6 +4,10 @@
 	
 	print(getMaps());
 	
+	/**
+	 * Devuelve una lista con todos los mapas existentes en Localgis.
+	 * @return string
+	 */
 	function getMaps() {
 		$connection = new ServerConnection();
 		$query = 'SELECT * FROM maps';

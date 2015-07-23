@@ -35,11 +35,23 @@
 		addLayer($layerId,$layerName,$mapId,$mapName,$town,$projection,$connection,$geoserver);
 		$connection->dbClose();
 	}
-		
+	
+	/**
+	 * Esta función conecta a la base de datos de LocalGis, de la que descarga y ejecuta las Querys necesarias para obtener la información de las capas y añadirlas a Geoserver.
+	 * @param int $layerId
+	 * @param string $layerName
+	 * @param int $mapId
+	 * @param string $mapName
+	 * @param string $town
+	 * @param string $projection
+	 * @param object $connection
+	 * @param object $geoserver
+	 */	
 	function addLayer($layerId,$layerName,$mapId,$mapName,$town,$projection,$connection,$geoserver){
 		//Se rescata la query que forma la capa de Localgis
 		$query = "SELECT selectquery FROM queries WHERE id_layer='".$layerId."'";
 		$result = pg_query($query) or die('Error: '.pg_last_error());
+		echo ($result);
 		$select_layer = pg_fetch_result($result, 0,0);
 		$select_layer=str_replace("?T","'".$projection."'",$select_layer);
 		$select_layer=str_replace("?M","'".$town."'",$select_layer);
@@ -52,7 +64,6 @@
 		for($i=0;$i<sizeof($from);$i++)
 			$from_string=$from_string."public.".$from[$i];
 		print($select_string." FROM ".$from_string." WHERE ".$where_string);*/
-
 		pg_query($connection->dbConn, 'CREATE OR REPLACE VIEW visores."'.$layerName.'" AS '.$select_layer);
 
 		//Comprobamos que la tabla está vacia: Si lo está hay que incluir el srs, ya que geoserver no puede extraerlo al no haber datos geoespaciales.
@@ -69,7 +80,14 @@
 			addStyles($layerId,$layerName,$mapId,$connection,$geoserver);
 		}
 	}
-
+	/**
+	 * Conecta a LocalGis para obtener los estilos de una capa, importarlos a Geoserver y asignarselos a una capa.
+	 * @param int $layerId
+	 * @param string $layerName
+	 * @param int $mapId
+	 * @param object $connection
+	 * @param object $geoserver
+	 */
 	function addStyles($layerId,$layerName,$mapId,$connection,$geoserver){
 		$where="";
 		if($mapId>=0)
@@ -91,7 +109,7 @@
 					$sld_xml=$header."<UserStyle>".$exp[$i];
 					if($i!=$numSld)
 						$sld_xml.=$end;
-					if(($res=$geoserver->createStyle($sld_xml, $styleName."_".$i, $connection->wsName))!="")
+					if(($res=$geoserver->createStyle($connection->wsName, $sld_xml, $styleName."_".$i))!="")
 						print("Advice: ".$res."\n");
 					//if(($res=$geoserver->addStyleToLayer($layerName, $styleName."_".$i, $connection->wsName))!="")
 						//print("Advice: ".$res."\n");

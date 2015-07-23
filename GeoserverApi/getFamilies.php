@@ -9,6 +9,11 @@
 	else //Todas las familias
 		print(getFamilies());
 
+	/**
+	 * Obtiene las familias de un mapa de LocalGis a través de su ID.
+	 * @param $idMap
+	 * @return string
+	 */
 	function getFamilies($idMap=null) {
 		$connection = new ServerConnection();
 		$where="";

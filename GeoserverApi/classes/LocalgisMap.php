@@ -1,22 +1,94 @@
 
 <?php
 	//include "getFamilies.php";
-
+	/**
+	 * Clase que representa un mapa de LocalGis.
+	 */
 	class LocalgisMap {
+		/**
+		 * Id del mapa.
+		 * @var int
+		 */
 		var $id;
+		
+		/**
+		 * Descripción del mapa.
+		 * @var string
+		 */
 		var $description;
-		var $usnits;
+		
+		/**
+		 * Unidades del mapa.
+		 * @var string
+		 */
+		var $units;
+		
+		/**
+		 * Escala del mapa.
+		 * @var string
+		 */
 		var $scale;
+		
+		/**
+		 * Proyección del mapa.
+		 * @var string
+		 */
 		var $projection;
+		
+		/**
+		 * Srid del mapa.
+		 * @var string
+		 */
 		var $srid;
+		
+		/**
+		 * Nombre del mapa.
+		 * @var string
+		 */
 		var $name;
+		
+		/**
+		 * Imagen del mapa.
+		 * @var string
+		 */
 		var $image;
+		
+		/**
+		 * ID de la entidad del mapa.
+		 * @var int
+		 */
 		var $id_entidad;
+		
+		/**
+		 * ID de la proyección del mapa.
+		 * @var int
+		 */
 		var $projection_id;
+		
+		/**
+		 * Fecha de la creación del mapa.
+		 * @var int
+		 */
 		var $fecha_ins;
+		
+		/**
+		 * Fecha de la última de modificación del mapa.
+		 * @var int
+		 */
 		var $fecha_mod;
 		//var $families;
 
+		
+		/**
+		 * @param int $id
+		 * @param string $xml 
+		 * @param string $image
+		 * @param int $id_entidad
+		 * @param int $projection_id
+		 * @param date $fecha_ins
+		 * @param date $fecha_mod
+		 * @param bool $getFamilies
+		 */
 		public function __construct($id, $xml, $image, $id_entidad, $projection_id, $fecha_ins, $fecha_mod, $getFamilies=true){
 			$this->id=$id;
 			if($xml!=""){
