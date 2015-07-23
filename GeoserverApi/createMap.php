@@ -13,24 +13,24 @@
 		print("Use: ".$argv[0]." <map name>\n");
 		exit;
 	}
-	
-	/**
-	 * Crea un mapa en Geoserver. Genera un WorkSpace y un Datastore en Geoserver.
-	 * @param string $mapName
-	 */
+	/*
+		Creación del WS y el DS del mapa
+	*/
 	function createGeoserverMap($mapName){
 		$connection = new ServerConnection($mapName);
 		$geoserver = new ApiRest('http://'.$connection->gsHost.':8080/geoserver',$connection->gsUser, $connection->gsPassword);
+		//pg_query($connection->dbConn, 'CREATE SCHEMA "'.$connection->dsName.'" AUTHORIZATION '.$connection->dbUser);
+		//print(pg_last_error());
 		#Creación del WS y el DS
 		if(($result=$geoserver->createWorkspace($connection->wsName))!="")
 			print("Advice".$result."\n");
 		else
 			print("Workspace creado\n");
 
-		if(($result=$geoserver->createPostGISDatastore($connection->wsName, $connection->dsName, 'visores', $connection->dbName, $connection->dbUser, $connection->dbPass, $connection->dbHost))!="")
+		if(($result=$geoserver->createPostGISDataStore($connection->wsName, $connection->dsName, 'visores', $connection->dbName, $connection->dbUser, $connection->dbPass, $connection->dbHost))!="")
 			print("Advice".$result."\n");
 		else
 			print("Store creado\n");
-		$connection->dbClose();	
+		pg_close($connection->dbConn);	
 	}
 ?>

@@ -1,7 +1,6 @@
 <?php
 	class ServerConnection {
 		#Info database
-		var $dbName;
 		var $dbSchema;
 		var $dbConn;
 		var $dbUser;
@@ -12,22 +11,17 @@
 		var $wsName;
 		var $dsName;
 
-		public function __construct($mapName="",$dbSchema=null){
+		public function __construct($mapName=""){
+			$this->dbSchema="public";
 			$this->dbName="Localgis";
-			if ($dbSchema==null)
-				$this->dbSchema="public";
-			else
-				$this->dbSchema=$dbSchema;
 			$this->dbUser="postgres";
 			$this->dbPass="1234";
 			$this->dbHost="localhost";
-
-			$this->gsHost="localhost";
+			$this->gsHost="192.168.1.2";
 			$this->gsUser="admin";
 			$this->gsPassword="geoserver";
 			$this->wsName=$mapName;
 			$this->dsName=$mapName;
-
 			$this->dbConn = pg_connect("host=".$this->dbHost." dbname=".$this->dbName." user=".$this->dbUser." password=".$this->dbPass)  or die('Error: '.pg_last_error());
 		}
 

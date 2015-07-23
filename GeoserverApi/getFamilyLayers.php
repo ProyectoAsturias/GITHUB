@@ -8,11 +8,6 @@
 	else
 		print(json_encode("Error: falta idMap"));
 
-	/**
-	 * Obtiene las capas de un mapa de LocalGis a través de su ID.
-	 * @param $idMap
-	 * @return string
-	 */
 	function getLayers($idMap) {
 		$connection = new ServerConnection();
 

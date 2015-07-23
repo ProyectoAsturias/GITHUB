@@ -8,26 +8,26 @@
 		$mapName=$_POST['mapName'];
 		delLayer($layerName,$mapName);
 	}
+	delLayer("scbarbol1","Map_Arbolado");
 
 	function delLayer($layerName,$mapName){
 		$connection = new ServerConnection($mapName);
 		$geoserver = new ApiRest('http://'.$connection->gsHost.':8080/geoserver',$connection->gsUser, $connection->gsPassword);
 		//Borrado de los estilos asociados
-		$styleList=$geoserver->listStyles($layerName,$connection->wsName);
-		if($styleList->styles!=null){
-			$styleList=$styleList->styles->style;
-			foreach($styleList as $style)
-				delStyle($style->name,$connection->wsName,$geoserver);
-		}
+		$styleList=$geoserver->listStyles($layerName,$connection->wsName)->styles->style;
+		foreach($styleList as $style)
+			delStyle($style->name,$connection->wsName,$geoserver);
 		//Borrado de la capa
 		if(($result=$geoserver->deleteLayer($mapName,$mapName,$layerName))!="")
 			print("Advice: ".$result."\n");
+		print("Borrado satisfactorio");
 		print(0);
 		$connection->dbClose();
 	}
 
 	function delStyle($name,$wsName,$geoserver){
 		if(($result=$geoserver->deleteStyle($name,$wsName))!="")
-			print("Advice: ".$result."\n");
+			print(1); //El estilo no se ha borrado porque otra capa hace uso de él.
+			//print("Advice: ".$result."\n");
 	}
 ?>

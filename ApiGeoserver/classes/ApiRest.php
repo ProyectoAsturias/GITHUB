@@ -174,11 +174,8 @@ class ApiRest {
 			'<store class="dataStore"><name>'.htmlentities($datastoreName, ENT_COMPAT).'</name></store>'.
 			'</featureType>';*/
 		$srs="";
-		if($proj!=null)
-			$srs='<srs>EPSG:'.$proj.'</srs>';
-
-		//else
-			//$srs='<srs>EPSG:23030</srs>';
+		if($proj==null)
+			$srs='<srs>EPSG:23030</srs>';
 		$xml='<featureType>'.
 			'<name>'.$layerName.'</name>'.
 			'<nativeName>'.$layerName.'</nativeName>'.
@@ -352,7 +349,123 @@ class ApiRest {
 	}
 
 	public function deleteStyle($styleName,$workspaceName) {
-		//eturn $this->runApi('workspaces/'.htmlentities($workspaceName, ENT_COMPAT)."/styles/".htmlentities($styleName, ENT_COMPAT), 'DELETE');
-		return $this->runApi('styles/'.htmlentities($workspaceName, ENT_COMPAT).':'.htmlentities($styleName, ENT_COMPAT).'/styles', 'DELETE');
+		print($styleName."...".$workspaceName);
+		return $this->runApi('workspaces/'.htmlentities($workspaceName, ENT_COMPAT)."/styles/".htmlentities($styleName, ENT_COMPAT), 'DELETE');
 	}
+	
+	
+// GetCapabilities Info API
+
+	public function updateWmsInfo($workspaceName, $description, $keywords, $title){
+		$length= sizeof($keywords);
+		$xmlKeywords='<keywords>';
+		for($i=0;$i<$length;$i++)
+			$xmlKeywords .='<string>'.$keywords[$i].'</string>';
+		$xmlKeywords .='</keywords>';
+		
+		$xml='<wms>'.
+			'<workspace><name>'.$workspaceName.'</name></workspace>'.
+			'<enabled>true</enabled>'.
+			'<name>WMS</name>'.
+			'<title>'.$title.'</title>'.
+			'<abstrct>'.$description.'</abstrct>'.
+			$xmlKeywords.
+			'</wms>';
+		return $this->runApi('services/wms/workspaces/'.urlencode($workspaceName).'/settings.xml', 'PUT', $xml);
+	}
+	
+	public function updateWsInfo($workspaceName, $contactPerson, $contactOrganization, $contactPosition, $address, $addressType, $city, $stateOrProvince, $country, $postCode, $contactPhone, $fax, $email){
+		$xml=	'<settings>'.
+					'<workspace>'.
+						'<name>'.$workspaceName.'</name>'.
+					'</workspace>'.
+					'<contact>'.
+						'<address>'.$address.'</address>'.
+						'<addressCity>'.$city.'</addressCity>'.
+						'<addressCountry>'.$country.'</addressCountry>'.
+						'<addressPostalCode>'.$postCode.'</addressPostalCode>'.
+						'<addressState>'.$stateOrProvince.'</addressState>'.
+						'<addressType>'.$addressType.'</addressType>'.
+						'<contactEmail>'.$email.'</contactEmail>'.
+						'<contactFacsimile>'.$fax.'</contactFacsimile>'.
+						'<contactOrganization>'.$contactOrganization.'</contactOrganization>'.
+						'<contactPerson>'.$contactPerson.'</contactPerson>'.
+						'<contactPosition>'.$contactPosition.'</contactPosition>'.
+						'<contactVoice>'.$contactPhone.'</contactVoice>'.
+					'</contact>'.
+				'</settings>';
+			return $this->runApi('workspaces/'.urlencode($workspaceName).'/settings.xml', 'PUT', $xml);
+	}
+
+	public function updateLayerInfo($workspaceName, $layerName, $description, $keywords, $title, $isWmsLayer){
+		$length= sizeof($keywords);
+		$xmlKeywords='<keywords>';
+		for($i=1;$i<$length;$i++)
+			$xmlKeywords .='<string>'.$keywords[$i].'</string>';
+		$xmlKeywords .='</keywords>';
+		//Comprobamos primero si la capa pertenece al datastore con la variable $store	
+		if ($isWmsLayer=="false"){
+			$xml='<featureType>'.
+					'<title>'.$title.'</title>'.
+					'<abstract>'.$description.'</abstract>'.
+					$xmlKeywords.
+					'<enabled>true</enabled>'.
+					'</featureType>';
+			return $this->runApi('workspaces/'.urlencode($workspaceName).'/datastores/'.urlencode($workspaceName).'/featuretypes/'.urlencode($layerName).'.xml', 'PUT', $xml);
+		}
+		else{
+			$xml='<wmsLayer>'.
+					'<title>'.$title.'</title>'.
+					'<abstract>'.$description.'</abstract>'.
+					$xmlKeywords.
+					'<enabled>true</enabled>'.
+					'</wmsLayer>'
+			$wmsStore=$this->getWmsstoreName($workspaceName,$layerName);
+			return $this->runApi('workspaces/'.urlencode($workspaceName).'/wmsstores/'.urlencode($wmsStore).'/wmslayers/'.urlencode($layerName).'.xml', 'PUT', $xml);
+		}
+	}
+	
+	//wms
+	public function listWmsstores($workspaceName) {
+		return json_decode($this->runApi('workspaces/'.urlencode($workspaceName).'/wmsstores.json'));
+	}
+
+	public function listWmsLayers($workspaceName, $wmsstoreName) {
+		return json_decode($this->runApi('workspaces/'.urlencode($workspaceName).'/wmsstores/'.urlencode($wmsstoreName).'/wmslayers.json'));
+	}
+
+	public function addWmsLayer($workspaceName, $wmsstoreName, $wmsTitle, $description = ''){
+		$xml='<wmsLayer>
+		<name>'.$wmsTitle.'</name>
+		</wmsLayer>';
+		return $this->runApi('workspaces/'.urlencode($workspaceName).'/wmsstores/'.urlencode($wmsstoreName).'/wmslayers.xml', 'POST', $xml);
+	}
+
+	public function delWmsLayer($workspaceName, $wmsstoreName, $layerName) {
+		$this->runApi('layers/'.urlencode($workspaceName).":".urlencode($layerName), 'DELETE');
+		return $this->runApi('workspaces/'.urlencode($workspaceName).'/wmsstores/'.urlencode($wmsstoreName).'/wmslayers/'.urlencode($layerName), 'DELETE');
+	}
+
+	public function listWmsSize($workspaceName, $wmsstoreName) {
+		$listWmsLayers=$this->listWmsLayers($workspaceName, $wmsstoreName);
+		if($listWmsLayers!=null){
+			$listWmsLayers=$listWmsLayers->wmsLayers->wmsLayer;
+			return sizeof($listWmsLayers);
+		}
+		else
+			return 0;
+	}
+	
+	public function getWmsstoreName($workspaceName,$layerName){
+		$listWmsstores=$this->listWmsstores($workspaceName)->wmsStores->wmsStore;
+		foreach ($listWmsstores as $wmsstore){
+		$listWmsLayers=$this->listWmsLayers($workspaceName, $wmsstore->name)->wmsLayers->wmsLayer;
+		foreach ($listWmsLayers as $wmsLayer){
+			if($wmsLayer->name==$layerName)
+				return $wmsstore->name;
+			};
+		};
+		return null;
+	}
+	
 }
