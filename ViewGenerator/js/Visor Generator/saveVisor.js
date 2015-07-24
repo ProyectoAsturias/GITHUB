@@ -22,7 +22,21 @@ function createJson() {
 }
 
 function saveVisorData(visorData) {
+    console.log(visorName);
     console.log(JSON.stringify(visorData));
+    $.ajax({
+        url: "../../Tables/php/userContent.php",
+        data: {
+            "tag" : "saveVisorContent",
+            "visorContent" : JSON.stringify(visorData),
+            "visorName" : visorName
+        },
+        method: "POST",
+        success: function (response) {
+            console.log("Guardado");
+            console.log(response);
+        }
+    });
 }
 
 /**

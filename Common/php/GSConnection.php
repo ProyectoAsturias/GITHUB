@@ -46,7 +46,7 @@
 		 * @param string $mapName
 		 */
 		public function __construct($mapName=""){
-			$this->host="localhost";
+			$this->host="192.168.127.129";
 			$this->user="admin";
 			$this->pass="geoserver";
 			$this->wsName=$mapName;

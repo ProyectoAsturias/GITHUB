@@ -16,7 +16,7 @@ if(isset($_GET["visorName"]) && ($_GET["visorName"]!= "")){
     echo $twig->render('Visor Generator/visorgenerator.html.twig', array(
         "functions" => ["areazoom", "clickcoordinates", "dataretrieve", "draw", "fullscreen", "panto", "printmap", "zoomin", "zoomout", "empty"],
         "username" => $_SESSION["username"],
-        "visorName" => $_GET["visorName"]
+        "visorName" => $_GET["visorName"],
     ));
 }else{
     header("Location: ../../Tables/php/tables.php?errorMessage=".urlencode("El nombre del visor no puede ser vacío"));

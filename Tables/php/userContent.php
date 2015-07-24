@@ -18,6 +18,9 @@
             case "saveVisor":
                 echo json_encode(saveVisor($_POST["visorName"],$_POST["visorDescription"],$_POST["visorOwner"]));
                 break;
+            case "saveVisorContent":
+                echo json_encode(saveVisorContent($_POST["visorName"],$_POST["visorContent"]));
+                break;
             case "deleteMap":
                 echo json_encode(deleteMap($_POST["mapName"]));
                 break;
@@ -56,8 +59,14 @@
     }
 
     function saveVisor($visorName, $visorDescription, $username){
-        $connection = new DBUserContentConnect();
         $query = "INSERT INTO public.\"Visors\" (name, description, owner) VALUES ('".$visorName."','".$visorDescription."','".$username."');";
+        $result = pg_query($query) or die('Error: '.pg_last_error());
+        return $result;
+    }
+
+    function saveVisorContent($visorName, $visorContent){
+        $query = "UPDATE public.\"Visors\" SET content = '".$visorContent."' WHERE name = '".$visorName."';";
+        echo $query;
         $result = pg_query($query) or die('Error: '.pg_last_error());
         return $result;
     }
