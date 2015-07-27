@@ -1,0 +1,21 @@
+<div class="panel panel-default">
+    <div class="panel-heading" role="tab">
+        <h4 class="panel-title">
+            <p>Conectado como: <span class="glyphicon glyphicon-user"></span><strong id="userName"></strong></p>
+            <a href="#" class="btnLogout btn btn-lg btn-warning"><span class="glyphicon glyphicon-log-out"></span> Logout</a>
+        </h4>
+    </div>
+    <div class="panel-heading" role="tab">
+        <a id="listMapsCollapse" role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+            <h4 class="panel-title">
+                <i id="listMapsCollapseIcon" class="glyphicon glyphicon-collapse-up"></i>
+                Listado de mapas.
+            </h4>
+        </a>
+    </div>
+    <div id="collapseOne" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="headingOne">
+        <div class="panel-body">
+            {% include "mapTable.html.twig" %}
+        </div>
+    </div>
+</div>

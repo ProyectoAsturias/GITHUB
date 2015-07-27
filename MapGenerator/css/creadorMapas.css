@@ -1,0 +1,201 @@
+#logo{
+    margin-top: 0.5vh;
+    margin-bottom: 1vh;
+}
+
+#map{
+    height: 100%;
+}
+
+#logo img{
+    height: 12vh;
+    width: 100%;
+    min-height:14ex;
+}
+
+#leftBar{
+    height: 86vh;
+	padding-top:0.7vh;
+    margin-top:1.3vh;
+    min-height:740px ;
+    background-color: lightgray;
+}
+
+#saveMapButton{
+    width: 80%;
+    font-size:12pt;
+}
+
+#cancelMapButton{
+    width: 20%;
+}
+
+#logout{
+    margin-top: 2vh;
+    text-align: center;
+}
+
+#editWmsButton{
+	height: 6vh;
+	width:95%;
+	margin-left:2.5%;
+	margin-right:2.5%;
+	background-color:#4E7AB1;
+	border-radius:7px;
+	overflow:hidden;
+	text-align:center;
+	border:solid 2px black;
+}
+
+h2{
+	font-family:"Franklin Gothic Medium";
+	display:inline;
+	color:white;
+}
+
+#layersList{
+    height: 62vh;
+    min-height:584px;
+    overflow:auto;
+}
+
+#mapContainer{
+    min-height: 740px;
+    height: 86vh;
+}
+
+#allTools{
+    height: 12vh;
+    margin-top: 0.5vh;
+    margin-bottom: 0.3vh;
+    background-color: #eee;
+    min-height:14ex;
+}
+
+#fuentesDatos{
+    height: 100%;
+}
+
+#inputWms{
+    margin-top:1.2vh;
+}
+
+#wms{
+    margin-top:0.2vh;
+}
+
+#loadWms{
+    margin-top:0.2vh;
+}
+
+#inputMaps{
+    margin-top:1.8vh;
+}
+
+#importMap{
+    margin-top:1.8vh;
+}
+
+#progress {
+    position:relative;
+    float:left;
+    height: 7px;
+    background: blue;
+    width: 0;
+    transition: width 250ms;
+}
+
+body,
+.navbar-fixed-top,
+.navbar-fixed-bottom {
+    min-width: 1500px;
+    min-height: 850px;
+}
+
+/* Non-responsive overrides
+ *
+ * Utilize the following CSS to disable the responsive-ness of the container,
+ * grid system, and navbar.
+ */
+
+/* Reset the container */
+.container {
+    width: 970px;
+    max-width: none !important;
+}
+
+
+body.dragging, body.dragging * {
+    cursor: move !important;
+}
+
+.dragged{
+    position: absolute;
+    top: 0;
+    opacity: .5;
+    z-index: 2000;
+}
+ol {
+    padding: 10px 5px 0px 5px;
+    margin-bottom: 10px;
+    min-height: 10px;
+}
+li{
+    display: block;
+    padding: 5px;
+    border: 1px solid #CCC;
+    color: orange;
+    background: #f5f5f5;
+}
+
+li.placeholder {
+    position: relative;
+    margin: 0;
+    padding: 0;
+    border: none;
+}
+
+li.placeholder:before{
+    position : absolute;
+    content: "";
+    width: 0;
+    height: 0;
+    margin-top: -5px;
+    left: -5px;
+    top: -4px;
+    border: 5px solid transparent;
+    border-left-color: red;
+    border-right-color: red;
+}
+
+li .glyphicon {
+    cursor: pointer;
+    margin:0px 3px 0px 3px;
+    float: right;
+    color:#000000;
+}
+
+textarea {
+	resize: none;
+}
+
+li{
+    overflow-y: hidden;
+    overflow-x: hidden;
+}
+
+.layerName{
+    float: left;
+    white-space: nowrap;
+    max-width: 75%;
+    min-width: 75%;
+    text-overflow: ellipsis;
+    overflow-x: hidden;
+    overflow-y: hidden;
+    margin: 0 0 0 0;
+}
+
+.placeholder{
+    height: 5px;
+    background-color: palevioletred;
+}
