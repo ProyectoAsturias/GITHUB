@@ -21,6 +21,9 @@
             case "saveVisorContent":
                 echo json_encode(saveVisorContent($_POST["visorName"],$_POST["visorContent"]));
                 break;
+            case "loadVisorContent":
+                echo json_encode(loadVisorContent($_POST["visorName"],$_POST["visorContent"]));
+                break;
             case "deleteMap":
                 echo json_encode(deleteMap($_POST["mapName"]));
                 break;
@@ -66,9 +69,15 @@
 
     function saveVisorContent($visorName, $visorContent){
         $query = "UPDATE public.\"Visors\" SET content = '".$visorContent."' WHERE name = '".$visorName."';";
-        echo $query;
         $result = pg_query($query) or die('Error: '.pg_last_error());
         return $result;
+    }
+
+    function loadVisorContent($visorName){
+        $dbConnection = new DBConnection("UserContent");
+        $query = "SELECT content FROM public.\"Visors\" WHERE name='".$visorName."';";
+        $result = pg_query($query) or die('Error: '.pg_last_error());
+        return pg_fetch_all($result);
     }
 
     function deleteMap($mapName){

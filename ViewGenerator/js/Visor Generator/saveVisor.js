@@ -22,7 +22,6 @@ function createJson() {
 }
 
 function saveVisorData(visorData) {
-    console.log(visorName);
     console.log(JSON.stringify(visorData));
     $.ajax({
         url: "../../Tables/php/userContent.php",

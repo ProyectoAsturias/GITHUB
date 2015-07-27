@@ -3,10 +3,16 @@ $(document).ready(function(){
 });
 
 function updateTreeLayer(){
-    $(document).ajaxStop(function(){
+    if (map!= undefined && map.mapURL == ""){
         var treeData = generateTreeData();
         createLayerTree(treeData);
-    });
+
+    }else{
+        $(document).ajaxStop(function(){
+            var treeData = generateTreeData();
+            createLayerTree(treeData);
+        });
+    }
 }
 
 function generateNode(layer){

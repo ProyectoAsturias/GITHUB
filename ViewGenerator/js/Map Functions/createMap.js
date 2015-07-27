@@ -38,43 +38,44 @@ function createMap() {
         renderer: 'canvas',
         view: new ol.View({
             projection: ('EPSG:4230', 'EPSG:900913'),
-            center: [-424339.90999686107,5372327.873439357],
-            zoom: 12
+            center: mapDetails.center,
+            zoom: mapDetails.zoomLevel
         })
     });
 
     if (mapDetails["WMSUrl"]) {
         try {
             addLayersAndGroupsFromWMS(mapDetails["WMSUrl"]);
-            map.wmsURL = mapDetails["WMSUrl"];
         }catch (error){
             console.log("WOP");
         }
 
         //TEMPORAL
-        var osmLayer = new ol.layer.Tile({
-            source: new ol.source.OSM()
-        });
-        osmLayer.name = "OpenStreet Maps";
-        map.addLayer(osmLayer);
+        addBaseOSMLayer();
 
     }else{
-        map.mapURL = "";
-        //TEMPORAL
-        var osmLayer = new ol.layer.Tile({
-            source: new ol.source.OSM()
-        });
-        osmLayer.name = "OpenStreet Maps";
-        map.addLayer(osmLayer);
+        addBaseOSMLayer();
     }
+
+    map.addControl(new ol.control.ScaleLine());
 }
 
 function destroyMap(){
     map.setTarget(null);
 }
 
+function addBaseOSMLayer(){
+    var osmLayer = new ol.layer.Tile({
+        source: new ol.source.OSM()
+    });
+    osmLayer.name = "OpenStreet Maps";
+    map.addLayer(osmLayer);
+}
+
 function updateMap(){
     destroyMap();
+    setMapCenter(map.getView().getCenter());
+    setMapZoomLevel(map.getView().getZoom());
     createMap();
 }
 
@@ -115,18 +116,18 @@ function addLayersAndGroupsFromWMS(WMSUrl){
 
 
 function addGroupToMap(groupIndex, WMSUrl) {
-        var nombre=layersNames[groupIndex];
-        requestLayersForGroup(nombre, WMSUrl, function(layersInGroup){
-            if(layersInGroup.length == 0){
-                addLayerToMap(groupIndex, WMSUrl);
-                return;
-            }
-            var layerGroup = new ol.layer.Group({
-                layers: layersInGroup
-            });
-            layerGroup.name = nombre;
-            map.addLayer(layerGroup);
+    var nombre=layersNames[groupIndex];
+    requestLayersForGroup(nombre, WMSUrl, function(layersInGroup){
+        if(layersInGroup.length == 0){
+            addLayerToMap(groupIndex, WMSUrl);
+            return;
+        }
+        var layerGroup = new ol.layer.Group({
+            layers: layersInGroup
         });
+        layerGroup.name = nombre;
+        map.addLayer(layerGroup);
+    });
 }
 
 function requestLayersForGroup(groupName, WMSUrl, callback){
@@ -182,8 +183,8 @@ function addLayerToMap(layerIndex, WMSUrl){
 
 function searchAndRemoveLayer(layerToRemove){
     map.getLayers().forEach(function(layer){
-       if (layer.name == layerToRemove.name){
-           map.removeLayer(layer);
-       }
+        if (layer.name == layerToRemove.name){
+            map.removeLayer(layer);
+        }
     });
 }

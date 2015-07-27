@@ -14,4 +14,3 @@ function attachMap(wmsURL){
     map.mapURL = wmsURL;
     updateTreeLayer();
 }
-

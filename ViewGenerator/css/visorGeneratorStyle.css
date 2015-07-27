@@ -97,7 +97,7 @@
     top: -40% !important;
 }
 
-#areaZoom{
+.areaZoom{
     cursor: pointer;
     height: 48px;
     width: 48px;
@@ -105,7 +105,7 @@
     background-repeat:no-repeat;
 }
 
-#clickCoordinatesButton{
+.clickCoordinatesButton{
     cursor: pointer;
     height: 48px;
     width: 48px;
@@ -113,7 +113,7 @@
     background-repeat:no-repeat;
 }
 
-#dataRetrieving{
+.dataRetrieving{
     cursor: pointer;
     height: 48px;
     width: 48px;
@@ -121,7 +121,7 @@
     background-repeat:no-repeat;
 }
 
-#drawType{
+.drawType{
     cursor: pointer;
     height: 48px;
     width: 48px;
@@ -129,7 +129,7 @@
     background-repeat:no-repeat;
 }
 
-#fullScreen{
+.fullScreen{
     cursor: pointer;
     height: 48px;
     width: 48px;
@@ -137,7 +137,7 @@
     background-repeat:no-repeat;
 }
 
-#panTo{
+.panTo{
     cursor: pointer;
     height: 48px;
     width: 48px;
@@ -146,7 +146,7 @@
 }
 
 
-#printMap{
+.printMap{
     cursor: pointer;
     height: 48px;
     width: 48px;
@@ -154,7 +154,7 @@
     background-repeat:no-repeat;
 }
 
-#zoomInButton{
+.zoomInButton{
     cursor: pointer;
     height: 48px;
     width: 48px;
@@ -162,7 +162,7 @@
     background-repeat:no-repeat;
 }
 
-#zoomOutButton{
+.zoomOutButton{
      cursor: pointer;
      height: 48px;
      width: 48px;
@@ -170,7 +170,7 @@
      background-repeat:no-repeat;
  }
 
-#empty{
+.empty{
     cursor: pointer;
     height: 48px;
     width: 48px;

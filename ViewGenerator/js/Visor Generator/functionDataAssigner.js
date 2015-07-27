@@ -15,38 +15,38 @@ function addDataAttributes(){
 }
 
 function clickCoordinatesDataAssing(){
-    $("#clickCoordinatesButton").data("function", "clickCoordinates");
+    $(".clickCoordinatesButton").data("function", "clickCoordinates");
 }
 
 function drawAreaDataAssign(){
-    $("#drawType").data("function", "draw");
+    $(".drawType").data("function", "draw");
 }
 
 function panToDataAssign(){
-    $("#panTo").data("function", "panTo");
+    $(".panTo").data("function", "panTo");
 }
 
 function printMapDataAssign(){
-    $("#printMap").data("function", "printMap");
+    $(".printMap").data("function", "printMap");
 }
 
 function retrieveDataAssign(){
-    $("#dataRetrieving").data("function", "dataRetrieve");
+    $(".dataRetrieving").data("function", "dataRetrieve");
 }
 
 function fullScreenDataAssign(){
-    $("#fullScreen").data("function", "fullScreen");
+    $(".fullScreen").data("function", "fullScreen");
 }
 
 function zoomControlDataAssign(){
-    $("#zoomInButton").data("function", "zoomIn");
-    $("#zoomOutButton").data("function", "zoomOut");
+    $(".zoomInButton").data("function", "zoomIn");
+    $(".zoomOutButton").data("function", "zoomOut");
 }
 
 function zoomAreaDataAssign(){
-    $("#areaZoom").data("function", "areaZoom");
+    $(".areaZoom").data("function", "areaZoom");
 }
 
 function emptySpaceAssign(){
-    $("#empty").data("function", "empty");
+    $(".empty").data("function", "empty");
 }

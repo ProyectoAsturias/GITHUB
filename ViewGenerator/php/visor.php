@@ -16,7 +16,7 @@ $twig = new Twig_Environment($loader, array(
 ));
 $twig->addExtension(new Twig_Extension_Debug());
 
-$json = "{\"mapDetails\":{\"center\":[-424339.90999686107,5372327.873439357],\"zoom\":14},\"functionsBar\":[{\"position\":{\"top\":\"-500px\",\"left\":\"278px\"},\"functions\":[\"draw\",\"zoomIn\",\"zoomOut\",\"clickCoordinates\",\"areaZoom\",\"printMap\",\"panTo\",\"fullScreen\",\"dataRetrieve\"]}]}";
+$json = '{"mapDetails":{"center":[-385480.6330376505,6836280.051162561],"zoom":5,"WMSUrl":"http://ogc.bgs.ac.uk/cgi-bin/BGS_Bedrock_and_Superficial_Geology/wms"},"functionsBar":[{"position":{"top":"650px","left":"275px"},"functions":["fullScreen","dataRetrieve","panTo","zoomOut","empty","panTo"]}]}';
 
 $visorData = json_decode($json);
 
