@@ -19,7 +19,7 @@
         
         $method = "aes-128-cbc";
         //falta aplicar PBEKeySpec con salt (actualmente no encripta correctamente)
-        $password = openssl_encrypt($password, $method, 'GEOPISTA');
+        //$password = openssl_encrypt($password, $method, 'GEOPISTA');
         //print("##".$password."##");
 
         /*$query="SELECT id,id_entidad FROM iuseruserhdr WHERE name = '".$username."' AND password='".$password."'";
@@ -50,7 +50,7 @@
             $loginResponse = new stdClass();
             $loginResponse->logged = true;
             $loginResponse->previousUrl = $_SERVER['HTTP_REFERER'];
-            registerUser($userid,$username);
+            //registerUser($userid,$username);
             return $loginResponse;
         }else{
             $loginResponse = new stdClass();

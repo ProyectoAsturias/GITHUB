@@ -87,7 +87,7 @@
     }
 
     function deleteVisor($visorName){
-        $connection = new DBUserContentConnect();
+        $connection = new DBConnection("UserContent");
         $query = "DELETE FROM public.\"Visors\" WHERE name='".$visorName."'";
         $result = pg_query($query) or die('Error: '.pg_last_error());
         return $result;

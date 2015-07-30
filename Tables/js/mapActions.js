@@ -43,6 +43,7 @@ function mapModalSaveButtonHandler(){
                     return;
                 }
                 saveNewMap(mapName, "Descripción del mapa", userName).then(function(result){
+                    console.log(result);
                     if (result != ""){
                         //TODO: Mostrar mensaje de error
                         console.log(result);
