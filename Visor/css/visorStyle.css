@@ -1,0 +1,11 @@
+.empty{
+    background-image: none; !important;
+}
+
+#mapContainer{
+    padding-top: 0px; !important;
+}
+
+.hugeTransform{
+    font-size: 50px;
+}

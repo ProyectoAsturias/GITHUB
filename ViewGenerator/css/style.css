@@ -1,0 +1,53 @@
+#SLDEditorModal .modal-dialog {
+     width: 90%;
+     min-height: 90%; !important;
+     height: 90%;
+}
+
+#SLDEditorModal .modal-content{
+    height: 100%;
+}
+
+.modal .modal-body {
+    max-height: 100%;
+    overflow-y: auto;
+}
+
+.map{
+    width: 50%;
+}
+
+#areaOverlay, #coordinatesOverlay{
+    background-color: white;
+    border-radius: 10px;
+    border: 1px solid black;
+    padding: 5px 10px;
+}
+.ol-overlaycontainer-stopevent:first-child{
+    min-width: 100%;
+}
+
+#toolBar{
+    background-color: lightgrey;
+    display: inline-block;
+    border-top-left-radius: 20px;
+    border-top-right-radius: 20px;
+    height: 10vh;
+    line-height: 10vh;
+}
+#toolBar div{
+    margin: 2px;
+    float: left;
+}
+
+.fullScreen{
+    height: 100%;
+}
+.invisibleFullScreenButton{
+    background-color: Transparent;
+    background-repeat:no-repeat;
+    border: none;
+    cursor: pointer;
+    overflow: hidden;
+    outline:none;
+}
