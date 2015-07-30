@@ -12,6 +12,10 @@ function exportMapEventHandler(){
     });
 }
 
+function getLayerToExport(){
+
+}
+
 function exportMap(format){
     window.location = "http://192.168.127.129:8080/geoserver/Prueba1/wfs?request=GetFeature&service=wfs&version=1.0.0&typename=bez_arbolado_1&outputformat=SHAPE-ZIP";
 }
