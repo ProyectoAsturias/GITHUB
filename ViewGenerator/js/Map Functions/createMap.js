@@ -46,6 +46,7 @@ function createMap() {
     if (mapDetails["WMSUrl"]) {
         try {
             addLayersAndGroupsFromWMS(mapDetails["WMSUrl"]);
+            map.mapURL = mapDetails["WMSUrl"];
         }catch (error){
             console.log("WOP");
         }
@@ -145,6 +146,7 @@ function requestLayersForGroup(groupName, WMSUrl, callback){
             objectResponse.layerDescriptions.forEach(function (layer){
                 var groupLayer = new ol.layer.Tile({
                     source: new ol.source.TileWMS({
+                        crossOrigin:'anonymous',
                         preload: Infinity,
                         url: WMSUrl,
                         servertype: "geoserver",
@@ -168,6 +170,7 @@ function addLayerToMap(layerIndex, WMSUrl){
     }
     var newlayer = new ol.layer.Tile({
         source: new ol.source.TileWMS({
+            crossOrigin:'anonymous',
             preload: Infinity,
             url: WMSUrl,
             serverType:'geoserver',

@@ -8,7 +8,7 @@ $(document).ready(function(){
  * @return
  */
 function PanEventHandler() {
-    $("#panTo").click(function () {
+    $(".panTo").click(function () {
         var coordinates = [parseInt($("#panToDestination").val().split(",")[0]), parseInt($("#panToDestination").val().split(",")[1])];
         panToPosition(coordinates);
     });

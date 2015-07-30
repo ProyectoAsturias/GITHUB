@@ -10,7 +10,7 @@ $(document).ready(function(){
  * @return
  */
 function RetrieveEventHandler() {
-    $("#dataRetrieving").click(function () {
+    $(".dataRetrieving").click(function () {
         toggleDataRetrieving();
         generateJSONLayers();
     });

@@ -66,6 +66,12 @@ function makeNodesSortable(){
 				_super($item, container);
 			});
 		},
+		onDrop: function ($item, container, _super, event) {
+			$item.removeClass(container.group.options.draggedClass).removeAttr("style");
+			$("body").removeClass(container.group.options.bodyClass);
+			var indexTo =  map.getLayers().getLength()-1-$item.index();
+			reorderOpenlayersMap(indexFrom, indexTo);
+		},
 		onDragStart: function ($item, container, _super, event) {
 			var offset = $item.offset(),
 				pointer = container.rootGroup.pointer;
@@ -84,12 +90,6 @@ function makeNodesSortable(){
 		},
 		over: function (event, ui) {
 			$( this ).addClass( "ui-state-highlight" );
-		},
-		onDrop: function ($item, container, _super, event) {
-			$item.removeClass(container.group.options.draggedClass).removeAttr("style");
-			$("body").removeClass(container.group.options.bodyClass);
-			var indexTo =  map.getLayers().getLength()-1-$item.index();
-			reorderOpenlayersMap(indexFrom, indexTo);
 		}
 	});
 }

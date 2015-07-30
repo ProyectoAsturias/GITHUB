@@ -10,7 +10,7 @@ $(document).ready(function(){
  * @return
  */
 function coordinatesEventHandlers() {
-    $("#clickCoordinatesButton").click(function () {
+    $(".clickCoordinatesButton").click(function () {
         toggleClickCoordinate();
     });
 }

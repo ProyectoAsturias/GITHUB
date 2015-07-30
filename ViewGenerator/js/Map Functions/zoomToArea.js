@@ -13,7 +13,7 @@ $(document).ready(function(){
  * @return
  */
 function ZoomAreaEventHandler(){
-    $("#areaZoom").click(function () {
+    $(".areaZoom").click(function () {
         toggleAreaZoom();
     });
 }

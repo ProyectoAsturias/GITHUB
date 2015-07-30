@@ -4,6 +4,7 @@ $(document).ready(function(){
     $(".ol-scale-line").draggable({
         containment: $(".ol-viewport")
     })
+    makeLegendBarDraggable();
 });
 
 /**
@@ -60,5 +61,12 @@ function makeToolsSortable(){
         stop: function(event, ui) {
             $(this).sortable('cancel');
         }
+    });
+}
+
+function makeLegendBarDraggable() {
+    $(".legendBar").draggable({
+        containment: $(".ol-viewport"),
+        cancel: ".functionContainer"
     });
 }

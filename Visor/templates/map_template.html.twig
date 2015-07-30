@@ -9,10 +9,9 @@
         </div>
     </div>
 </div>
-<div id="layertree"></div>
-<div id="layertree2"></div>
 
 <script type="text/javascript">
     setMapDetails({{ visorData.mapDetails|json_encode|raw }})
     createMap();
+    createLegendMap();
 </script>

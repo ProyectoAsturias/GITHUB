@@ -154,6 +154,14 @@
     background-repeat:no-repeat;
 }
 
+.export{
+    cursor: pointer;
+    height: 48px;
+    width: 48px;
+    background-image:url("../templates/images/export.png");
+    background-repeat:no-repeat;
+}
+
 .zoomInButton{
     cursor: pointer;
     height: 48px;
@@ -178,4 +186,44 @@
     background-repeat:no-repeat;
 }
 
+
+.legendBar{
+    position: absolute;
+    top: 650px;
+    left: 600px;
+    z-index: 1;
+    border: solid 1px black;
+    border-radius:5px;
+    width:13vw;
+    background-color:#CCC;
+    opacity:0.9;
+}
+#titleMap{
+    width:100%;
+    height:25px;
+    border-bottom:solid 1px black;
+    border-radius:2px;
+    background-color:#2C31ED;
+    text-align:center;
+
+    color:#FFF;
+}
+.titleLayer{
+    width: 100%;
+    height:20px;
+    overflow:hidden;
+    text-align:center;
+    border: solid 1px blue;
+}
+.imgLayer{
+    width: 100%;
+    background-color:white;
+    overflow:hidden;
+    border-radius:4px;
+}
+span{
+    position:relative;
+    float:right;
+    margin:2px;
+}
 

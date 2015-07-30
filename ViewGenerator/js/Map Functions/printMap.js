@@ -1,3 +1,12 @@
+var dims = {
+    a0: [1189, 841],
+    a1: [841, 594],
+    a2: [594, 420],
+    a3: [420, 297],
+    a4: [150, 105],
+    a5: [210, 148]
+};
+
 $(document).ready(function(){
     PrintEventHandler();
 });
@@ -8,7 +17,7 @@ $(document).ready(function(){
  * @return
  */
 function PrintEventHandler() {
-    $("#printMap").on("click", printMap);
+    $(".printMap").on("click", printMap);
 }
 
 /**
@@ -17,56 +26,106 @@ function PrintEventHandler() {
  * @return
  */
 function printMap(){
-    makeOverlaysResponsive();
-    window.print();
+
+    var format = "a4";
+
+    var mapImage = generateMapImage();
+    var mapTitle = generateMapTitle();
+    var mapDescription = generateMapDescription();
+    var mapScale = generateMapScale();
+    var legendImage;
+    generateLegendImage(function(image){
+        legendImage = image;
+    })
+    var tableImages;
+    generateTableImages(function(images){
+        tableImages = images;
+    })
+
+
+    var interval = setInterval(function(){
+        if (legendImage != undefined && tableImages != undefined){
+            clearInterval(interval);
+            createPDF(format, mapTitle, mapDescription, mapScale, mapImage, legendImage, tableImages);
+        }
+    }, 100)
 }
 
-/**
- * In order to print overlays on the map, those must become responsive since they are generated with static position.
- * @method makeOverlaysResponsive
- * @return
- */
-function makeOverlaysResponsive() {
-    makeCoordinatesOverlayResponsive();
-    makeAreaOverlayResponsive();
+function createPDF(format,mapTitle, mapDescription, mapScale, mapImage, legendImage, tableImages){
+    var pdf = new jsPDF('landscape', "cm", format);
+    pdf.setFontSize(20);
+    pdf.text(11, 1.5, mapTitle);
+
+    pdf.setFontSize(12);
+    //pdf.text(1, 2, mapDescription);
+    pdf.fromHTML($("#description").get(0),1, 2, {
+        "width": 28,
+        "elementsHandler": specialElementHandlers()
+    });
+    pdf.addImage(mapImage, 'JPEG', 1, 4, 28, 0);
+
+    pdf.setFontSize(14);
+    pdf.text(1, 16, "Escala");
+    pdf.setFontSize(12);
+    pdf.text(3, 16, mapScale);
+
+    pdf.addImage(legendImage, "PNG", 1, 4, 4, 0);
+
+    var leftMargin = 1;
+    for (var i=0; i<tableImages.length; i++){
+        pdf.addImage(tableImages[i], "PNG", leftMargin, 17, 3, 0);
+        leftMargin =  (3+leftMargin)+0.5;
+    }
+    pdf.save('map.pdf');
 }
 
-/**
- * Changes some css attributes on coordinatesOverlay from static values to percentages. With that when printing is started this overlay stays
- * in the same position.
- * @method makeCoordinatesOverlayResponsive
- * @return
- */
-function makeCoordinatesOverlayResponsive() {
-    $("#coordinatesOverlay").parent().css('right', function () {
-        var rightMargin = $("#coordinatesOverlay").parent().css("right");
-        var rightPercentage = parseFloat(rightMargin) / parseFloat($("#mapContainer").width());
-        return rightPercentage * 100 + "%";
-    });
+function specialElementHandlers(){
+    return true;
+}
 
-    $("#coordinatesOverlay").parent().css('bottom', function () {
-        var bottomMargin = $("#coordinatesOverlay").parent().css("bottom");
-        var bottomPercentage = parseFloat(bottomMargin) / parseFloat($("#mapContainer").height());
-        return bottomPercentage * 100 + "%";
+function generateMapImage(){
+    var canvas = $("canvas").get(0);
+    return canvas.toDataURL('image/jpeg');
+}
+
+function generateMapTitle(){
+    return "Título del Mapa";
+}
+
+function generateMapDescription(){
+    $("#description").html("Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut " +
+    "\nlabore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi" +
+    "\nut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.");
+
+}
+function generateLegendImage(callback){
+    html2canvas($(".legendBar").get(0),{
+        onrendered: function(canvas) {
+            callback(canvas.toDataURL('image/png'));
+        }
+    })
+}
+
+function generateMapScale(){
+    return $(".ol-scale-line-inner").html();
+}
+
+function generateTableImages(callback){
+    var images =[];
+    var numberOfTables = $("#dataTables").children().length;
+    $("#dataTables").children().each(function() {
+        var element = $(this);
+        var element = $(element).addClass("hugeTransform");
+        html2canvas(element.get(0), {
+            onrendered: function (canvas) {
+                var tableImage = canvas.toDataURL('image/png');
+                images.push(tableImage);
+                $(element).removeClass("hugeTransform");
+                if (images.length == numberOfTables){
+                    callback(images);
+                }
+            }
+        });
     });
 }
 
-/**
- * Changes some css attributes on areaOverlay from static values to percentages. With that when printing is started this overlay stays
- * in the same position.
- * @method makeAreaOverlayResponsive
- * @return
- */
-function makeAreaOverlayResponsive() {
-    $("#areaOverlay").parent().css('right', function () {
-        var rightMargin = $("#areaOverlay").parent().css("right");
-        var rightPercentage = parseFloat(rightMargin) / parseFloat($("#mapContainer").width());
-        return rightPercentage * 100 + "%";
-    });
-
-    $("#areaOverlay").parent().css('bottom', function () {
-        var bottomMargin = $("#areaOverlay").parent().css("bottom");
-        var bottomPercentage = parseFloat(bottomMargin) / parseFloat($("#mapContainer").height());
-        return bottomPercentage * 100 + "%";
-    });
-}

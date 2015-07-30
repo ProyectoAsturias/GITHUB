@@ -12,6 +12,11 @@ function addDataAttributes(){
     zoomControlDataAssign();
     zoomAreaDataAssign();
     emptySpaceAssign();
+    exportDataAssign();
+}
+
+function exportDataAssign(){
+    $(".export").data("function", "export");
 }
 
 function clickCoordinatesDataAssing(){

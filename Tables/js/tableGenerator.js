@@ -31,7 +31,8 @@ function createVisorsTable(target){
     retrieveUserVisors(function(jsonVisors){
         var visorsData = JSON.parse(jsonVisors);
         var columns = [{checkbox: "true"}, {field: "id", title: "ID Visor", sortable: "true"},{field:"name", title:"Nombre", sortable: "true"},
-            {field:"description", title:"Descripción"},{field:"date_update", title:"Última modificación", sortable: "true"}, {field:"date_creation", title:"Fecha creación", sortable: "true"}];
+            {field:"description", title:"Descripción"},{field:"date_update", title:"Última modificación", sortable: "true"}, {field:"date_creation", title:"Fecha creación", sortable: "true"},
+            {title: "Descargar", formatter:"downloadVisorLink"}];
         createTable(target, columns, visorsData);
     });
 }
@@ -80,6 +81,11 @@ function synchronizedFormatter(value, row, index){
     return "<span class='glyphicon glyphicon-refresh' style='color:green; font-size: 1.2em;'></span>";
 }
 
+function downloadVisorLink(value, row, index){
+    return "<a href='../php/downloadVisor.php?visorName="+row.name+"' download=''><span class='glyphicon glyphicon-download'></span></a>";
+
+}
+
 function linkToEditMaps(){
     $('#table').on("click-cell.bs.table", function(event,field,value,row){
 	if(field=="image"){
@@ -104,9 +110,11 @@ function appendImages(mapsData){
 }
 
 function linkToEditVisors(){
-    $("#tableVisors").on("click-row.bs.table", function(event, row){
-        window.location.href = viewPath + "php/generateVisor.php?visorName=" + row.name;
-    })
+    $('#tableVisors').on("click-cell.bs.table", function(event,field,value,row){
+        if(field=="name"){
+            window.location.href = viewPath + "php/generateVisor.php?visorName=" + row.name;
+        }
+    });
 }
 
 function getImageMap(mapName) {

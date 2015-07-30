@@ -3,6 +3,7 @@ $(document).ready(function(){
         setMapDetails(visorData.mapDetails);
     }
     createMap();
+    createLegendMap();
 })
 
 function replaceAllSubstring(text, target, replacement) {

@@ -9,8 +9,12 @@ function attachMapEventHandler(){
 }
 
 function attachMap(wmsURL){
-    setMapURL(wmsURL);
-    updateMap();
-    map.mapURL = wmsURL;
-    updateTreeLayer();
+    console.log(wmsURL);
+    if (wmsURL != ""){
+        setMapURL(wmsURL);
+        updateMap();
+        map.mapURL = wmsURL;
+        updateTreeLayer();
+        createLegendMap();
+    }
 }

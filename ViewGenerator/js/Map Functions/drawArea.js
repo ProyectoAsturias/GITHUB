@@ -1,3 +1,4 @@
+/*
 //Declaración de variables necesarias
 $(document).ready(function (){
   var drawInteraction; //El objeto Draw que se crea, no confundir con su feature (drawingContent)
@@ -38,7 +39,9 @@ $(document).ready(function (){
     var type = (typeSelect.value == 'area' ? 'Polygon' : 'LineString');
     drawInteraction = new ol.interaction.Draw({
       source: drawingLayer.getSource(),
-      type: /** @type {ol.geom.GeometryType} */ (type)
+      type: */
+/** @type {ol.geom.GeometryType} *//*
+ (type)
     });
 
     map.addInteraction(drawInteraction);
@@ -119,10 +122,14 @@ $(document).ready(function (){
   function fillAndShowOverlay(drawingContent, overlay) {
     var occupiedSpace;
     if (drawingContent.getGeometry() instanceof ol.geom.Polygon) {
-      occupiedSpace = formatArea(/** @type {ol.drawingContent.getGeometry().Polygon} */ (drawingContent.getGeometry()));
+      occupiedSpace = formatArea(*/
+/** @type {ol.drawingContent.getGeometry().Polygon} *//*
+ (drawingContent.getGeometry()));
       overlay.setPosition(new Array(drawingContent.getGeometry().getLastCoordinate()[0] * 1.0002, drawingContent.getGeometry().getLastCoordinate()[1]));
     } else if (drawingContent.getGeometry() instanceof ol.geom.LineString) {
-      occupiedSpace = formatLength(/** @type {ol.drawingContent.getGeometry().LineString} */ (drawingContent.getGeometry()));
+      occupiedSpace = formatLength(*/
+/** @type {ol.drawingContent.getGeometry().LineString} *//*
+ (drawingContent.getGeometry()));
       overlay.setPosition(new Array(drawingContent.getGeometry().getClosestPoint(drawingContent.getGeometry().getLastCoordinate())[0], drawingContent.getGeometry().getClosestPoint(drawingContent.getGeometry().getLastCoordinate())[1] * 1.00005));
     }
     overlay.getElement().innerHTML = occupiedSpace;
@@ -152,4 +159,4 @@ $(document).ready(function (){
       });
     }
   };
-});
+});*/
