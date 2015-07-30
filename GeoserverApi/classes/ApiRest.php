@@ -619,6 +619,36 @@ class ApiRest {
 		return json_decode($this->runApi('layers/'.urlencode($workspaceName).":".urlencode($layerName).'/styles.json'));
 	}
 
+
+	/**
+	 * Sube un fichero SLD para ser asignado a un estilo de un Workspace.
+	 * @param $url_file
+	 * @param $styleName
+	 * @param $workspaceName
+     */
+	public function uploadSldStyle($workspaceName, $url_file, $styleName) {
+		$curl='curl -u admin:geoserver -XPUT -H "Content-type: application/vnd.ogc.sld +xml" -d @'.$url_file.' http://localhost:8080/geoserver/rest/workspaces/'.$workspaceName.'/styles/'.$styleName;
+		$rslt = shell_exec($curl);
+		return $rslt;
+		//return $this->runApi('workspaces/'.urlencode($workspaceName).'/styles'.urlencode($styleName), 'PUT', htmlentities('@'.$url_file, ENT_COMPAT),"application/vnd.ogc.sld +xml");
+	}
+
+	/**
+	 * Crea un estilo a partir de un fichero.
+	 * @param $SLDFile
+	 * @param $styleName
+	 * @param $workspaceName
+	 * @return mixed|string
+     */
+	public function createStyleFromFile($workspaceName, $file_sld, $styleName) {
+		$style='<style><name>'.htmlentities($styleName, ENT_COMPAT).'</name><filename>'.htmlentities($file_sld, ENT_COMPAT).'</filename></style>';
+		$result=$this->runApi('workspaces/'.urlencode($workspaceName).'/styles', 'POST', $style);
+		if ($result!="")
+			return $result;
+		else
+			return $this->uploadSldStyle($workspaceName, $file_sld, $styleName);
+	}
+
 	/**
 	 * Crea un estilo que se almacena en un Workspace.
 	 * @param $SLD
@@ -637,25 +667,7 @@ class ApiRest {
 		fwrite($fp, $SLD);
 		fclose($fp);
 
-		$style='<style><name>'.htmlentities($styleName, ENT_COMPAT).'</name><filename>'.htmlentities($dir.$file_sld, ENT_COMPAT).'</filename></style>';
-		$result=$this->runApi('workspaces/'.urlencode($workspaceName).'/styles', 'POST', $style);
-		if ($result!="")
-			return $result;
-		else
-			return $this->uploadSldStyle($workspaceName, $dir.$file_sld, $styleName);
-	}
-
-	/**
-	 * Sube un fichero SLD para ser asignado a un estilo de un Workspace.
-	 * @param $url_file
-	 * @param $styleName
-	 * @param $workspaceName
-     */
-	public function uploadSldStyle($workspaceName, $url_file, $styleName) {
-		$curl='curl -u admin:geoserver -XPUT -H "Content-type: application/vnd.ogc.sld +xml" -d @'.$url_file.' http://localhost:8080/geoserver/rest/workspaces/'.$workspaceName.'/styles/'.$styleName;
-		$rslt = shell_exec($curl);
-		return $rslt;
-		//return $this->runApi('workspaces/'.urlencode($workspaceName).'/styles'.urlencode($styleName), 'PUT', htmlentities('@'.$url_file, ENT_COMPAT),"application/vnd.ogc.sld +xml");
+		return $this->createStyleFromFile($workspaceName, $dir.$file_sld, $styleName);
 	}
 
 	/**
@@ -666,7 +678,11 @@ class ApiRest {
 	 * @return mixed|string
      */
 	public function addStyleToLayer($layerName, $styleName, $workspaceName) {
-		$xml='<style><name>'.htmlentities($workspaceName, ENT_COMPAT).':'.htmlentities($styleName, ENT_COMPAT).'</name></style>';
+		$xml="";
+		if($styleName=="point"||$styleName=="line"||$styleName=="polygon")
+			$xml='<style><name>'.htmlentities($styleName, ENT_COMPAT).'</name></style>';
+		else
+			$xml='<style><name>'.htmlentities($workspaceName, ENT_COMPAT).':'.htmlentities($styleName, ENT_COMPAT).'</name></style>';
 		return $this->runApi('layers/'.urlencode($workspaceName).':'.urlencode($layerName).'/styles', 'POST', $xml);
 	}
 
@@ -678,8 +694,12 @@ class ApiRest {
 	 * @return mixed|string
      */
 	public function defaultStyleToLayer($layerName, $styleName, $workspaceName) {
-		//return ('layers/'.urlencode($workspaceName).':'.urlencode($layerName). 'PUT <layer><defaultStyle><name>'.htmlentities($workspaceName, ENT_COMPAT).':'.htmlentities($styleName, ENT_COMPAT).'</name></defaultStyle></layer>');
-		return $this->runApi('layers/'.urlencode($workspaceName).':'.urlencode($layerName), 'PUT', '<layer><defaultStyle><name>'.htmlentities($workspaceName, ENT_COMPAT).':'.htmlentities($styleName, ENT_COMPAT).'</name></defaultStyle></layer>');
+		$xml="";
+		if($styleName=="point"||$styleName=="line"||$styleName=="polygon")
+			$xml='<layer><defaultStyle><name>'.htmlentities($styleName, ENT_COMPAT).'</name></defaultStyle></layer>';
+		else
+			$xml='<layer><defaultStyle><name>'.htmlentities($workspaceName, ENT_COMPAT).':'.htmlentities($styleName, ENT_COMPAT).'</name></defaultStyle></layer>';
+		return $this->runApi('layers/'.urlencode($workspaceName).':'.urlencode($layerName), 'PUT', $xml);
 	}
 
 	/**

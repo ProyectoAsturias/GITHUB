@@ -1,9 +1,5 @@
 var map;
 
-$(document).ready(function(){
-	assignEventsHandlers();
-});
-
 /**
 * Inicialización de la variable map de openlayers 3
 **/
@@ -111,71 +107,6 @@ function reorderOpenlayersMap(indexFrom, indexTo){
 	map.getLayers().insertAt(indexTo, movedLayer);
 }
 
-function assignEventsHandlers(){
-	eyeIconClickHandler();
-	deleteIconClickHandler();
-	attributesClickHandler();
-	layerInfoClickHandler();
-	stylesClickHandler();
-}
-
-function eyeIconClickHandler(){
-	$(".visibilityLayer").click(function(event){
-		if ($(this).parent().data().layer.getVisible()){
-			$(this).css("color", "lightgray");
-			$(this).parent().data().layer.setVisible(false);
-		}else{
-			$(this).css("color", "black");
-			$(this).parent().data().layer.setVisible(true);
-		}
-	});
-}
-
-function deleteIconClickHandler(){
-	$(".removeLayer").click(function(event){
-		var parent = $(this).parent();
-		bootbox.confirm("¿Realmente desea eliminar esta capa?", function(result) {
-			if (result){
-				removeLayer(parent.data("layer"),function(response){
-					parent.fadeOut("slow", function(){
-						$(this).remove();
-					});
-				});
-			}
-		});
-	});
-}
-
-function attributesClickHandler(){
-	$(".attributesLayer").click(function(event){
-		var parent = $(this).parent();
-		getJSONLayer(parent.data("layer"), function(attributes){
-			var modalHTML = "";
-			attributes.features.forEach(function (feature){
-				//console.log(feature);
-				modalHTML += "<div><input type='checkbox' style='vertical-align: middle'/><label>&nbsp;&nbsp;&nbsp;"+feature+"</label></div>"
-			})
-			$("#modalAttributes .modal-body").html(modalHTML);
-			$("#modalAttributes").modal("show");
-		})
-	});
-}
-
-function layerInfoClickHandler(){
-	$(".infoLayer").click(function(event){
-		var parent = $(this).parent();
-		appendModalLayer(map.name,parent.data("layer"));
-	});
-}
-
-
-function stylesClickHandler(){
-        $(".stylesLayer").click(function(event){
-                var parent = $(this).parent();
-                appendModalStyles(map.name,parent.data("layer"));
-        });
-}
-
 function removeLayer(layer, callback) {
 	if(!layer.wms){
 		console.log("Capa Normal");
@@ -194,6 +125,7 @@ function removeLayer(layer, callback) {
 					map.removeLayer(layer);
 					//console.log(map.getLayers().getArray().length);
 				}
+				updateDatabaseMap();
 				callback(response);
 			},
 			error:function(error){
@@ -231,14 +163,14 @@ function removeLayer(layer, callback) {
 /**
 * Carga un wms en Geoserver
 **/
-function importWms() {
-	var wms;
+function importWms(wms) {
+	/*var wms;
 	if($('#wms').val()!="")
 		wms=$('#wms').val();
 	else if($("#selectWms").val()!=null)
 		wms=$("#selectWms").val();
 	else
-		return;
+		return;*/
 	//Obtener title y lista de capas que forman el wms
 	$.ajax({
 		type : "GET",
@@ -304,7 +236,28 @@ function importMap(){
 				for(var i=0; i<layerList.length; i++){
 					importLayer(layerList[i]);
 				}
+				//Guardar campos en MAP
+				saveAttributes(id,layerList);
 				//Importar ortofoto
+				$.ajax({
+					type: "POST",
+					url : apiPath+"apiLocalgis.php",
+					data : {
+						tag:"getWmsLayers",
+						idMap: id,
+					},
+					success: function(response){
+						var ortoFotos=JSON.parse(response);
+						for(var i=0; i<ortoFotos.length; i++){
+							var wms=ortoFotos[i].id.split("?");
+							console.log(wms[0]);
+							importWms(wms[0]);
+						}
+					},
+					error: function(response){
+						console.log(response);
+					}
+				})
 			},
 			error: function(error) {
 				console.log("Error al cargar el mapa: ".error);				 
@@ -350,6 +303,52 @@ function importFamily(familyId){
 }
 
 /**
+* Actualiza el mapa de la base de datos propia, extrayendo los campos de cada capa
+**/
+function updateDatabaseMap(){
+	var layersInfo=[];
+	var reverseLayers = map.getLayers().getArray().slice(0).reverse();
+	var i=0;
+	reverseLayers.forEach(function (layer) {
+		if(layer.base!=true){
+			layersInfo.push(layer.name);
+		}
+	});
+	reverseLayers.forEach(function (layer) {
+		if(layer.base!=true){
+			getJSONLayer(layer, function(viewAttributes){
+				var index = layersInfo.indexOf(viewAttributes.id[0]);
+				layersInfo[index]=[viewAttributes,layer.getOpacity()];
+				updateDatabaseMapInfo(i++,layersInfo);
+			})
+		}
+	});
+}
+
+/**
+* Actualiza el mapa de la base de datos propia
+**/
+function updateDatabaseMapInfo(i,layersInfo){
+	if(i==map.getLayers().getArray().slice(0).reverse().length-2){
+		$.ajax({
+			type: "POST",
+			url : apiPath+"apiDatabase.php",
+			data : {
+				tag:"updateMapInfo",
+				mapName: map.name,
+				layersInfo: layersInfo
+			},
+			success: function(response){
+				console.log(response);
+			},
+			error: function(error) {
+				console.log("Error al guardar la información en MAPS: ".error);				 
+			}
+		});
+	}
+}
+
+/**
 * Carga la capa al ws
 **/
 function importLayer(layer,mapId){
@@ -380,6 +379,8 @@ function importLayer(layer,mapId){
 			success: function(response){
 				console.log("Importando capa: #"+name);
 				console.log(response);
+				//update MAP Table
+				updateDatabaseMap();
 				drawTree();
 			},
 			error: function(error) {

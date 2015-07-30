@@ -1,4 +1,108 @@
 var globalLayer;
+var defaultStyle;
+
+$(document).ready(function(){
+	assignEventsHandlers();
+});
+
+function assignEventsHandlers(){
+	eyeIconClickHandler();
+	deleteIconClickHandler();
+	attributesClickHandler();
+	layerInfoClickHandler();
+	stylesClickHandler();
+}
+
+//EVENTOS
+
+function eyeIconClickHandler(){
+	$(".visibilityLayer").click(function(event){
+		if ($(this).parent().data().layer.getVisible()){
+			$(this).css("color", "lightgray");
+			$(this).parent().data().layer.setVisible(false);
+		}else{
+			$(this).css("color", "black");
+			$(this).parent().data().layer.setVisible(true);
+		}
+	});
+}
+
+function deleteIconClickHandler(){
+	$(".removeLayer").click(function(event){
+		var parent = $(this).parent();
+		bootbox.confirm("¿Realmente desea eliminar esta capa?", function(result) {
+			if (result){
+				removeLayer(parent.data("layer"),function(response){
+					parent.fadeOut("slow", function(){
+						$(this).remove();
+					});
+				});
+			}
+		});
+	});
+}
+
+function attributesClickHandler(){
+	$(".attributesLayer").click(function(event){
+		var parent = $(this).parent();
+		getJSONLayer(parent.data("layer"), function(viewFeatures){
+			//Rescatar atributos de MAP
+			$.ajax({
+		    	type: "POST",
+		    	url:apiPath+'apiDatabase.php',
+		    	data : {
+					tag:"getLayerAttributes",
+		            mapName: map.name,
+					layerName: parent.data("layer").name
+		        },
+		    	success: function (response) {
+		    		var dbLayers=JSON.parse(response);
+				    //Que aparezcan con el tick solo los que están presentes (attributes)
+					var modalHTML = "";
+					dbLayers.forEach(function (dbLayer){
+						if(dbLayer[0].id[0]==parent.data("layer").name){
+							var listAttributes=dbLayer[0].features;
+							listAttributes.forEach(function (attribute){
+								var checked=false;
+								viewFeatures.features.forEach(function (feature){
+									if(feature==attribute){
+										checked=true;
+										modalHTML += "<div><input type='checkbox' style='vertical-align: middle' checked/><label>&nbsp;&nbsp;&nbsp;"+attribute+"</label></div>";
+									}	
+								})
+								if(!checked)
+									modalHTML += "<div><input type='checkbox' style='vertical-align: middle' unchecked/><label>&nbsp;&nbsp;&nbsp;"+attribute+"</label></div>";
+							})
+						}
+					})
+					$("#modalAttributes .modal-body").html(modalHTML);
+					$("#modalAttributes").modal("show");
+					globalLayer=parent.data("layer");
+		    	},
+		    	error:function(error){
+		            console.log(error);
+		    	}
+			});
+		})
+	});
+}
+
+function layerInfoClickHandler(){
+	$(".infoLayer").click(function(event){
+		var parent = $(this).parent();
+		appendModalLayer(map.name,parent.data("layer"));
+	});
+}
+
+
+function stylesClickHandler(){
+    $(".stylesLayer").click(function(event){
+        var parent = $(this).parent();
+        appendModalStyles(map.name,parent.data("layer"));
+    });
+}
+
+//FUNCIONES
 
 /**
 *Primero pedimos la informacion actual del servicio Wms del mapa, a traves del GetCapabilities , y despues desplegamos la ventana modal para poder modificarlos
@@ -199,6 +303,7 @@ function updateLayerInfo(){
 function appendModalStyles(nameMap,layer){
         mapName= nameMap;
         globalLayer=layer;
+	var styleName="";
         var layerName= layer.name;
         var parser = new ol.format.WMSCapabilities();
         //llamada al GetCapabilities
@@ -216,13 +321,14 @@ function appendModalStyles(nameMap,layer){
                                         var pickLayer= capabilities.Layer.Layer[i];
                                 }
                         }
+			defaultStyle=pickLayer.Style[0].Name;
 			var srcStyle =pickLayer.Style[0].LegendURL[0].OnlineResource;
 			var valueOpacity=globalLayer.getOpacity();
                         var modalHTML="<label for=\"defaultStyle\">Estilo por defecto </label>"+
 					"<div><img id='legendStyle' src=\""+srcStyle+"\" /></div>"+
                                         "<input type=\"text\" readonly  class=\"form-control\" id=\"defaultStyle\" value=\""+pickLayer.Style[0].Name+"\">"+
 					"<label for=\"opacityBar\">Transparencia</label>"+
-					"<input class='opacity' id=\"opacityBar\" onchange='setOpacity()' value=\""+valueOpacity+"\" type='range' min='0' max='1' step='0.01'/>"+
+					"<input class='opacity' id=\"opacityBar\" value=\""+valueOpacity+"\" type='range' min='0' max='1' step='0.01'/>"+
                                         "<label for=\"styleList\">Estilos disponibles</label>"+
                                         "<select multiple class=\"form-control\" id=\"styleList\" tabindex=\"1\">"
                         for(var i=1; i<pickLayer.Style.length; i++){
@@ -236,25 +342,31 @@ function appendModalStyles(nameMap,layer){
 					"<div id=\"buttonStyles\"></div>"+
                                 "</div>"
 			$("#modalStyles .modal-body").html(modalHTML);
+
 			$('#inputSld').fileinput({
-				uploadUrl: apiPath+"styleUpload.php", 
-				uploadAsync: true,
-				allowedFileExtensions: ["sld"],
-				previewClass:"bg-warning",
-				dropZoneEnabled: false,	
+			    uploadUrl:apiPath+"apiGeoserver.php", 
+			    uploadAsync: true,
+			    uploadExtraData:{
+				    tag:"uploadNewStyle",
+				    mapName:mapName,
+				    layerName:layerName,
+			    },
+			    allowedFileExtensions: ["sld"],
+			    previewClass:"bg-warning",
+			    dropZoneEnabled: false, 
 			});
+
 			$("#inputSld").on('fileuploaded', function(event,data ) {
-        			//console.log(data);
-				var styleName= data.files[0].name.split(".");
-				//console.log(styleName[0]);
-				$("#modalStyles .modal-body").empty();
-				appendModalStyles(mapName,layer);
+			    styleName=data.files[0].name.split(".");
+			    $("#modalStyles .modal-body").empty();
+			    appendModalStyles(mapName,layer);
 			});
-                        $("#inputSld").on('fileuploaderror', function(event,data ) {
-                                //console.log(data);
-                                //console.log("error");
-                        });
-                        $("#modalStyles").modal("show");
+
+            $("#inputSld").on('fileuploaderror', function(event,data ) {
+                    console.log(data);
+                    console.log("error");
+            });
+            $("#modalStyles").modal("show");
 
 		},
 		error: function(error){
@@ -274,23 +386,138 @@ function selectStyle(){
 function setOpacity(){
 	var opacity=document.getElementById('opacityBar').value
 	globalLayer.setOpacity(opacity);
+	updateDatabaseMap();
 }
 
 function updateStyle(){
 	var newDefaultStyle=document.getElementById("defaultStyle").value;
-        $.ajax({
-                type: "POST",
-                data : {
-                        mapName: mapName,
-			layerName:globalLayer.name,
-			styleName:newDefaultStyle,
-                },
-                url:apiPath+'updateDefaultStyle.php',
-                success: function (response) {
-                        console.log(response);
-                },
-                error:function(error){
-                        console.log("error");
-                }
-        });
+	setOpacity();
+
+	if(defaultStyle!=newDefaultStyle){
+    	$.ajax({
+        	type: "POST",
+        	url:apiPath+'apiGeoserver.php',
+        	data : {
+				tag:"setDefaultStyle",
+                mapName: mapName,
+				layerName:globalLayer.name,
+				styleName:newDefaultStyle,
+            },
+        	success: function (response) {
+                console.log(response);
+        	},
+        	error:function(error){
+                console.log(error);
+        	}
+    	});
+	}
+}
+
+function saveAttributes(){
+	var att="";
+	//Crear lista con los atributos checked
+	$(".modal-body").children().each(function(){
+		if(($($(this)).children('input')).is(':checked'))
+			att=att+","+$($(this)).children('label').html().replace(/&nbsp;/g,"");
+	});
+	if(att=="")
+		console.log("Debe haber al menos un atributo.");
+	else{
+		var select_layer=att.substr(1);
+
+		$.ajax({
+	    	type: "POST",
+	    	url:apiPath+'apiDatabase.php',
+	    	data : {
+				tag:"editView",
+	            mapName: map.name,
+				layerName: globalLayer.name,
+				select_layer: select_layer
+	        },
+	    	success: function (response) {
+	            console.log(response);
+	    	},
+	    	error:function(error){
+	            console.log(error);
+	    	}
+		});
+	}
+}
+
+function editWmsList() {
+	var htmlModal = "<label for=\"wmsList\">Lista de Wms disponible</label>" +
+		"<select multiple class=\"form-control\" id=\"wmsList\" tabindex=\"1\">" +
+		"</select>" +
+		"<button onclick='delWmsUrl()' id=\"ButtonDelWms\" class=\"btn btn-info btn-block\" style=\"margin-top:5px;margin-bottom:5px\" >Eliminar Wms</button>" +
+		"<input type=\"text\"  id=\"newWmsUrl\" style=\"width:100%; border-radius: 7px; \"/>" +
+		"<button onclick='addWmsUrl()' id=\"ButtonAddWms\" class=\"btn btn-info btn-block\" style=\"margin-top:5px\" >Añadir Wms</button>";
+	$("#modalWmsList .modal-body").empty();
+	$("#modalWmsList .modal-body").append(htmlModal);
+	$("#modalWmsList").modal("show");
+	$.ajax({
+		type : "POST",
+		url : apiPath + "apiDatabase.php",
+		data : {
+			tag : "getWms"
+		},
+		success : function (response) {
+			console.log(response);
+			var wmsList = JSON.parse(response);
+			//$("#wmsList").empty();
+			for (var i = 0; i < wmsList.length; i++) {
+				$("#wmsList").append("<option value=\"" + wmsList[i] + "\">" + wmsList[i] + "</option>");
+			}
+			$('#wmsList').prop('selectedIndex', -1);
+		},
+		error : function (error) {
+			$("#selectWms").append("<option value='http://ogc.bgs.ac.uk/cgi-bin/BGS_Bedrock_and_Superficial_Geology/wms'>http://ogc.bgs.ac.uk/cgi-bin/BGS_Bedrock_and_Superficial_Geology/wms</option>");
+			console.log("Ocurrió un error. Compruebe su conexión al servidor.");
+			console.log("Error al mostrar la lista de wms: " + error);
+		}
+	});
+}
+
+function addWmsUrl() {
+	var newWmsUrl = $('#newWmsUrl').val();
+	var checkUrl = true;
+	newWmsUrl = newWmsUrl.trim();
+	if (newWmsUrl) {
+		$("#wmsList option").each(function () {
+			var listUrl = $(this).val();
+			if (listUrl == newWmsUrl)
+				checkUrl = false;
+		});
+		if (checkUrl) {
+			$("#wmsList").append("<option value=\"" + newWmsUrl + "\">" + newWmsUrl + "</option>");
+			$('#newWmsUrl').val("");
+		}
+	}
+}
+
+function delWmsUrl() {
+	$("#wmsList option:selected").remove();
+}
+
+function updateWmsList() {
+	var newWmsList = [];
+	$("#wmsList option").each(function () {
+		newWmsList.push($(this).val());
+	});
+	console.log(newWmsList);
+	$.ajax({
+		type : "POST",
+		url : apiPath + "apiDatabase.php",
+		data : {
+			tag : "updateWmsList",
+			wms : newWmsList
+		},
+		success : function (response) {
+			console.log(response);
+		},
+		error : function (response) {
+			console.log(response);
+		}
+	});
+	$('#selector').empty();
+	showListWms();
 }

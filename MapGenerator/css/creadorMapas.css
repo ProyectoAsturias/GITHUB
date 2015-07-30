@@ -40,6 +40,7 @@
 	width:95%;
 	margin-left:2.5%;
 	margin-right:2.5%;
+    min-height: 7ex;
 	background-color:#4E7AB1;
 	border-radius:7px;
 	overflow:hidden;
@@ -187,8 +188,8 @@ li{
 .layerName{
     float: left;
     white-space: nowrap;
-    max-width: 75%;
-    min-width: 75%;
+    max-width: 50%;
+    min-width: 35%;
     text-overflow: ellipsis;
     overflow-x: hidden;
     overflow-y: hidden;
@@ -198,4 +199,11 @@ li{
 .placeholder{
     height: 5px;
     background-color: palevioletred;
+}
+
+#buttonWmsList{
+    margin-top: 2ex;
+    height:7.5vh;
+    min-height: 7ex;
+    width: 13em;
 }

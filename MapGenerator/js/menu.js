@@ -50,15 +50,16 @@ function success(message){
 
 function showListWms() {
 	menuDatosWms();
-	$('#selector').html("<div id=\"inputWms\" class=\"col-md-6\">" +
-			"<select id=\"selectWms\" class=\"chosen-select\" tabindex=\"1\" ></select>"+
-			"<input type=\"text\"  id=\"wms\" placeholder=\"Introduzca un WMS\" style=\"width:100%; border-radius: 7px; \"/>" +
-			"<button onclick='importWms()' id=\"importWms\" class=\"btn btn-info btn-block\" style=\"padding:0;\" >Importar Wms</button>"+
-		"</div>");
+	 $('#selector').html("<div id=\"inputWms\" class=\"col-xs-6\">" +
+    "<select id=\"selectWms\" class=\"chosen-select\" tabindex=\"1\" ></select>"+
+    "<input type=\"text\"  id=\"wms\" placeholder=\"Introduzca un WMS\" style=\"width:100%; border-radius: 7px; \"/>" +
+    "<button onclick='selectWms()' id=\"importWms\" class=\"btn btn-info btn-block\" style=\"padding:0;\" >Importar Wms</button>"+
+    "</div><div id=\"buttonWmsList\" class=\"col-xs-2\">"+
+    "<button onclick='editWmsList()' id=\"editWmsList\" class=\"btn btn-info btn-block\" style=\"height:100%;\" >Editar Lista Wms</button></div>");
 		
 	$.ajax({
 		type : "POST",
-		url : apiPath+"apiLocalgis.php",
+		url : apiPath+"apiDatabase.php",
 		data : {
 			tag:"getWms"
 		},
@@ -66,6 +67,7 @@ function showListWms() {
 			//console.log(response)
 			var wmsList = JSON.parse(response);
 			$("#selectWms").empty();
+			//console.log(wmsList);
 			for(var i=0; i<wmsList.length; i++)
 				$("#selectWms").append("<option value=\""+wmsList[i]+"\">"+wmsList[i]+"</option>");
 			$('#selectWms').prop('selectedIndex', -1);
@@ -87,11 +89,25 @@ function showListWms() {
 }
 
 /**
+*  Selecciona la Url del Wms antes de importarlo
+**/
+function selectWms(){
+var wms;
+	if($('#wms').val()!="")
+		wms=$('#wms').val();
+	else if($("#selectWms").val()!=null)
+		wms=$("#selectWms").val();
+	else
+		return;
+	importWms(wms);
+}
+
+/**
 * Muestra el listado de mapas de localgis disponibles
 **/
 function showListMaps(){
 	menuDatosMapLocalgis();
-	$('#selector').html("<div id=\"inputMaps\" class=\"col-md-6\">" +
+	$('#selector').html("<div id=\"inputMaps\" class=\"col-xs-6\">" +
 			"<select id=\"selectMap\" class=\"chosen-select\" ></select>"+
 			"<button onclick='importMap()' id=\"importMap\" class=\"btn btn-info btn-block\" style=\"padding:0;\">Importar Mapa</button>"+
 		"</div>");
@@ -120,7 +136,7 @@ function showListMaps(){
 
 function showListFamilies(){
 	menuDatosLayersLocalgis();
-	$('#selector').html("<div id=\"inputFamilies\" class=\"col-md-6\">" +
+	$('#selector').html("<div id=\"inputFamilies\" class=\"col-xs-6\">"+
 			"<select id=\"selectFamily\" class=\"chosen-select\" onchange=\"showListLayers();\"></select>"+
 			"<button onclick='importFamily()' id=\"importFamilies\" class=\"btn btn-info btn-block\" style=\"padding:0; margin-bottom:10px;\">Importar Familia</button>"+
 			"<select id=\"selectLayer\" class=\"chosen-select\" ></select>"+
