@@ -1,4 +1,3 @@
-
 <?php
 	/**
 	 * Clase que representa un mapa de LocalGis.

@@ -36,7 +36,8 @@ function confirmSaveMap(){
 			success("Mapa guardado correctamente.");
 	});
 }
-function confirmCleanMap(){
+
+function confirmClearMap(){
 	bootbox.confirm("El contenido del mapa será eliminado", function(result) {
 		if (result)
 			success("El contenido del mapa ha sido eliminado.");
@@ -44,27 +45,29 @@ function confirmCleanMap(){
 }
 
 function success(message){
-	bootbox.alert(message, function() {});
+	bootbox.console.log(message, function() {});
 }
 
 function showListWms() {
 	menuDatosWms();
-	$('#selector').html("<div id=\"inputWms\" class=\"col-md-6\">" +
-			"<select id=\"selectWms\" class=\"chosen-select\" tabindex=\"1\" ></select>"+
-			"<input type=\"text\"  id=\"wms\" placeholder=\"Introduzca un WMS\" style=\"width:100%; border-radius: 7px; \"/>" +
-			"<button onclick='importWms()' id=\"importWms\" class=\"btn btn-info btn-block\" style=\"padding:0;\" >Importar Wms</button>"+
-		"</div>");
+	 $('#selector').html("<div id=\"inputWms\" class=\"col-xs-6\">" +
+    "<select id=\"selectWms\" class=\"chosen-select\" tabindex=\"1\" ></select>"+
+    "<input type=\"text\"  id=\"wms\" placeholder=\"Introduzca un WMS\" style=\"width:100%; border-radius: 7px; \"/>" +
+    "<button onclick='selectWms()' id=\"importWms\" class=\"btn btn-info btn-block\" style=\"padding:0;\" >Importar Wms</button>"+
+    "</div><div id=\"buttonWmsList\" class=\"col-xs-2\">"+
+    "<button onclick='editWmsList()' id=\"editWmsList\" class=\"btn btn-info btn-block\" style=\"height:100%;\" >Editar Lista Wms</button></div>");
 		
 	$.ajax({
 		type : "POST",
-		url : apiPath+"apiLocalgis.php",
+		url : apiPath+"apiDatabase.php",
 		data : {
 			tag:"getWms"
 		},
 		success:function (response) {
-			console.log(response)
+			//console.log(response)
 			var wmsList = JSON.parse(response);
 			$("#selectWms").empty();
+			//console.log(wmsList);
 			for(var i=0; i<wmsList.length; i++)
 				$("#selectWms").append("<option value=\""+wmsList[i]+"\">"+wmsList[i]+"</option>");
 			$('#selectWms').prop('selectedIndex', -1);
@@ -80,9 +83,23 @@ function showListWms() {
 				search_contains: true,
 			});
 			console.log("Ocurrió un error. Compruebe su conexión al servidor.");
-			alert("Error al mostrar la lista de wms: "+error);
+			console.log("Error al mostrar la lista de wms: "+error);
 		}
 	});
+}
+
+/**
+*  Selecciona la Url del Wms antes de importarlo
+**/
+function selectWms(){
+var wms;
+	if($('#wms').val()!="")
+		wms=$('#wms').val();
+	else if($("#selectWms").val()!=null)
+		wms=$("#selectWms").val();
+	else
+		return;
+	importWms(wms);
 }
 
 /**
@@ -90,14 +107,18 @@ function showListWms() {
 **/
 function showListMaps(){
 	menuDatosMapLocalgis();
-	$('#selector').html("<div id=\"inputMaps\" class=\"col-md-6\">" +
+	$('#selector').html("<div id=\"inputMaps\" class=\"col-xs-6\">" +
 			"<select id=\"selectMap\" class=\"chosen-select\" ></select>"+
 			"<button onclick='importMap()' id=\"importMap\" class=\"btn btn-info btn-block\" style=\"padding:0;\">Importar Mapa</button>"+
 		"</div>");
 	$.ajax({
 		type: "POST",
-		url: apiPath+"getMaps.php",
+		url : apiPath+"apiLocalgis.php",
+		data : {
+			tag:"getMaps"
+		},
 		success: function(response) {
+			//console.log(response);
 			var mapList=JSON.parse(response);
 			for(var i=0;i<mapList.length; i++){
 				var mapName= mapList[i].name;
@@ -108,14 +129,14 @@ function showListMaps(){
 			$('.chosen-select').chosen({width:"100%"});
 		},
 		error:function(error){
-			alert("Error al mostrar la lista de mapas: "+error);
+			console.log("Error al mostrar la lista de mapas: "+error);
 		}
 	});
 }
 
 function showListFamilies(){
 	menuDatosLayersLocalgis();
-	$('#selector').html("<div id=\"inputFamilies\" class=\"col-md-6\">" +
+	$('#selector').html("<div id=\"inputFamilies\" class=\"col-xs-6\">"+
 			"<select id=\"selectFamily\" class=\"chosen-select\" onchange=\"showListLayers();\"></select>"+
 			"<button onclick='importFamily()' id=\"importFamilies\" class=\"btn btn-info btn-block\" style=\"padding:0; margin-bottom:10px;\">Importar Familia</button>"+
 			"<select id=\"selectLayer\" class=\"chosen-select\" ></select>"+
@@ -123,7 +144,10 @@ function showListFamilies(){
 		"</div>");
 	$.ajax({
 		type : "POST",
-		url : apiPath+"getFamilies.php",
+		url : apiPath+"apiLocalgis.php",
+		data : {
+			tag:"getFamilies"
+		},
 		success : function (response) {
 			var familyList = JSON.parse(response);
 			$("#selectFamily").empty();
@@ -137,7 +161,7 @@ function showListFamilies(){
 			$('.chosen-select').chosen({width:"100%"});			
 		},
 		error:function(error){
-			alert("Error al mostrar la lista de familias: "+error);
+			console.log("Error al mostrar la lista de familias: "+error);
 		}
 	})
 }
@@ -147,14 +171,16 @@ function showListLayers(){
 	var idFamily=$("#selectFamily").val();
 	$.ajax({
 		type : "POST",
-		url : apiPath+"getLayers.php",
-		data :{
+		url : apiPath+"apiLocalgis.php",
+		data : {
+			tag:"getLayers",
 			idFamily: idFamily
 		},
 		success : function (response) {
+			//console.log(response);
 			var layerList = JSON.parse(response);
 			var layerId=0;
-			var layerName="sdhfggh";
+			var layerName="";
 			$("#selectLayer").empty();
 			for(var i=0; i<layerList.length; i++){
 				var layerId=layerList[i].id;
@@ -166,7 +192,7 @@ function showListLayers(){
 			//$('.chosen-select').chosen({width:"100%"});
 		},
 		error:function(error){
-			alert("Error al mostrar la lista de capas: "+error);
+			console.log("Error al mostrar la lista de capas: "+error);
 		}
 	})
 }

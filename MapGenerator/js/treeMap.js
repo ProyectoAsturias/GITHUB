@@ -8,6 +8,7 @@ function drawTree(){
     		source: new ol.source.OSM()
     	});
     	osmLayer.name = "OpenStreet Maps";
+    	osmLayer.base = true;
     	map.addLayer(osmLayer);
    	};
 	var wms=server+"geoserver/"+map.name+"/wms";
@@ -40,8 +41,8 @@ function loadWmsTree(wms) {
 						layers.push(layer);
 					}
 				}
-				updateTreeLayer();
 			}
+			updateTreeLayer();
 		},
 		error:function(error){
 			alert("Error: "+error);
@@ -71,6 +72,7 @@ function makeNodesSortable(){
 			$("body").removeClass(container.group.options.bodyClass);
 			var indexTo =  map.getLayers().getLength()-1-$item.index();
 			reorderOpenlayersMap(indexFrom, indexTo);
+			updateDatabaseMap();
 		},
 		onDragStart: function ($item, container, _super, event) {
 			var offset = $item.offset(),

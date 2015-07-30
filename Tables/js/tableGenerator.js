@@ -1,4 +1,5 @@
 $(document).ready(function(){
+    $("#userName").append(userName);
     createMapsTable($("#table"));
     linkToEditMaps();
     createVisorsTable($("#tableVisors"));
@@ -41,7 +42,7 @@ function retrieveUserMaps(callback){
     $.ajax({
         url: "../php/userContent.php",
         data: {
-            "tag": "userMaps"
+            tag: "userMaps"
         },
         method: "POST",
         success: function (response) {
@@ -54,7 +55,7 @@ function retrieveUserVisors(callback){
     $.ajax({
         url: "../php/userContent.php",
         data: {
-            "tag": "userVisors"
+            tag: "userVisors"
         },
         method: "POST",
         success: function (response) {
@@ -88,25 +89,19 @@ function downloadVisorLink(value, row, index){
 
 function linkToEditMaps(){
     $('#table').on("click-cell.bs.table", function(event,field,value,row){
-	if(field=="image"){
-		if(row.published=="t")
-        		window.location.href = mapPath+'php/mapGenerator.php?mapName='+row.name;
-		else{
-			var html="<button type=\"button\" onclick=\"activateWmsMap('"+row.name+"')\" class=\"btn btn-success\">Publicar y editar</button>"+
-				"<button type=\"button\" class=\"btn btn-default\" data-dismiss=\"modal\">Cerrar</button>";
-			$("#modalActivateWmsMaps .modal-footer").append(html);
-			$("#modalActivateWmsMaps").modal("show");
-		}
-	}
-	console.log(row);
+    	if(field=="image"){
+    		if(row.published=="t")
+            		window.location.href = mapPath+'php/mapGenerator.php?mapName='+row.name;
+    		else{
+    			var html="<button type=\"button\" onclick=\"activateWmsMap('"+row.name+"')\" class=\"btn btn-success\">Publicar y editar</button>"+
+    				"<button type=\"button\" class=\"btn btn-default\" data-dismiss=\"modal\">Cerrar</button>";
+                $("#modalActivateWmsMaps .modal-footer").empty();
+    			$("#modalActivateWmsMaps .modal-footer").append(html);
+    			$("#modalActivateWmsMaps").modal("show");
+    		}
+    	}
+    	//console.log(row);
     })
-}
-
-function appendImages(mapsData){
-    mapsData.forEach(function (map){
-        getImageMap(map.name);
-        
-    });
 }
 
 function linkToEditVisors(){
@@ -115,6 +110,14 @@ function linkToEditVisors(){
             window.location.href = viewPath + "php/generateVisor.php?visorName=" + row.name;
         }
     });
+}
+
+function appendImages(mapsData){
+    if(mapsData){
+        mapsData.forEach(function (map){
+            getImageMap(map.name);   
+        });
+    }
 }
 
 function getImageMap(mapName) {
@@ -126,7 +129,6 @@ function getImageMap(mapName) {
 		dataType : 'text',
 		url : urlWms+'?request=getCapabilities&service=wms',
 		crossDomain : true,
-		//async: false,
 		success:function (response) {
 			var service = parser.read(response);
 			if(service.Capability.Layer.Layer!=undefined){
