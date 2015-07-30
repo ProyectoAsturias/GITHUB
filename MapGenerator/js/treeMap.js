@@ -8,6 +8,7 @@ function drawTree(){
     		source: new ol.source.OSM()
     	});
     	osmLayer.name = "OpenStreet Maps";
+    	osmLayer.base = true;
     	map.addLayer(osmLayer);
    	};
 	var wms=server+"geoserver/"+map.name+"/wms";
@@ -24,32 +25,27 @@ function loadWmsTree(wms) {
 		url : wms+'?request=getCapabilities&service=wms',
 		crossDomain : true,
 		success:function (response) {
-			//console.log(response);
-			if(response.search("Service WMS is disabled")<0){
-				var service = parser.read(response);
-				var capabilities = service.Capability;
-				var title = service.Service.Title;
-				var layers = [];
-				//console.log(wms+"?request=getCapabilities&service=wms");
-				if(capabilities.Layer.Layer!=undefined){
-					for(var i=0; i<capabilities.Layer.Layer.length; i++){
-						if (!searchLayerByName(capabilities.Layer.Layer[i].Name)){
-							var layer = addLayer(capabilities.Layer.Layer[i].Name,wms);
-							if(capabilities.Layer.Layer[i].cascaded==1)
-								layer.wms=true;
-							else
-								layer.wms=false;
-							layers.push(layer);
-						}
+			var service = parser.read(response);
+			var capabilities = service.Capability;
+			var title = service.Service.Title;
+			var layers = [];
+			//console.log(wms+"?request=getCapabilities&service=wms");
+			if(capabilities.Layer.Layer!=undefined){
+				for(var i=0; i<capabilities.Layer.Layer.length; i++){
+					if (!searchLayerByName(capabilities.Layer.Layer[i].Name)){
+						var layer = addLayer(capabilities.Layer.Layer[i].Name,wms);
+						if(capabilities.Layer.Layer[i].cascaded==1)
+							layer.wms=true;
+						else
+							layer.wms=false;
+						layers.push(layer);
 					}
 				}
-				updateTreeLayer();
 			}
-			else
-				alert("Debe activar el servicio WMS para acceder al mapa.");
+			updateTreeLayer();
 		},
 		error:function(error){
-			alert("Error al cargar el arbol de capas: "+error);
+			alert("Error: "+error);
 		}
 	});
 }
@@ -60,6 +56,7 @@ function makeNodesSortable(){
 	$("#layersList ol").sortable({
 		group: 'simple_with_animation',
 		pullPlaceholder: false,
+		handle: '.layerName',
 		onDrop: function  ($item, container, _super) {
 			var $clonedItem = $('<li/>').css({height: 0});
 			$item.before($clonedItem);
@@ -69,6 +66,13 @@ function makeNodesSortable(){
 				$clonedItem.detach();
 				_super($item, container);
 			});
+		},
+		onDrop: function ($item, container, _super, event) {
+			$item.removeClass(container.group.options.draggedClass).removeAttr("style");
+			$("body").removeClass(container.group.options.bodyClass);
+			var indexTo =  map.getLayers().getLength()-1-$item.index();
+			reorderOpenlayersMap(indexFrom, indexTo);
+			updateDatabaseMap();
 		},
 		onDragStart: function ($item, container, _super, event) {
 			var offset = $item.offset(),
@@ -86,11 +90,8 @@ function makeNodesSortable(){
 				top: position.top - adjustment.top
 			});
 		},
-		onDrop: function ($item, container, _super, event) {
-			$item.removeClass(container.group.options.draggedClass).removeAttr("style");
-			$("body").removeClass(container.group.options.bodyClass);
-			var indexTo =  map.getLayers().getLength()-1-$item.index();
-			reorderOpenlayersMap(indexFrom, indexTo);
+		over: function (event, ui) {
+			$( this ).addClass( "ui-state-highlight" );
 		}
 	});
 }
@@ -111,7 +112,7 @@ function generateLayerListHTML(){
 }
 
 function generateNode(layer){
-	var node = $("<li>"+layer.name +
+	var node = $("<li><div class='layerName'>"+layer.name +"</div>" +
 	"<span class='glyphicon glyphicon-remove removeLayer'></span>" +
 	"<span class='glyphicon glyphicon-eye-open visibilityLayer' ></span>" +
 	"<span class='glyphicon glyphicon-cog attributesLayer'></span>" +
@@ -121,3 +122,4 @@ function generateNode(layer){
 		.data("layer", layer)
 		.appendTo($("#layersList ol"));
 }
+

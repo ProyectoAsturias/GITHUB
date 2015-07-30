@@ -37,11 +37,12 @@ function mapModalSaveButtonHandler(){
             },
             method: "POST",
             success: function(response){
+                console.log(response);
                 if (response == 1){
                     console.log("Ya existe un mapa con ese nombre");
                     return;
                 }
-                saveNewMap(mapName, "Descripción del mapa", username).then(function(result){
+                saveNewMap(mapName, "Descripción del mapa", userName).then(function(result){
                     if (result != ""){
                         //TODO: Mostrar mensaje de error
                         console.log(result);
@@ -72,6 +73,7 @@ function saveNewMap (mapName, mapDescription, mapOwner){
         },
         error: function (error){
             console.log("Error al guardar el mapa:"+error);
+
         }
     });
 }
@@ -142,13 +144,14 @@ function mapModalPublicateButtonHandler(){
         $("#table").bootstrapTable('getSelections').forEach(function (row){
             publicateMap(row).then(function(response){
                 $("#modalPublicateMaps").modal("hide");
-                $("#table").bootstrapTable('refresh');
+                if(response=="\n"){  
+                    row.published = "t";
+                    $("#table").bootstrapTable('updateRow', {index: getMapRowIndexById(row.id), row: row});
+                }
+                else
+                    alert("Error: No se pudo publicar el mapa");
             })
         })
-        /*$( document ).ajaxStop(function() {
-        	alert("HUE");
-  			$("#table").bootstrapTable('refresh');
-		});*/
     })
 }
 
@@ -161,7 +164,8 @@ function publicateMap(map){
         },
         method: "POST",
         success: function(response){
-            if(response==""){  
+            console.log(response);
+            if(response=="\n"){  
                 $.ajax({
                     url: "./userContent.php",
                     data: {
@@ -178,7 +182,7 @@ function publicateMap(map){
                 });
             }
             else
-                console.log("Error al publicar el mapa:"+response);
+                console.log("Error al publicar el mapa:"+response+".");
         },
         error: function (error){
             console.log("Error al publicar el mapa:"+error);
@@ -199,13 +203,14 @@ function mapModalUnpublicateButtonHandler(){
         $("#table").bootstrapTable('getSelections').forEach(function (row){
             unpublicateMap(row).then(function(response){
                 $("#modalUnpublicateMaps").modal("hide");
-                $("#table").bootstrapTable('refresh');
+                if(response="\n"){
+                    row.published = "f";
+                    $("#table").bootstrapTable('updateRow', {index: getMapRowIndexById(row.id), row: row});
+                }
+                else
+                    alert("Error: No se pudo despublicar el mapa");
             })
         })
-        /*$( document ).ajaxStop(function() {
-        	alert("HUE");
-  			$("#table").bootstrapTable('refresh');
-		});*/
     })
 }
 
@@ -218,7 +223,7 @@ function unpublicateMap(map){
         },
         method: "POST",
         success: function(response){
-            if(response==""){
+            if(response=="\n"){
                 $.ajax({
                     url: "./userContent.php",
                     data: {
@@ -235,10 +240,26 @@ function unpublicateMap(map){
                 });
             }
             else
-                console.log("Error al despublicar el mapa:"+response);
+                console.log("Error al despublicar el mapa:"+response+".");
         },
         error: function (error){
             console.log("Error al despublicar el mapa:"+error);
         }
     });
+}
+
+function activateWmsMap(mapName){
+	publicateMap(mapName);
+	$( document ).ajaxStop(function() {
+		console.log("se cambia");
+		window.location.href = mapPath+'php/mapGenerator.php?mapName='+mapName;
+	});
+}
+
+function getMapRowIndexById(mapId){
+    $("#table").find("tr").each(function (rowIndex, row){
+        if ($(row).find("td")[2] != undefined && $(row).find("td").eq(2).html() == mapId){
+            return ($(row).data("index"));
+        }
+    })
 }

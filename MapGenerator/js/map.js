@@ -1,15 +1,12 @@
 var map;
 
-$(document).ready(function(){
-	assignEventsHandlers();
-});
-
 /**
 * Inicialización de la variable map de openlayers 3
 **/
 function initMap() {
 	//console.log(mapName);
 	$("#editWmsButton").append("<h2>"+mapName+"</h2>");
+	//console.log(userName);
 	$("#userName").append(userName);
 	map = new ol.Map({
 		target : 'map',
@@ -110,95 +107,54 @@ function reorderOpenlayersMap(indexFrom, indexTo){
 	map.getLayers().insertAt(indexTo, movedLayer);
 }
 
-function assignEventsHandlers(){
-	eyeIconClickHandler();
-	deleteIconClickHandler();
-	attributesClickHandler();
-	layerInfoClickHandler();
-}
-
-function eyeIconClickHandler(){
-	$(".visibilityLayer").click(function(event){
-		if ($(this).parent().data().layer.getVisible()){
-			$(this).css("color", "lightgray");
-			$(this).parent().data().layer.setVisible(false);
-		}else{
-			$(this).css("color", "black");
-			$(this).parent().data().layer.setVisible(true);
-		}
-	});
-}
-
-function deleteIconClickHandler(){
-	$(".removeLayer").click(function(event){
-		var parent = $(this).parent();
-		bootbox.confirm("¿Realmente desea eliminar esta capa?", function(result) {
-			if (result){
-				removeLayer(parent.data("layer"),function(response){
-					parent.fadeOut("slow", function(){
-						$(this).remove();
-					});
-				});
-			}
-		});
-	});
-}
-
-function attributesClickHandler(){
-	$(".attributesLayer").click(function(event){
-		var parent = $(this).parent();
-		getJSONLayer(parent.data("layer"), function(attributes){
-			var modalHTML = "";
-			attributes.features.forEach(function (feature){
-				//console.log(feature);
-				modalHTML += "<div><input type='checkbox' style='vertical-align: middle'/><label>&nbsp;&nbsp;&nbsp;"+feature+"</label></div>"
-			})
-			$("#modalAttributes .modal-body").html(modalHTML);
-			$("#modalAttributes").modal("show");
-		})
-	});
-}
-
-function layerInfoClickHandler(){
-	$(".infoLayer").click(function(event){
-		var parent = $(this).parent();
-		appendModalLayer(map.name,parent.data("layer"));
-	});
-}
-
 function removeLayer(layer, callback) {
 	if(!layer.wms){
-		//console.log("Capa Normal");
+		console.log("Capa Normal");
 		$.ajax({
 			type: "POST",
-			url : apiPath+"delLayer.php",
-			data: {
+			url : apiPath+"apiGeoserver.php",
+			data : {
+				tag:"delLayer",
 				mapName: map.name,
 				layerName: layer.name
 			},
 			success: function (response) {
-				//console.log(response);
-				if(response==0)
+				console.log("##"+response+"##");
+				if(response=="\n0"){
+					//console.log(layer.name);
 					map.removeLayer(layer);
+					//console.log(map.getLayers().getArray().length);
+				}
+				updateDatabaseMap();
 				callback(response);
+			},
+			error:function(error){
+				alert("Error al eliminar una capa : "+error);
 			}
 		});
 	}
 	else{
-		//console.log("Capa WMS");
+		console.log("Capa WMS");
 		$.ajax({
 			type: "POST",
-			url : apiPath+"delWmsLayer.php",
-			data: {
+			url : apiPath+"apiGeoserver.php",
+			data : {
+				tag:"delWmsLayer",
 				mapName: map.name,
 				wmsName: layer.wms,
 				layerName: layer.name
 			},
 			success: function (response) {
-				//console.log(response);
-				if(response==0)
+				//console.log("##"+response+"##");
+				if(response=="\n0"){
+					//console.log(layer.name);
 					map.removeLayer(layer);
+					//console.log(map.getLayers().getArray().length);
+				}
 				callback(response);
+			},
+			error:function(error){
+				alert("Error al eliminar una capa wms: "+error);
 			}
 		});
 	}
@@ -207,14 +163,14 @@ function removeLayer(layer, callback) {
 /**
 * Carga un wms en Geoserver
 **/
-function importWms() {
-	var wms;
+function importWms(wms) {
+	/*var wms;
 	if($('#wms').val()!="")
 		wms=$('#wms').val();
 	else if($("#selectWms").val()!=null)
 		wms=$("#selectWms").val();
 	else
-		return;
+		return;*/
 	//Obtener title y lista de capas que forman el wms
 	$.ajax({
 		type : "GET",
@@ -223,19 +179,21 @@ function importWms() {
 		url : wms+'?request=getCapabilities&service=wms',
 		crossDomain : true,
 		success:function (response) {
+			//console.log(response)
 			var parser = new ol.format.WMSCapabilities();
 			var service = parser.read(response);
 			var capabilities = service.Capability;
 			var title = service.Service.Title;
 			title=title.replace(/ /gi,'_');
 			var listLayers = [];
-			console.log("Importando wms: #"+title);
+			
 			for(var i=0; i<capabilities.Layer.Layer.length; i++)
 				listLayers.push(capabilities.Layer.Layer[i].Name);
 			$.ajax({
 				type: "POST",
-				url: apiPath+"addWms.php",
+				url: apiPath+"apiGeoserver.php",
 				data:{
+					tag: 'addWms',
 					mapName: map.name,
 					wmsName: title,
 					wmsUrl: wms,
@@ -263,23 +221,46 @@ function importWms() {
 function importMap(){
 	if($("#selectMap").val()!=null){
 		var id=$("#selectMap").val();
+
 		console.log("Importando map: #"+id);
 		$.ajax({
 			type: "POST",
-			url: apiPath+"getMapLayers.php",
-			data:{
+			url : apiPath+"apiLocalgis.php",
+			data : {
+				tag:"getMapLayers",
 				idMap: id
 			},
 			success: function(response){
+				//console.log(response);
 				var layerList = JSON.parse(response);
 				for(var i=0; i<layerList.length; i++){
-					importFamily(layerList[i]);
+					importLayer(layerList[i]);
 				}
+				//Guardar campos en MAP
+				saveAttributes(id,layerList);
 				//Importar ortofoto
+				$.ajax({
+					type: "POST",
+					url : apiPath+"apiLocalgis.php",
+					data : {
+						tag:"getWmsLayers",
+						idMap: id,
+					},
+					success: function(response){
+						var ortoFotos=JSON.parse(response);
+						for(var i=0; i<ortoFotos.length; i++){
+							var wms=ortoFotos[i].id.split("?");
+							console.log(wms[0]);
+							importWms(wms[0]);
+						}
+					},
+					error: function(response){
+						console.log(response);
+					}
+				})
 			},
 			error: function(error) {
 				console.log("Error al cargar el mapa: ".error);				 
-			
 			}
 		});
 	}
@@ -294,14 +275,18 @@ function importMap(){
 function importFamily(familyId){	
 	if($("#selectFamily").val()!=null || familyId!=null){
 		var id=$("#selectFamily").val() || familyId;
+
 		console.log("Importando familia: #"+id);
+
 		$.ajax({
 			type: "POST",
-			url: apiPath+"getLayers.php",
-			data:{
+			url : apiPath+"apiLocalgis.php",
+			data : {
+				tag:"getLayers",
 				idFamily: id
 			},
 			success: function(response){
+				//console.log(response);
 				var layerList = JSON.parse(response);
 				for(var i=0; i<layerList.length; i++){
 					importLayer(layerList[i]);
@@ -314,6 +299,52 @@ function importFamily(familyId){
 	}
 	else{
 		console.log("Selector de familias vacío.");
+	}
+}
+
+/**
+* Actualiza el mapa de la base de datos propia, extrayendo los campos de cada capa
+**/
+function updateDatabaseMap(){
+	var layersInfo=[];
+	var reverseLayers = map.getLayers().getArray().slice(0).reverse();
+	var i=0;
+	reverseLayers.forEach(function (layer) {
+		if(layer.base!=true){
+			layersInfo.push(layer.name);
+		}
+	});
+	reverseLayers.forEach(function (layer) {
+		if(layer.base!=true){
+			getJSONLayer(layer, function(viewAttributes){
+				var index = layersInfo.indexOf(viewAttributes.id[0]);
+				layersInfo[index]=[viewAttributes,layer.getOpacity()];
+				updateDatabaseMapInfo(i++,layersInfo);
+			})
+		}
+	});
+}
+
+/**
+* Actualiza el mapa de la base de datos propia
+**/
+function updateDatabaseMapInfo(i,layersInfo){
+	if(i==map.getLayers().getArray().slice(0).reverse().length-2){
+		$.ajax({
+			type: "POST",
+			url : apiPath+"apiDatabase.php",
+			data : {
+				tag:"updateMapInfo",
+				mapName: map.name,
+				layersInfo: layersInfo
+			},
+			success: function(response){
+				console.log(response);
+			},
+			error: function(error) {
+				console.log("Error al guardar la información en MAPS: ".error);				 
+			}
+		});
 	}
 }
 
@@ -333,20 +364,23 @@ function importLayer(layer,mapId){
 		name=$("#selectLayer").find('option:selected').attr("name");
 	}
 	if(id!=null){
-		console.log("Importando capa: #"+name);
 		$.ajax({
 			type: "POST",
-			url: apiPath+"addLayer.php",
-			data:{
+			url : apiPath+"apiGeoserver.php",
+			data : {
+				tag:"addLayer",
 				layerId: id,
-				layerName: map.name+"_"+name,
+				layerName: name,
 				mapId: mapId,
 				mapName: map.name,
 				town: map.town,
 				projection: map.projection
 			},
 			success: function(response){
-				//console.log(response);
+				console.log("Importando capa: #"+name);
+				console.log(response);
+				//update MAP Table
+				updateDatabaseMap();
 				drawTree();
 			},
 			error: function(error) {
@@ -360,18 +394,12 @@ function importLayer(layer,mapId){
 }
 
 function clearMap(){
-	//var parent = //item lista $(this).parent();
+	console.log("ClearMap");
 	var listLayers=map.getLayers();
-	//console.log(parent);
 	listLayers.forEach(function(layer){
-		//console.log("Eliminando:"+layer.name);
 		if(layer.name!="OpenStreet Maps"){
 			removeLayer(layer,function(response){
-				/*parent.fadeOut("slow", function(){
-					$(this).remove();
-				});*/
-				console.log(map.getLayers().b.length);
-				if(map.getLayers().b.length==1){
+				if(map.getLayers().getArray().length==1){
 					success("El contenido del mapa ha sido eliminado.");
 					drawTree();
 				}

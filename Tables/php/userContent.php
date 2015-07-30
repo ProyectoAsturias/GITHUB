@@ -15,8 +15,14 @@
             case "saveMap":
                 echo json_encode(saveMap($_POST["mapName"],$_POST["mapDescription"],$_POST["mapOwner"]));
                 break;
+            case "saveVisor":
+                echo json_encode(saveVisor($_POST["visorName"],$_POST["visorDescription"],$_POST["visorOwner"]));
+                break;
             case "deleteMap":
                 echo json_encode(deleteMap($_POST["mapName"]));
+                break;
+            case "deleteVisor":
+                echo json_encode(deleteVisor($_POST["visorName"]));
                 break;
             case "cloneMap":
                 echo json_encode(cloneMap($_POST["mapName"]));
@@ -47,13 +53,25 @@
         $query = "INSERT INTO public.\"Maps\" (name, description, owner) VALUES ('".$mapName."','".$mapDescription."','".$username."');";
         $result = pg_query($query) or die('Error: '.pg_last_error());
         return $result;
-    }  
+    }
+
+    function saveVisor($visorName, $visorDescription, $username){
+        $query = "INSERT INTO public.\"Visors\" (name, description, owner) VALUES ('".$visorName."','".$visorDescription."','".$username."');";
+        $result = pg_query($query) or die('Error: '.pg_last_error());
+        return $result;
+    }
 
     function deleteMap($mapName){
         $query = "DELETE FROM public.\"Maps\" WHERE name='".$mapName."'";
         $result = pg_query($query) or die('Error: '.pg_last_error());
         return $result;
-    } 
+    }
+
+    function deleteVisor($visorName){
+        $query = "DELETE FROM public.\"Visors\" WHERE name='".$visorName."'";
+        $result = pg_query($query) or die('Error: '.pg_last_error());
+        return $result;
+    }
 
     function cloneMap($mapName){
         /*$query = "DELETE FROM public.\"Maps\" WHERE name='".$mapName."'";

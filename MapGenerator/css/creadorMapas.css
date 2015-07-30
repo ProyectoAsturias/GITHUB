@@ -40,6 +40,7 @@
 	width:95%;
 	margin-left:2.5%;
 	margin-right:2.5%;
+    min-height: 7ex;
 	background-color:#4E7AB1;
 	border-radius:7px;
 	overflow:hidden;
@@ -165,7 +166,7 @@ li.placeholder:before{
     top: -4px;
     border: 5px solid transparent;
     border-left-color: red;
-    border-right: none;
+    border-right-color: red;
 }
 
 li .glyphicon {
@@ -177,4 +178,32 @@ li .glyphicon {
 
 textarea {
 	resize: none;
+}
+
+li{
+    overflow-y: hidden;
+    overflow-x: hidden;
+}
+
+.layerName{
+    float: left;
+    white-space: nowrap;
+    max-width: 50%;
+    min-width: 35%;
+    text-overflow: ellipsis;
+    overflow-x: hidden;
+    overflow-y: hidden;
+    margin: 0 0 0 0;
+}
+
+.placeholder{
+    height: 5px;
+    background-color: palevioletred;
+}
+
+#buttonWmsList{
+    margin-top: 2ex;
+    height:7.5vh;
+    min-height: 7ex;
+    width: 13em;
 }

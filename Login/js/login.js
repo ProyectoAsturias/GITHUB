@@ -8,10 +8,6 @@ function loginEventHandler(){
             login($("#loginForm input[name='username']").val(), $("#loginForm input[name='password']").val());
         }
     });
-
-    $(".btnLogout").click(function(){
-       logout();
-    });
 }
 
 function validateLogin(){
@@ -50,21 +46,13 @@ function login(username, password){
         data: {method: "login", username: username, password: password}
     })
         .done(function(response){
+            console.log(response);
             if (!JSON.parse(response).logged){
                 showErrorMessage(JSON.parse(response).errorMessage);
                 return;
             }
-            window.location.replace(redirectUrl);
+            else{
+                window.location.replace(redirectUrl);
+            }
         })
-}
-
-function logout(){
-    $.ajax({
-       type: "POST",
-        url: "sessionController.php",
-        data: {method: "logout"}
-    })
-        .done(function(response){
-            location.reload();
-        });
 }
