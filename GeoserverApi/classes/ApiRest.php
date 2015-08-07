@@ -68,7 +68,7 @@ class ApiRest {
 	private function runApi($apiPath, $method = 'GET', $data = '', $contentType = 'text/xml') {
 		$ch = curl_init();
 		curl_setopt($ch, CURLOPT_URL, $this->serverUrl.'rest/'.$apiPath);
-		curl_setopt($ch, CURLOPT_USERPWD, $this->username.":".$this->password); 
+		curl_setopt($ch, CURLOPT_USERPWD, $this->username.":".$this->password);
 		if ($method == 'POST') {
 			curl_setopt($ch, CURLOPT_POST, true);
 			curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
@@ -77,10 +77,22 @@ class ApiRest {
 			curl_setopt($ch, CURLOPT_CUSTOMREQUEST, $method);
 		}
 		if ($data != '') {
-			curl_setopt($ch, CURLOPT_HTTPHEADER, 
-				array("Content-Type: $contentType",
-				'Content-Length: '.strlen($data))
-			);
+			$d=explode('@',$data);
+			if (sizeof($d)>1 && $d[0]==''){
+				/*$curl='curl -u admin:geoserver -XPUT -H "Content-type: application/vnd.ogc.sld +xml" -d @'
+				.$url_file.' http://localhost:8080/geoserver/rest/workspaces/'.$workspaceName.'/styles/'.$styleName;*/
+				//@styles/default:scb_alumbrado_privado_0.sld
+				curl_setopt($ch, CURLOPT_HTTPHEADER, array("Content-Type: $contentType"));
+				curl_setopt($ch, CURLOPT_POSTFIELDS, array('file'=>"$data"));
+				/*curl_setopt($ch, CURLOPT_HEADER, false);
+				curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+				$rslt = curl_exec($ch);
+				$info = curl_getinfo($ch);
+				return print($info['http_code']);*/
+			}
+			else{
+				curl_setopt($ch, CURLOPT_HTTPHEADER, array("Content-Type: $contentType",'Content-Length: '.strlen($data)));
+			}
 		}
 		curl_setopt($ch, CURLOPT_HEADER, false);
 		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
@@ -306,7 +318,7 @@ class ApiRest {
 	public function delWmsstore($workspaceName, $wmsstoreName) {
 		//Borrado de las capas asociadas
 		$layerList=$this->listWmsLayers($workspaceName, $wmsstoreName);
-		if($layerList->wmsLayers!=null){
+		if($layerList!=null && $layerList->wmsLayers!=null){
 			$layerList=$layerList->wmsLayers->wmsLayer;
 			foreach($layerList as $layer)
 				$this->delWmsLayer($workspaceName, $wmsstoreName, $layer->name);
@@ -363,24 +375,19 @@ class ApiRest {
 	 * @return mixed|string
      */
 	 public function addLayer($workspaceName, $datastoreName, $layerName, $description = '', $proj){
-		/*return 'workspaces/'.urlencode($workspaceName).'/datastores/'.urlencode($datastoreName).'/featuretypes.xml'.' # POST # <featureType>'.
-			'<name>'.$layerName.'</name>'.
-			'<nativeName>'.$layerName.'</nativeName>'.
-			'<description>'.htmlentities($description, ENT_COMPAT).'</description>'.
-			'<store class="dataStore"><name>'.htmlentities($datastoreName, ENT_COMPAT).'</name></store>'.
-			'</featureType>';*/
 		$srs="";
 		if($proj!=null)
 			$srs='<srs>EPSG:'.$proj.'</srs>';
-
 		//else
 			//$srs='<srs>EPSG:23030</srs>';
+		//name es el nombre de la capa para geoserver
+		//nativaName es el nombre de la tabla de la base de datos
 		$xml='<featureType>'.
-			'<name>'.$layerName.'</name>'.
-			'<nativeName>'.$layerName.'</nativeName>'.
-			$srs.
-			'<description>'.htmlentities($description, ENT_COMPAT).'</description>'.
-			'<store class="dataStore"><name>'.htmlentities($datastoreName, ENT_COMPAT).'</name></store>'.
+				'<name>'.$layerName.'</name>'.
+				'<nativeName>'.$workspaceName."_".$layerName.'</nativeName>'.
+				$srs.
+				'<description>'.htmlentities($description, ENT_COMPAT).'</description>'.
+				'<store class="dataStore"><name>'.htmlentities($datastoreName, ENT_COMPAT).'</name></store>'.
 			'</featureType>';
 
 		if($this->existsWorkspace($workspaceName) && $this->existsDatastore($workspaceName, $datastoreName))
@@ -396,18 +403,21 @@ class ApiRest {
 	 * @return mixed|string
      */
 	public function delLayer($workspaceName, $datastoreName, $layerName) {
-		
-		//Borrado de los estilos asociados
+		$result='';
+		//Lista de estilos
 		$styleList=$this->listStyles($workspaceName,$layerName);
-		//var_dump($styleList);
-		/*if($styleList->styles!=null){
+		//Borrado de la capa en Geoserver
+		$result=$this->runApi('layers/'.urlencode($layerName), 'DELETE');
+		$result=$result.$this->runApi('workspaces/'.urlencode($workspaceName).'/datastores/'.urlencode($datastoreName).'/featuretypes/'.urlencode($layerName), 'DELETE');
+
+		//Borrado de los estilos asociados
+		if($styleList->styles!=null){
 			$styleList=$styleList->styles->style;
 			foreach($styleList as $style)
-				$this->delStyle($style->name,$workspaceName);
-		}*/
-		//Borrado de la capa en geoserver
-		$this->runApi('layers/'.urlencode($layerName), 'DELETE');
-		return $this->runApi('workspaces/'.urlencode($workspaceName).'/datastores/'.urlencode($datastoreName).'/featuretypes/'.urlencode($layerName), 'DELETE');
+				$result=$result.$this->delStyle($style->name,$workspaceName);
+		}
+		
+		return $result;
 	}
 
 	/**
@@ -609,6 +619,36 @@ class ApiRest {
 		return json_decode($this->runApi('layers/'.urlencode($workspaceName).":".urlencode($layerName).'/styles.json'));
 	}
 
+
+	/**
+	 * Sube un fichero SLD para ser asignado a un estilo de un Workspace.
+	 * @param $url_file
+	 * @param $styleName
+	 * @param $workspaceName
+     */
+	public function uploadSldStyle($workspaceName, $url_file, $styleName) {
+		$curl='curl -u admin:geoserver -XPUT -H "Content-type: application/vnd.ogc.sld +xml" -d @'.$url_file.' http://localhost:8080/geoserver/rest/workspaces/'.$workspaceName.'/styles/'.$styleName;
+		$rslt = shell_exec($curl);
+		return $rslt;
+		//return $this->runApi('workspaces/'.urlencode($workspaceName).'/styles'.urlencode($styleName), 'PUT', htmlentities('@'.$url_file, ENT_COMPAT),"application/vnd.ogc.sld +xml");
+	}
+
+	/**
+	 * Crea un estilo a partir de un fichero.
+	 * @param $SLDFile
+	 * @param $styleName
+	 * @param $workspaceName
+	 * @return mixed|string
+     */
+	public function createStyleFromFile($workspaceName, $file_sld, $styleName) {
+		$style='<style><name>'.htmlentities($styleName, ENT_COMPAT).'</name><filename>'.htmlentities($file_sld, ENT_COMPAT).'</filename></style>';
+		$result=$this->runApi('workspaces/'.urlencode($workspaceName).'/styles', 'POST', $style);
+		if ($result!="")
+			return $result;
+		else
+			return $this->uploadSldStyle($workspaceName, $file_sld, $styleName);
+	}
+
 	/**
 	 * Crea un estilo que se almacena en un Workspace.
 	 * @param $SLD
@@ -627,24 +667,7 @@ class ApiRest {
 		fwrite($fp, $SLD);
 		fclose($fp);
 
-		$style='<style><name>'.htmlentities($styleName, ENT_COMPAT).'</name><filename>'.htmlentities($dir.$file_sld, ENT_COMPAT).'</filename></style>';
-		$result=$this->runApi('workspaces/'.urlencode($workspaceName).'/styles', 'POST', $style);
-		if ($result!="")
-			return $result;
-		else
-			$this->uploadSldStyle($workspaceName, $dir.$file_sld, $styleName);
-	}
-
-	/**
-	 * Sube un fichero SLD para ser asignado a un estilo de un Workspace.
-	 * @param $url_file
-	 * @param $styleName
-	 * @param $workspaceName
-     */
-	public function uploadSldStyle($workspaceName, $url_file, $styleName) {
-		$curl='curl -u admin:geoserver -XPUT -H "Content-type: application/vnd.ogc.sld +xml" -d @'.$url_file.' http://localhost:8080/geoserver/rest/workspaces/'.$workspaceName.'/styles/'.$styleName;
-		shell_exec($curl);
-		//return $this->runApi('workspaces/'.htmlentities($workspaceName, ENT_COMPAT).'/styles/'.htmlentities($styleName, ENT_COMPAT), 'PUT', '@'.htmlentities($url_file, ENT_COMPAT));
+		return $this->createStyleFromFile($workspaceName, $dir.$file_sld, $styleName);
 	}
 
 	/**
@@ -655,7 +678,12 @@ class ApiRest {
 	 * @return mixed|string
      */
 	public function addStyleToLayer($layerName, $styleName, $workspaceName) {
-		return $this->runApi('layers/'.htmlentities($workspaceName, ENT_COMPAT).':'.htmlentities($layerName, ENT_COMPAT).'/styles', 'POST', '<style><name>'.htmlentities($workspaceName, ENT_COMPAT).':'.htmlentities($styleName, ENT_COMPAT).'</name></style>');
+		$xml="";
+		if($styleName=="point"||$styleName=="line"||$styleName=="polygon")
+			$xml='<style><name>'.htmlentities($styleName, ENT_COMPAT).'</name></style>';
+		else
+			$xml='<style><name>'.htmlentities($workspaceName, ENT_COMPAT).':'.htmlentities($styleName, ENT_COMPAT).'</name></style>';
+		return $this->runApi('layers/'.urlencode($workspaceName).':'.urlencode($layerName).'/styles', 'POST', $xml);
 	}
 
 	/**
@@ -666,7 +694,12 @@ class ApiRest {
 	 * @return mixed|string
      */
 	public function defaultStyleToLayer($layerName, $styleName, $workspaceName) {
-		return $this->runApi('layers/'.htmlentities($workspaceName, ENT_COMPAT).':'.htmlentities($layerName, ENT_COMPAT), 'PUT', '<layer><defaultStyle><name>'.htmlentities($workspaceName, ENT_COMPAT).':'.htmlentities($styleName, ENT_COMPAT).'</name></defaultStyle></layer>');
+		$xml="";
+		if($styleName=="point"||$styleName=="line"||$styleName=="polygon")
+			$xml='<layer><defaultStyle><name>'.htmlentities($styleName, ENT_COMPAT).'</name></defaultStyle></layer>';
+		else
+			$xml='<layer><defaultStyle><name>'.htmlentities($workspaceName, ENT_COMPAT).':'.htmlentities($styleName, ENT_COMPAT).'</name></defaultStyle></layer>';
+		return $this->runApi('layers/'.urlencode($workspaceName).':'.urlencode($layerName), 'PUT', $xml);
 	}
 
 	/**
@@ -676,7 +709,7 @@ class ApiRest {
 	 * @return mixed|string
      */
 	public function delStyle($styleName,$workspaceName) {
-		return $this->runApi('styles/'.htmlentities($workspaceName, ENT_COMPAT).':'.htmlentities($styleName, ENT_COMPAT).'/styles', 'DELETE');
+		return $this->runApi('styles/'.urlencode($workspaceName).':'.htmlentities($styleName, ENT_COMPAT).'/styles', 'DELETE');
 	}
 
 //wms
@@ -734,7 +767,7 @@ class ApiRest {
      */
 	public function countWmsLayers($workspaceName, $wmsstoreName) {
 		$listWmsLayers=$this->listWmsLayers($workspaceName, $wmsstoreName);
-		if($listWmsLayers!=null){
+		if($listWmsLayers!=null && $listWmsLayers->wmsLayers!=null){
 			$listWmsLayers=$listWmsLayers->wmsLayers->wmsLayer;
 			return sizeof($listWmsLayers);
 		}
@@ -761,6 +794,52 @@ class ApiRest {
 	}
 
 //GetCapabilitiesInfo
+
+	/**
+	 * Inicializa la información del WorkSpace (Apartado WMS).
+	 * @param $workspaceName
+	 * @return mixed|string
+     */
+	public function initWmsInfo($workspaceName){
+	    $xml='<wms>'.
+	            '<workspace><name>'.$workspaceName.'</name></workspace>'.
+	            '<enabled>true</enabled>'.
+	            '<name>WMS</name>'.
+	            '<title></title>'.
+	            '<abstrct></abstrct>'.
+	            '</wms>';
+	    return $this->runApi('services/wms/workspaces/'.urlencode($workspaceName).'/settings.xml', 'PUT', $xml);
+    }
+
+	/**
+	 * Inicializa la información del WorkSpace (Apartado WS).
+	 * @param $workspaceName
+	 * @return mixed|string
+     */
+    public function initWsInfo($workspaceName){
+        $xml= '<settings>'.
+                '<workspace>'.
+                        '<name>'.$workspaceName.'</name>'.
+                '</workspace>'.
+                '<contact>'.
+                            '<address></address>'.
+                            '<addressCity></addressCity>'.
+                            '<addressCountry></addressCountry>'.
+                            '<addressPostalCode></addressPostalCode>'.
+                            '<addressState></addressState>'.
+                            '<addressType></addressType>'.
+                            '<contactEmail></contactEmail>'.
+                            '<contactFacsimile></contactFacsimile>'.
+                            '<contactOrganization></contactOrganization>'.
+                            '<contactPerson></contactPerson>'.
+                            '<contactPosition></contactPosition>'.
+                            '<contactVoice></contactVoice>'.
+                '</contact>'.
+                '<charset>UTF-8</charset>'.
+                '</settings>';
+        return $this->runApi('workspaces/'.urlencode($workspaceName).'/settings.xml', 'PUT', $xml);
+	}
+
 	/**
 	 * Actualiza la información del WorkSpace (Apartado WMS).
 	 * @param $workspaceName
@@ -863,5 +942,15 @@ class ApiRest {
 			$wmsStore=$this->getWmsstoreName($workspaceName,$layerName);
 			return $this->runApi('workspaces/'.urlencode($workspaceName).'/wmsstores/'.urlencode($wmsStore).'/wmslayers/'.urlencode($layerName).'.xml', 'PUT', $xml);
 		}
+	}
+
+	/**
+	 * Limpia la cache de geoserver y restaura los links a los datasource.
+	 *
+	 * @return mixed|string
+     */
+	public function reload(){
+		//curl -u admin:password -v -XPOST http://localhost:8080/geoserver/rest/reload
+		return $this->runApi('reload', 'POST');
 	}
 }

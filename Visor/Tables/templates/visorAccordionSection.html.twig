@@ -1,0 +1,15 @@
+<div class="panel panel-default">
+    <div class="panel-heading" role="tab" id="headingTwo">
+        <a id="listVisorsCollapse" class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
+            <h4 class="panel-title">
+                <i id="listVisorsCollapseIcon" class="glyphicon glyphicon-collapse-down"></i>
+                Listado de visores.
+            </h4>
+        </a>
+    </div>
+    <div id="collapseTwo" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingTwo">
+        <div class="panel-body">
+            {% include "visorTable.html.twig" %}
+        </div>
+    </div>
+</div>

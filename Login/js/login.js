@@ -5,12 +5,8 @@ $(document).ready(function(){
 function loginEventHandler(){
     $(".btnLogin").click(function(){
         if (validateLogin()){
-            login($("#loginForm input[name='username']").val(), $("#loginForm input[name='password']").val());
+            login($("#loginForm input[name='userName']").val(), $("#loginForm input[name='password']").val());
         }
-    });
-
-    $(".btnLogout").click(function(){
-       logout();
     });
 }
 
@@ -20,7 +16,7 @@ function validateLogin(){
 }
 
 function validateUsername(){
-    if(!$("#loginForm input[name='username']").val()){
+    if(!$("#loginForm input[name='userName']").val()){
         showErrorMessage("Debe introducir un nombre de usuario.");
         return false;
     }
@@ -43,28 +39,20 @@ function showErrorMessage(errorMessage){
     }, 3000);
 }
 
-function login(username, password){
+function login(userName, password){
     $.ajax({
         type: "POST",
         url: "sessionController.php",
-        data: {method: "login", username: username, password: password}
+        data: {method: "login", userName: userName, password: password}
     })
         .done(function(response){
+            console.log(response);
             if (!JSON.parse(response).logged){
                 showErrorMessage(JSON.parse(response).errorMessage);
                 return;
             }
-            window.location.replace(redirectUrl);
+            else{
+                window.location.replace(redirectUrl);
+            }
         })
-}
-
-function logout(){
-    $.ajax({
-       type: "POST",
-        url: "sessionController.php",
-        data: {method: "logout"}
-    })
-        .done(function(response){
-            location.reload();
-        });
 }

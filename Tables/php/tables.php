@@ -8,9 +8,11 @@
 	$twig->addExtension(new Twig_Extension_Debug());
 
 	session_start();
-	if(isset($_SESSION['username'])){
+
+	if(isset($_SESSION['userName']) and isset($_SESSION["entityId"])){
 	    echo $twig->render("tableIndex.html.twig", array(
-	        "username" => $_SESSION["username"],
+	        "userName" => $_SESSION["userName"],
+	        "entityId" => $_SESSION["entityId"]
 	    ));
 	}
 	else{

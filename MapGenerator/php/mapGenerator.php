@@ -10,15 +10,13 @@ $twig = new Twig_Environment($loader, array(
 $twig->addExtension(new Twig_Extension_Debug());
 
 session_start();
-if (!isset($_SESSION['username'])) header("Location: ../../Login/php/loginView.php?errorMessage=".urlencode("Debe iniciar sesión para ver este contenido")."&requestURL=".urlencode("http://$_SERVER[HTTP_HOST]$_SERVER[REQUEST_URI]"));
+if (!isset($_SESSION['userName'])) header("Location: ../../Login/php/loginView.php?errorMessage=".urlencode("Debe iniciar sesión para ver este contenido")."&requestURL=".urlencode("http://$_SERVER[HTTP_HOST]$_SERVER[REQUEST_URI]"));
 
 if(isset($_GET["mapName"]) && ($_GET["mapName"]!= "")){
     echo $twig->render('index.html.twig', array(
-        "username" => $_SESSION["username"],
+        "userName" => $_SESSION["userName"],
         "mapName" => $_GET["mapName"]
     ));
 }else{
     header("Location: ../../Tables/php/tables.php?errorMessage=".urlencode("El nombre del mapa no puede ser vacío"));
 }
-
-
