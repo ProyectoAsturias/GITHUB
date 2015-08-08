@@ -1,5 +1,5 @@
 $(document).ready(function(){
-    if (visorData != ""){
+    if (visorData != undefined){
         setMapDetails(visorData.mapDetails);
     }
     createMap();

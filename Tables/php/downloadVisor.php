@@ -19,6 +19,7 @@ function generateZipVisor(){
 
     $zip->add(saveHtmlFile(), PCLZIP_OPT_REMOVE_ALL_PATH, PCLZIP_OPT_ADD_PATH, "Visor/html");
     $zip->add("../../ViewGenerator/js/Map Functions",PCLZIP_OPT_REMOVE_PATH, "../../");
+    $zip->add("../../ViewGenerator/js/Visor Generator/legend.js",PCLZIP_OPT_REMOVE_PATH, "../../");
     $zip->add("../../ViewGenerator/css/",PCLZIP_OPT_REMOVE_PATH, "../../");
     $zip->add("../../ViewGenerator/templates/images/",PCLZIP_OPT_REMOVE_PATH, "../../");
     $zip->add("../../Visor/css/visorStyle.css",PCLZIP_OPT_REMOVE_PATH, "../../");
@@ -27,6 +28,10 @@ function generateZipVisor(){
     $zip->add("../../Common/css/",PCLZIP_OPT_REMOVE_PATH, "../../");
     $zip->add("../../Common/bootstrap-3.3.4",PCLZIP_OPT_REMOVE_PATH, "../../");
     $zip->add("../../Common/js/",PCLZIP_OPT_REMOVE_PATH, "../../");
+    $zip->add("../../Common/jsPDF/jsPDF.js",PCLZIP_OPT_REMOVE_PATH, "../../");
+    $zip->add("../../Common/html2canvas/html2canvas.js",PCLZIP_OPT_REMOVE_PATH, "../../");
+    $zip->add("../../Common/canvas2image/canvas2image.js",PCLZIP_OPT_REMOVE_PATH, "../../");
+
 
     if(file_exists($zipname)) {
         header('Content-Type: application/zip');

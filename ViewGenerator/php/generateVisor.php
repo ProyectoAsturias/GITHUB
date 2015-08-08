@@ -18,7 +18,7 @@ if(isset($_GET["visorName"]) && ($_GET["visorName"]!= "")){
     $visorData = loadVisorContent($_GET["visorName"]);
 
     echo $twig->render('Visor Generator/visorgenerator.html.twig', array(
-        "functions" => ["areazoom", "clickcoordinates", "dataretrieve", "draw", "fullscreen", "panto", "printmap", "zoomin", "zoomout", "empty"],
+        "functions" => ["areazoom", "clickcoordinates", "dataretrieve", "draw", "fullscreen", "panto", "printmap", "zoomin", "zoomout", "export", "empty"],
         "username" => $_SESSION["username"],
         "visorName" => $_GET["visorName"],
         "visorData" => json_decode($visorData[0]['content'])

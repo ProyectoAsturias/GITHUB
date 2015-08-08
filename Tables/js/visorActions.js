@@ -25,7 +25,7 @@ function createNewVisorEventsHandler(){
 function visorModalSaveButtonHandler() {
     $("#createVisorModal").click(function () {
         var visorName = $("#modalNewVisor .modal-body input").val();
-        saveNewVisor(visorName, "Descripción del visor", username).then(function (result) {
+        saveNewVisor(visorName, "Descripción del visor", userName).then(function (result) {
             if (result != "") {
                 console.log("Ha ocurrido un error en la Base de Datos.");
                 return;
