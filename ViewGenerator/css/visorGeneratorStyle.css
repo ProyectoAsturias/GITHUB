@@ -1,8 +1,14 @@
 #logo{
-    margin-bottom: 7px;
+    margin-top: 0.5vh;
+    margin-bottom: 1vh;
 }
 
 #map{
+    height: 100%;
+}
+
+#mapContainer{
+    min-height: 740px;
     height: 85vh;
 }
 
@@ -13,22 +19,34 @@
 
 #logo img{
     height: 12vh;
+    min-height: 14ex;
     width: 100%;
 }
 
 #leftBar{
     height: 85vh;
-    background-color: lightgray
+    background-color: lightgray;
+    min-height:740px ;
 }
 
 #attachMap{
-    height: 20vh;
-    padding-top: 15%;
-    text-align: center
+    height: 17vh;
+    padding-top: 15px;
+    text-align: center;
+    min-height: 18ex;
 }
 
-#mapAttachText{
-    margin-bottom: 10%
+#attachMapText{
+    margin-bottom: 10px;
+    width:80%;
+}
+#attachMapButton{
+    width:80%;
+    margin-bottom: 10px;
+}
+#openModalVisor{
+    width:80%;
+    overflow:hidden;
 }
 
 .separator{
@@ -52,18 +70,25 @@
 }
 
 #layersTree{
-    height: 47vh;
+    height: 45vh;
+    min-height: 53ex;
 }
 
-#mapContainer{
-    padding-top: 2vh;
+#baseLayerButton{
+    height:4vh;
+    min-height: 5ex;
+}
+
+#baseButton {
+    overflow: hidden;
 }
 
 #allTools{
-    height: 11.5vh;
-    margin-top: 5px;
-    margin-bottom: 5px;
-    background-color: #eee
+    height: 12vh;
+    margin-top: 0.5vh;
+    margin-bottom: 1vh;
+    background-color: #eee;
+    min-height: 14ex;
 }
 
 .functionsBar{
@@ -82,110 +107,185 @@
     -moz-border-radius: 15px;
     border-radius: 15px;
     height: 50px;
+    width:60vw;
     background-color:beige;
     position: absolute;
     top: 250px;
     left: 250px;
-    z-index: 1
+    z-index: 1;
 }
 
-.functionsBar .functionContainer{
-    top: -20% !important;
-}
+/*.functionsBar .functionContainer{
+    top: -5px !important;
+}*/
 
 .functionsBar .functionContainer:hover{
-    top: -40% !important;
+    top: -5px !important;
 }
 
 .areaZoom{
     cursor: pointer;
-    height: 48px;
-    width: 48px;
+    height: 38px;
+    width: 38px;
     background-image:url("../templates/images/areazoom.png");
     background-repeat:no-repeat;
+    background-size: contain;
 }
 
 .clickCoordinatesButton{
     cursor: pointer;
-    height: 48px;
-    width: 48px;
+    height: 38px;
+    width: 38px;
     background-image:url("../templates/images/coordinates.png");
     background-repeat:no-repeat;
+    background-size: contain;
 }
 
 .dataRetrieving{
     cursor: pointer;
-    height: 48px;
-    width: 48px;
+    height: 38px;
+    width: 38px;
     background-image:url("../templates/images/retrieveData.png");
     background-repeat:no-repeat;
+    background-size: contain;
 }
 
 .drawType{
     cursor: pointer;
-    height: 48px;
-    width: 48px;
+    height: 38px;
+    width: 38px;
     background-image:url("../templates/images/draw.png");
     background-repeat:no-repeat;
+    background-size: contain;
 }
 
 .fullScreen{
     cursor: pointer;
-    height: 48px;
-    width: 48px;
+    height: 38px;
+    width: 38px;
     background-image:url("../templates/images/fullScreen.png");
     background-repeat:no-repeat;
+    background-size: contain;
 }
 
 .panTo{
     cursor: pointer;
-    height: 48px;
-    width: 48px;
+    height: 38px;
+    width: 38px;
     background-image:url("../templates/images/panTo.png");
     background-repeat:no-repeat;
+    background-size: contain;
 }
 
 
 .printMap{
     cursor: pointer;
-    height: 48px;
-    width: 48px;
+    height: 38px;
+    width: 38px;
     background-image:url("../templates/images/printMap.png");
     background-repeat:no-repeat;
+    background-size: contain;
 }
 
 .export{
     cursor: pointer;
-    height: 48px;
-    width: 48px;
+    height: 38px;
+    width: 38px;
     background-image:url("../templates/images/export.png");
     background-repeat:no-repeat;
+    background-size: contain;
 }
 
 .zoomInButton{
     cursor: pointer;
-    height: 48px;
-    width: 48px;
+    height: 38px;
+    width: 38px;
     background-image:url("../templates/images/zoomIn.png");
     background-repeat:no-repeat;
+    background-size: contain;
 }
 
 .zoomOutButton{
-     cursor: pointer;
-     height: 48px;
-     width: 48px;
-     background-image:url("../templates/images/zoomOut.png");
-     background-repeat:no-repeat;
- }
+    cursor: pointer;
+    height: 38px;
+    width: 38px;
+    background-image:url("../templates/images/zoomOut.png");
+    background-repeat:no-repeat;
+    background-size: contain;
+}
 
 .empty{
     cursor: pointer;
-    height: 48px;
-    width: 48px;
+    height: 38px;
+    width: 38px;
     background-image:url("../templates/images/empty.png");
     background-repeat:no-repeat;
+    background-size: contain;
 }
-
+.export{
+    cursor: pointer;
+    height: 38px;
+    width: 38px;
+    background-image:url("../templates/images/export.png");
+    background-repeat:no-repeat;
+    background-size: contain;
+}
+.configuration{
+    cursor: pointer;
+    height: 38px;
+    width: 38px;
+    background-image:url("../templates/images/configuration.png");
+    background-repeat:no-repeat;
+    background-size: contain;
+}
+.help{
+    cursor: pointer;
+    height: 38px;
+    width: 38px;
+    background-image:url("../templates/images/help.png");
+    background-repeat:no-repeat;
+    background-size: contain;
+}
+.homeInfo{
+    cursor: pointer;
+    height: 38px;
+    width: 38px;
+    background-image:url("../templates/images/homeinfo.png");
+    background-repeat:no-repeat;
+    background-size: contain;
+}
+.lastView{
+    cursor: pointer;
+    height: 38px;
+    width: 38px;
+    background-image:url("../templates/images/lastview.png");
+    background-repeat:no-repeat;
+    background-size: contain;
+}
+.mail{
+    cursor: pointer;
+    height: 38px;
+    width: 38px;
+    background-image:url("../templates/images/mail.png");
+    background-repeat:no-repeat;
+    background-size: contain;
+}
+.selection{
+    cursor: pointer;
+    height: 38px;
+    width: 38px;
+    background-image:url("../templates/images/selection.png");
+    background-repeat:no-repeat;
+    background-size: contain;
+}
+.update{
+    cursor: pointer;
+    height: 38px;
+    width: 38px;
+    background-image:url("../templates/images/update.png");
+    background-repeat:no-repeat;
+    background-size: contain;
+}
 
 .legendBar{
     position: absolute;
@@ -221,9 +321,55 @@
     overflow:hidden;
     border-radius:4px;
 }
-span{
+.icons{
     position:relative;
     float:right;
     margin:2px;
 }
+li{
+    display: block;
+    padding: 5px;
+    border: 1px solid #CCC;
+    color: orange;
+    background: #f5f5f5;
+}
+.iconFunctionBar{
+    position:absolute;
+    left:0.5vw;
+}
+.fixedIcon{
+    position:fixed;
+}
 
+.iconVerticalFunctionBar{
+    position:absolute;
+    left:0.5vw;
+}
+.fixedVerticalIcon{
+    position:fixed;
+}
+
+
+.vertical{
+    /* Permalink - use to edit and share this gradient: http://colorzilla.com/gradient-editor/#bdf3fd+0,a2daf5+45,a2daf5+68,90bcea+76,90bae4+100,a9d2f3+100,b8e1fc+100 */
+    background: #bdf3fd; /* Old browsers */
+    background: -moz-linear-gradient(top,  #bdf3fd 0%, #a2daf5 45%, #a2daf5 68%, #90bcea 76%, #90bae4 100%, #a9d2f3 100%, #b8e1fc 100%); /* FF3.6+ */
+    background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#bdf3fd), color-stop(45%,#a2daf5), color-stop(68%,#a2daf5), color-stop(76%,#90bcea), color-stop(100%,#90bae4), color-stop(100%,#a9d2f3), color-stop(100%,#b8e1fc)); /* Chrome,Safari4+ */
+    background: -webkit-linear-gradient(top,  #bdf3fd 0%,#a2daf5 45%,#a2daf5 68%,#90bcea 76%,#90bae4 100%,#a9d2f3 100%,#b8e1fc 100%); /* Chrome10+,Safari5.1+ */
+    background: -o-linear-gradient(top,  #bdf3fd 0%,#a2daf5 45%,#a2daf5 68%,#90bcea 76%,#90bae4 100%,#a9d2f3 100%,#b8e1fc 100%); /* Opera 11.10+ */
+    background: -ms-linear-gradient(top,  #bdf3fd 0%,#a2daf5 45%,#a2daf5 68%,#90bcea 76%,#90bae4 100%,#a9d2f3 100%,#b8e1fc 100%); /* IE10+ */
+    background: linear-gradient(to bottom,  #bdf3fd 0%,#a2daf5 45%,#a2daf5 68%,#90bcea 76%,#90bae4 100%,#a9d2f3 100%,#b8e1fc 100%); /* W3C */
+    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#bdf3fd', endColorstr='#b8e1fc',GradientType=0 ); /* IE6-9 */
+
+
+    -webkit-border-radius: 15px;
+    -moz-border-radius: 15px;
+    border-radius: 15px;
+    width:5vw;
+    height:45vh;
+    background-color:beige;
+    position: absolute;
+    top: 250px;
+    left: 250px;
+    z-index: 1
+}

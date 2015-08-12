@@ -1,9 +1,6 @@
 var showLegend;
 
 function createLegendMap(){
-	
-	//var urlWms= server+"geoserver/"+map.name+"/wms";
-	//var legendImg ="<img class=\"legendIcon\" src='"+urlWms+"?REQUEST=GetLegendGraphic&VERSION=1.0.0&FORMAT=image/png&WIDTH=20&HEIGHT=20&LAYER="+layerName+"' />";
 	var urlWms = map.mapURL;
 	if (urlWms == undefined){
 		createEmptyLegend();
@@ -25,8 +22,8 @@ function createLegendMap(){
 								"<div class=\"imgLayer\" id=\""+capabilities.Layer.Layer[i].Name+"\"><img src='"+urlWms+"?REQUEST=GetLegendGraphic&VERSION=1.0.0&FORMAT=image/png&WIDTH=20&HEIGHT=20&LAYER="+capabilities.Layer.Layer[i].Name+"&LEGEND_OPTIONS=forceLabels:on' /></div>"
 			}
 			var legendHtml="<div id=\"titleMap\"><label for=\"legendContent\">LEYENDA</label>"+
-								"<span class='glyphicon glyphicon-remove removeLegend'></span>"+
-								"<span class='glyphicon glyphicon-minus hideLegend'></span></div>"+
+								"<span class='glyphicon glyphicon-remove removeLegend icons'></span>"+
+								"<span class='glyphicon glyphicon-minus hideLegend icons'></span></div>"+
 							"<div id=\"legendContent\"></div>";
 			$('.legendBar').empty();				
 			$('.legendBar').append(legendHtml);
@@ -61,14 +58,15 @@ function hideLegend(){
 function closeLegend(){
 	$(".removeLegend").click(function(event){
 		$(".legendBar").hide();
-	});	
+	});
 }
 
 function createEmptyLegend(){
 	var legendHtml="<div id=\"titleMap\"><label for=\"legendContent\">Leyenda</label>"+
-		"<span class='glyphicon glyphicon-remove removeLegend'></span>"+
-		"<span class='glyphicon glyphicon-minus hideLegend'></span></div>"+
+		"<span class='glyphicon glyphicon-remove removeLegend icons'></span>"+
+		"<span class='glyphicon glyphicon-minus hideLegend icons'></span></div>"+
 		"<div id=\"legendContent\"></div>";
 	$('.legendBar').empty();
 	$('.legendBar').append(legendHtml);
+	assignLegendEventsHandlers();
 }

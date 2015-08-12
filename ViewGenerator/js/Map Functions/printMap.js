@@ -1,12 +1,3 @@
-var dims = {
-    a0: [1189, 841],
-    a1: [841, 594],
-    a2: [594, 420],
-    a3: [420, 297],
-    a4: [150, 105],
-    a5: [210, 148]
-};
-
 $(document).ready(function(){
     PrintEventHandler();
 });
@@ -26,62 +17,45 @@ function PrintEventHandler() {
  * @return
  */
 function printMap(){
+    $.ajax({
+        url: "../../../JasperReports/src/generateReport.php",
+        data: {
+            reportPath: "C:/wamp/www/JasperReports/reports/Prueba1.jrxml",
+            mapImage: generateMapImage(),
+            fileName: new Date().getDate()+"_report"
+        },
+        method: "POST",
+        success: function (response) {
+            window.location = "../../../JasperReports/src/generateReport.php?tag=downloadPdf";
+            //window.location = "../../../../JasperReports/src/printPreview.php?file="+response;
+            //console.log(response);
+            //$("body").append('<iframe src="../../../../JasperReports/src/printPreview.php?file="'+response+'>');
 
-    var format = "a4";
-
-    var mapImage = generateMapImage();
-    var mapTitle = generateMapTitle();
-    var mapDescription = generateMapDescription();
-    var mapScale = generateMapScale();
-    var legendImage;
-    generateLegendImage(function(image){
-        legendImage = image;
-    })
-    var tableImages;
-    generateTableImages(function(images){
-        tableImages = images;
-    })
-
-
-    var interval = setInterval(function(){
-        if (legendImage != undefined && tableImages != undefined){
-            clearInterval(interval);
-            createPDF(format, mapTitle, mapDescription, mapScale, mapImage, legendImage, tableImages);
+            /*PDFJS.getDocument({data: atob(response)}).then(function getPDF(pdf){
+                function renderPages(pdfDoc) {
+                    for(var num = 1; num <= pdfDoc.numPages; num++)
+                        pdfDoc.getPage(num).then(renderPage);
+                }
+                pdf.getPage(1).then(function getPDFPage(page) {
+                    var scale = 1.5;
+                    var viewport = page.getViewport(scale);
+                    // Prepare canvas using PDF page dimensions.
+                    var canvas = document.getElementById('the-canvas');
+                    var context = canvas.getContext('2d');
+                    canvas.height = viewport.height;
+                    canvas.width = viewport.width;
+                    // Render PDF page into canvas context.
+                    var renderContext = {
+                        canvasContext: context,
+                        viewport: viewport
+                    };
+                    page.render(renderContext);
+                });
+            });*/
         }
-    }, 100)
-}
-
-function createPDF(format,mapTitle, mapDescription, mapScale, mapImage, legendImage, tableImages){
-    var pdf = new jsPDF('landscape', "cm", format);
-    pdf.setFontSize(20);
-    pdf.text(11, 1.5, mapTitle);
-
-    pdf.setFontSize(12);
-    //pdf.text(1, 2, mapDescription);
-    pdf.fromHTML($("#description").get(0),1, 2, {
-        "width": 28,
-        "elementsHandler": specialElementHandlers()
     });
-    pdf.addImage(mapImage, 'JPEG', 1, 4, 28, 0);
-
-    pdf.setFontSize(14);
-    pdf.text(1, 16, "Escala");
-    pdf.setFontSize(12);
-    pdf.text(3, 16, mapScale);
-
-    pdf.addImage(legendImage, "PNG", 1, 4, 4, 0);
-
-    var leftMargin = 1;
-    for (var i=0; i<tableImages.length; i++){
-        pdf.addImage(tableImages[i], "PNG", leftMargin, 17, 3, 0);
-        leftMargin =  (3+leftMargin)+0.5;
-    }
-    pdf.save('map.pdf');
 }
 
-function specialElementHandlers(){
-    return true;
-}
 
 function generateMapImage(){
     var canvas = $("canvas").get(0);
