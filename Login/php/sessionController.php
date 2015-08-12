@@ -33,7 +33,7 @@
         $row=pg_fetch_row($result);
         $connection->close();
 
-        $login=false;
+        $login=true;
         $userid=0;
         $entityid=0;
         if($row){

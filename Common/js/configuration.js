@@ -1,4 +1,4 @@
-var serverIp = "192.168.127.129";
+var serverIp = "192.168.1.37";
 var port = "8080";
 var server = "http://"+serverIp+":"+port+"/";
 var installationPath = "../../";

@@ -42,7 +42,7 @@ function showErrorMessage(errorMessage){
 function login(username, password){
     $.ajax({
         type: "POST",
-        url: "sessionController.php",
+        url: "../php/sessionController.php",
         data: {method: "login", username: username, password: password}
     })
         .done(function(response){
