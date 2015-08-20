@@ -227,3 +227,15 @@ span{
     margin:2px;
 }
 
+.leftSidePrintModal{
+    float: left;
+}
+
+#previewCanvas{
+    border: 1px solid black;
+    height: 100%;
+}
+
+.rightSidePrintModal{
+    float: right;
+}

@@ -47,7 +47,7 @@
 
 
 		public function __construct($database=null,$schema=null){
-			$this->host="192.168.1.37";
+			$this->host="192.168.1.35";
 			$this->port="5432";
 			if ($database==null)
 				$this->database="Localgis";

@@ -52,7 +52,7 @@
 		 * @param string $mapName
 		 */
 		public function __construct($mapName=""){
-			$this->host="192.168.1.37";
+			$this->host="192.168.1.35";
 			$this->port="8080";
 			$this->user="admin";
 			$this->pass="geoserver";

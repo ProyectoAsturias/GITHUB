@@ -4,34 +4,64 @@ require_once("ReportGenerator.php");
 
 $reportGenerator = null;
 
-switch ($_GET["tag"]){
-    case "downloadPdf":
-        downloadPdf();
-        break;
+if (isset($_GET["tag"])){
+    switch ($_GET["tag"]){
+        case "downloadPdf":
+            downloadPdf();
+            break;
+        case "getAvailableReports":
+            echo getAvailableReports();
+            break;
+        case "getPreview":
+            previewPdf();
+            break;
+    }
 }
 
-if (isset($_POST["reportPath"])){
+if (isset($_POST["reportName"])){
     startReport();
     addReportsField();
     exportToPdf();
     session_start();
     $_SESSION["reportGenerator"] = $reportGenerator;
+    echo previewPdf();
     //exportToHtml();
+}
+
+function getAvailableReports(){
+    $reports = Array();
+    foreach(glob('../reports/*.jrxml') as $filename){
+        array_push($reports, pathinfo($filename)["filename"]);
+    }
+    return json_encode($reports);
 }
 
 function startReport(){
     global $reportGenerator;
-    $reportGenerator = new ReportGenerator($_POST["reportPath"], realpath(".")."/../tmpReports/".$_POST["fileName"].".pdf", JAVA_INC_URL);
+    $reportGenerator = new ReportGenerator(realpath(".")."/../reports/".$_POST["reportName"].".jrxml", realpath(".")."/../tmpReports/".$_POST["fileName"].".pdf", JAVA_INC_URL);
     $reportGenerator->initializeReport();
+}
+
+function previewPdf(){
+    if (session_status() == PHP_SESSION_NONE) {
+        session_start();
+    }
+    if (isset($_SESSION["reportGenerator"])){
+        $reportGenerator = $_SESSION["reportGenerator"];
+        return base64_encode(file_get_contents($reportGenerator->outputPath));
+    }
 }
 
 function downloadPdf(){
     session_start();
     if (isset($_SESSION["reportGenerator"])){
         $reportGenerator = $_SESSION["reportGenerator"];
-        $reportGenerator->downloadPdf();
-    }
+        header("Content-type: application/pdf");
+        header("Content-Disposition: attachment; filename=".basename($reportGenerator->outputPath));
 
+        readfile($reportGenerator->outputPath);
+        unlink($reportGenerator->outputPath);
+    }
 }
 
 function addReportsField(){

@@ -20,6 +20,7 @@
     <script src="../../Common/bootstrap-3.3.4/js/bootstrap.min.js"></script>
     <script src="../../Common/js/bootstrap-treeview.js" type="text/javascript"></script>
     <script src="../../Common/pdfjs/build/pdf.js" type="text/javascript"></script>
+    <script src="../../Common/Jsonix/Jsonix-all.js"></script>
 
     <script src="../../Common/html2canvas/html2canvas.js" type="text/javascript"></script>
     <script src="../../Common/canvas2Image/canvas2image.js" type="text/javascript"></script>
@@ -36,7 +37,7 @@
     <script src="../../ViewGenerator/js/Map%20Functions/printMap.js" type="text/javascript"></script>
     <script src="../../ViewGenerator/js/Map%20Functions/toggleFullScreen.js" type="text/javascript"></script>
     <script src="../../ViewGenerator/js/Map%20Functions/retrieveData.js" type="text/javascript"></script>
-    <script src="../../ViewGenerator/js/Map%20Functions/layersVisibility.js" type="text/javascript"></script>
+
     <script src="../../ViewGenerator/js/Map%20Functions/export.js" type="text/javascript"></script>
 
     <script src="../../ViewGenerator/js/Visor%20Generator/legend.js" text="text/javascript"></script>
@@ -134,6 +135,7 @@
 </div>
 
 {% include "legend.html.twig" %}
+{% include "printModal_template.html.twig" %}
 
 
 <div style="clear: both"></div>
@@ -148,8 +150,6 @@
         </div>
     {% endfor %}
 {#{% include "SLD Editor/sldEditorModal_template.html.twig" %}#}
-
-<canvas id="the-canvas" style="border:1px  solid black"></canvas>
 
 </body>
 </html>

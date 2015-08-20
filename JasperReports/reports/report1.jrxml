@@ -125,7 +125,7 @@
 		</box>
 	</style>
 	<parameter name="SUBREPORT_DIR" class="java.lang.String">
-		<defaultValueExpression><![CDATA["C:\\wamp\\www\\JasperReports\\reports\\"]]></defaultValueExpression>
+		<defaultValueExpression><![CDATA["./"]]></defaultValueExpression>
 	</parameter>
 	<field name="_THIS" class="java.util.ArrayList"/>
 	<variable name="layerName" class="java.lang.String">
@@ -155,7 +155,7 @@
 					<subreportParameterExpression><![CDATA[$V{columnNames}]]></subreportParameterExpression>
 				</subreportParameter>
 				<dataSourceExpression><![CDATA[new net.sf.jasperreports.engine.data.JRBeanCollectionDataSource($V{columnNames})]]></dataSourceExpression>
-				<subreportExpression><![CDATA[$P{SUBREPORT_DIR} + "columNames_subreport.jasper"]]></subreportExpression>
+				<subreportExpression><![CDATA[$P{SUBREPORT_DIR} + "/columNames_subreport.jasper"]]></subreportExpression>
 			</subreport>
 		</band>
 	</detail>

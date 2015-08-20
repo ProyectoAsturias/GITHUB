@@ -12,7 +12,7 @@ $(document).ready(function(){
 function RetrieveEventHandler() {
     $(".dataRetrieving").click(function () {
         toggleDataRetrieving();
-        generateJSONLayers();
+        //generateJSONLayers();
     });
 }
 

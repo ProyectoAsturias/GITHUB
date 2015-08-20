@@ -50,8 +50,7 @@ function login(username, password){
             if (!JSON.parse(response).logged){
                 showErrorMessage(JSON.parse(response).errorMessage);
                 return;
-            }
-            else{
+            }else{
                 window.location.replace(redirectUrl);
             }
         })

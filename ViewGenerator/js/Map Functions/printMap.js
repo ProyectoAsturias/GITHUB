@@ -1,5 +1,7 @@
 $(document).ready(function(){
     PrintEventHandler();
+    populatePrintReportsAvailable();
+    changeReportSelectorHandler();
 });
 
 /**
@@ -8,39 +10,42 @@ $(document).ready(function(){
  * @return
  */
 function PrintEventHandler() {
-    $(".printMap").on("click", printMap);
+    $(".printMap").on("click", function(){
+        showPrintModal();
+        changePreview();
+    });
 }
 
-/**
- * Start print task only for map content.
- * @method printMap
- * @return
- */
-function printMap(){
+function changeReportSelectorHandler(){
+    $('.reportsAvailable').on('change', function() {
+        changePreview();
+    });
+}
+
+function changePreview(){
     $.ajax({
-        url: "../../../JasperReports/src/generateReport.php",
+        url: "../../JasperReports/src/generateReport.php",
         data: {
-            reportPath: "C:/wamp/www/JasperReports/reports/Prueba1.jrxml",
+            reportName: $(".reportsAvailable").val(),
             mapImage: generateMapImage(),
             fileName: new Date().getDate()+"_report"
         },
-        method: "POST",
+        type: "POST",
         success: function (response) {
-            window.location = "../../../JasperReports/src/generateReport.php?tag=downloadPdf";
-            //window.location = "../../../../JasperReports/src/printPreview.php?file="+response;
-            //console.log(response);
-            //$("body").append('<iframe src="../../../../JasperReports/src/printPreview.php?file="'+response+'>');
+             //console.log(response);
+             //$("body").append('<iframe src="../../../../JasperReports/src/printPreview.php?file="'+response+'>');
 
-            /*PDFJS.getDocument({data: atob(response)}).then(function getPDF(pdf){
+
+            PDFJS.getDocument({data: atob(response)}).then(function getPDF(pdf){
                 function renderPages(pdfDoc) {
                     for(var num = 1; num <= pdfDoc.numPages; num++)
                         pdfDoc.getPage(num).then(renderPage);
                 }
                 pdf.getPage(1).then(function getPDFPage(page) {
-                    var scale = 1.5;
+                    //var scale = 1.5;
                     var viewport = page.getViewport(scale);
                     // Prepare canvas using PDF page dimensions.
-                    var canvas = document.getElementById('the-canvas');
+                    var canvas = document.getElementById('previewCanvas');
                     var context = canvas.getContext('2d');
                     canvas.height = viewport.height;
                     canvas.width = viewport.width;
@@ -51,11 +56,44 @@ function printMap(){
                     };
                     page.render(renderContext);
                 });
-            });*/
+            });
+        }
+    });
+}
+/**
+ * Start print task only for map content.
+ * @method printMap
+ * @return
+ */
+function printMap(){
+
+}
+
+function populatePrintReportsAvailable(){
+    $.ajax({
+        url: "../../JasperReports/src/generateReport.php",
+        data: {
+            tag: "getAvailableReports"
+        },
+        type: "GET",
+        success: function(response){
+            JSON.parse(response).forEach(function(reportName){
+                $(".reportsAvailable").append($('<option>', {
+                    value: reportName,
+                    text: reportName
+                }))
+            })
         }
     });
 }
 
+function generateReportPreview(){
+
+}
+
+function showPrintModal(){
+    $("#printModal").modal("show");
+}
 
 function generateMapImage(){
     var canvas = $("canvas").get(0);

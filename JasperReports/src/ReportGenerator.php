@@ -24,20 +24,13 @@ class ReportGenerator {
         $this->reportParams->__client->cancelProxyCreationTag = 0;
         $this->reportParams->put("dataTables", new Java("java.util.ArrayList"));
         $this->reportParams->put("legendData", new Java("java.util.ArrayList"));
+        $this->reportParams->put("SUBREPORT_DIR", realpath("../reports/"));
     }
 
     function extractReportToPdf(){
         $print = $this->fillManager->fillReport($this->report,$this->reportParams,new Java("net.sf.jasperreports.engine.JREmptyDataSource"));
         $jem = new JavaClass("net.sf.jasperreports.engine.JasperExportManager");
         $jem->exportReportToPDFFile($print, $this->outputPath);
-    }
-
-    function downloadPdf(){
-        header("Content-type: application/pdf");
-        header("Content-Disposition: attachment; filename=".basename($this->outputPath));
-
-        readfile($this->outputPath);
-        unlink($this->outputPath);
     }
 
     function extractReportToHtml(){
