@@ -2,6 +2,7 @@ $(document).ready(function(){
     PrintEventHandler();
     populatePrintReportsAvailable();
     changeReportSelectorHandler();
+    removeReportHandler();
 });
 
 /**
@@ -14,6 +15,15 @@ function PrintEventHandler() {
         showPrintModal();
         changePreview();
     });
+    $("#printModalButton").on("click", function(){
+        printMap()
+    });
+}
+
+function removeReportHandler(){
+    window.onbeforeunload = function(){
+        deleteReportOnServer();
+    }
 }
 
 function changeReportSelectorHandler(){
@@ -32,31 +42,7 @@ function changePreview(){
         },
         type: "POST",
         success: function (response) {
-             //console.log(response);
-             //$("body").append('<iframe src="../../../../JasperReports/src/printPreview.php?file="'+response+'>');
-
-
-            PDFJS.getDocument({data: atob(response)}).then(function getPDF(pdf){
-                function renderPages(pdfDoc) {
-                    for(var num = 1; num <= pdfDoc.numPages; num++)
-                        pdfDoc.getPage(num).then(renderPage);
-                }
-                pdf.getPage(1).then(function getPDFPage(page) {
-                    //var scale = 1.5;
-                    var viewport = page.getViewport(scale);
-                    // Prepare canvas using PDF page dimensions.
-                    var canvas = document.getElementById('previewCanvas');
-                    var context = canvas.getContext('2d');
-                    canvas.height = viewport.height;
-                    canvas.width = viewport.width;
-                    // Render PDF page into canvas context.
-                    var renderContext = {
-                        canvasContext: context,
-                        viewport: viewport
-                    };
-                    page.render(renderContext);
-                });
-            });
+            $("#previewCanvas iframe").attr("src", "../../JasperReports/src/generateReport.php?tag=downloadPdf");
         }
     });
 }
@@ -66,7 +52,25 @@ function changePreview(){
  * @return
  */
 function printMap(){
+    $("#previewCanvas iframe").get(0).contentWindow.print();
+}
 
+function deleteReportOnServer(){
+    $.ajax({
+        url: "../../JasperReports/src/generateReport.php",
+        data: {
+            tag: "deleteReport"
+        },
+        type: "GET",
+        success: function(response){
+            JSON.parse(response).forEach(function(reportName){
+                $(".reportsAvailable").append($('<option>', {
+                    value: reportName,
+                    text: reportName
+                }))
+            })
+        }
+    });
 }
 
 function populatePrintReportsAvailable(){

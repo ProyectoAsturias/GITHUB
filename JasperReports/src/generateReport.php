@@ -15,6 +15,9 @@ if (isset($_GET["tag"])){
         case "getPreview":
             previewPdf();
             break;
+        case "deleteReport":
+            echo deleteReport();
+            break;
     }
 }
 
@@ -34,6 +37,16 @@ function getAvailableReports(){
         array_push($reports, pathinfo($filename)["filename"]);
     }
     return json_encode($reports);
+}
+
+function deleteReport(){
+    if (session_status() == PHP_SESSION_NONE) {
+        session_start();
+    }
+    if (isset($_SESSION["reportGenerator"])){
+        $reportGenerator = $_SESSION["reportGenerator"];
+        unlink($reportGenerator->outputPath);
+    }
 }
 
 function startReport(){
@@ -56,11 +69,16 @@ function downloadPdf(){
     session_start();
     if (isset($_SESSION["reportGenerator"])){
         $reportGenerator = $_SESSION["reportGenerator"];
-        header("Content-type: application/pdf");
-        header("Content-Disposition: attachment; filename=".basename($reportGenerator->outputPath));
+        $file = $reportGenerator->outputPath;
+        $filename = basename($reportGenerator->outputPath);
 
-        readfile($reportGenerator->outputPath);
-        unlink($reportGenerator->outputPath);
+        header('Content-type: application/pdf');
+        header('Content-Disposition: inline; filename="' . $filename . '"');
+        header('Content-Transfer-Encoding: binary');
+        header('Content-Length: ' . filesize($file));
+        header('Accept-Ranges: bytes');
+
+        @readfile($file);
     }
 }
 
