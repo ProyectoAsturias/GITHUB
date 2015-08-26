@@ -61,46 +61,48 @@ class ReportGenerator {
 
     private function generateTableArrayList($tableObject){
         $tableArray = new Java("java.util.ArrayList");
-        $tableArray->add("CapaName");
-        $tableArray->add($this->generateTableColumnsArrayList());
-        $tableArray->add($this->generateTableValuesArrayList());
+        $tableArray->add($tableObject->tableContent[0]);
+        $tableArray->add($this->generateTableColumnsArrayList(array_slice($tableObject->tableHeaders,1)));
+        $tableArray->add($this->generateTableValuesArrayList(array_slice($tableObject->tableContent,1)));
         return $tableArray;
     }
 
-    private function generateTableColumnsArrayList(){
+    private function generateTableColumnsArrayList($tableHeaders){
         $tableColumnsArray = new Java("java.util.ArrayList");
-        $tableColumnsArray->add("Campo1");
-        $tableColumnsArray->add("Campo2");
-        $tableColumnsArray->add("Campo3");
-        $tableColumnsArray->add("Campo4");
-        $tableColumnsArray->add("eageagaa");
-        $tableColumnsArray->add("Cameageagpo2");
-        $tableColumnsArray->add("Cameageagpo3");
-        $tableColumnsArray->add("Caeageateatmpo4");
+        foreach($tableHeaders as $header){
+            $tableColumnsArray->add($header);
+        }
         return $tableColumnsArray;
     }
 
-    private function generateTableValuesArrayList(){
+    private function generateTableValuesArrayList($tableContent){
         $tableValuesArray = new Java("java.util.ArrayList");
-        $tableValuesArray->add("Valor1");
-        $tableValuesArray->add("Valortweatea2");
-        $tableValuesArray->add("Vageaelor3");
-        $tableValuesArray->add("Valogegaaegaer4");
-        $tableValuesArray->add("Valor1");
-        $tableValuesArray->add("Valorteagearweatea2");
-        $tableValuesArray->add("Vageeagaegaelor3");
-        $tableValuesArray->add("Valogegawerqwraegaer4");
+        foreach($tableContent as $content){
+            $tableValuesArray->add($content);
+        }
         return $tableValuesArray;
     }
 
     private function generateLegendArrayList($legendObject){
         $legendArray = new Java("java.util.ArrayList");
-        $legendArray->add("Capa1");
-        $legendArray->add("Capa2");
-        $legendArray->add("Capa3");
-        $legendArray->add("Capa4");
-        $legendArray->add("Capa5");
-        $legendArray->add("Capa6");
+        $legendArray->add($this->generateLegendArrayListLayerImages($legendObject->layersImage));
+        $legendArray->add($this->generateLegendArrayListLayerTitle($legendObject->layersTitle));
         return $legendArray;
+    }
+
+    private function generateLegendArrayListLayerTitle($layersTitles){
+        $layersTitlesArray = new Java("java.util.ArrayList");
+        foreach($layersTitles as $title){
+            $layersTitlesArray->add($title);
+        }
+        return $layersTitlesArray;
+    }
+
+    private function generateLegendArrayListLayerImages($layersImages){
+        $layersImagesArray = new Java("java.util.ArrayList");
+        foreach($layersImages as $image){
+            $layersImagesArray->add($image);
+        }
+        return $layersImagesArray;
     }
 }

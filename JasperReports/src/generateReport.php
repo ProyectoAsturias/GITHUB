@@ -22,14 +22,14 @@ if (isset($_GET["tag"])){
 }
 
 if (isset($_POST["reportName"])){
-    echo $_POST["reportDescription"];
-    return;
     startReport();
     addReportsField();
     exportToPdf();
-    session_start();
+    if (session_status() == PHP_SESSION_NONE) {
+        session_start();
+    }
     $_SESSION["reportGenerator"] = $reportGenerator;
-    echo previewPdf();
+    //echo previewPdf();
     //exportToHtml();
 }
 
@@ -98,14 +98,15 @@ function addReportsField(){
     $imagedata = file_get_contents($_POST["mapImage"]);
     $reportGenerator->addReportImageField("mapImage", base64_encode($imagedata));
 
-    $reportGenerator->addReportTable(null);
-    $reportGenerator->addReportTable(null);
-    $reportGenerator->addReportTable(null);
-    $reportGenerator->addReportTable(null);
-    $reportGenerator->addReportTable(null);
-    $reportGenerator->addReportTable(null);
+    $reportGenerator->addReportLegend(json_decode($_POST["legendData"]));
 
-    $reportGenerator->addReportLegend(null);
+    $dataTables = json_decode($_POST["dataTables"]);
+    if ($dataTables != ""){
+        foreach($dataTables as $table){
+            $reportGenerator->addReportTable($table);
+        }
+    }
+
 }
 
 function exportToPdf(){
