@@ -3,14 +3,23 @@
 	<property name="ireport.zoom" value="1.0"/>
 	<property name="ireport.x" value="0"/>
 	<property name="ireport.y" value="0"/>
+	<parameter name="legendImages" class="java.util.List"/>
+	<parameter name="legendTitles" class="java.util.List"/>
 	<field name="_THIS" class="java.lang.String"/>
+	<variable name="thisImage" class="java.lang.String">
+		<variableExpression><![CDATA[$P{legendImages}.get($P{legendTitles}.indexOf($F{_THIS}))]]></variableExpression>
+	</variable>
 	<detail>
 		<band height="24" splitType="Stretch">
 			<textField>
-				<reportElement x="0" y="0" width="276" height="24" uuid="75cfee3a-c539-4d66-837b-4ffc05b8798d"/>
-				<textElement textAlignment="Center" verticalAlignment="Middle"/>
+				<reportElement x="74" y="0" width="194" height="24" uuid="db8380c2-2079-478b-b60e-00bcb6b9a2d3"/>
+				<textElement textAlignment="Left" verticalAlignment="Middle"/>
 				<textFieldExpression><![CDATA[$F{_THIS}]]></textFieldExpression>
 			</textField>
+			<image scaleImage="RetainShape" hAlign="Center" vAlign="Middle">
+				<reportElement x="0" y="0" width="74" height="24" isRemoveLineWhenBlank="true" forecolor="#FFFFFF" uuid="f689aa02-b980-48b8-9b1c-566085c838c9"/>
+				<imageExpression><![CDATA[new java.io.StringBufferInputStream( new org.w3c.tools.codec.Base64Decoder($V{thisImage}).processString() )]]></imageExpression>
+			</image>
 		</band>
 	</detail>
 </jasperReport>

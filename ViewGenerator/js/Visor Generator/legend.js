@@ -22,7 +22,7 @@ function createLegendMap(){
 			var contentHtml="";
 			for(var i=0; i<capabilities.Layer.Layer.length; i++){
 				contentHtml +="<div class=\"titleLayer\"><label for=\""+capabilities.Layer.Layer[i].Name+"\">"+capabilities.Layer.Layer[i].Name+"</label></div>"+
-								"<div class=\"imgLayer\" id=\""+capabilities.Layer.Layer[i].Name+"\"><img src='"+urlWms+"?REQUEST=GetLegendGraphic&VERSION=1.0.0&FORMAT=image/png&WIDTH=20&HEIGHT=20&LAYER="+capabilities.Layer.Layer[i].Name+"&LEGEND_OPTIONS=forceLabels:on' /></div>"
+								"<div class=\"imgLayer\" id=\""+capabilities.Layer.Layer[i].Name+"\"><img crossOrigin=\"Anonymous\" src='"+urlWms+"?REQUEST=GetLegendGraphic&VERSION=1.0.0&FORMAT=image/png&WIDTH=20&HEIGHT=20&LAYER="+capabilities.Layer.Layer[i].Name+"' /></div>"
 			}
 			var legendHtml="<div id=\"titleMap\"><label for=\"legendContent\">LEYENDA</label>"+
 								"<span class='glyphicon glyphicon-remove removeLegend'></span>"+

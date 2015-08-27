@@ -98,7 +98,10 @@ function addReportsField(){
     $imagedata = file_get_contents($_POST["mapImage"]);
     $reportGenerator->addReportImageField("mapImage", base64_encode($imagedata));
 
-    $reportGenerator->addReportLegend(json_decode($_POST["legendData"]));
+    if($_POST["legendData"] != ""){
+        $reportGenerator->addReportLegend(json_decode($_POST["legendData"]));
+    }
+
 
     $dataTables = json_decode($_POST["dataTables"]);
     if ($dataTables != ""){

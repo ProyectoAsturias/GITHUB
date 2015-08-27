@@ -152,9 +152,10 @@ function generateLegendForReport(){
             if ($(elem).hasClass("titleLayer")) {
                 layersTitle.push($(elem).find("label").html());
             } else if ($(elem).hasClass("imgLayer")) {
-                //layersImage.push(elem.html());
+                layersImage.push(convertImgToBase64URL($(elem).find("img").get(0)));
             }
         });
+        console.log(layersImage);
         return (JSON.stringify({layersTitle: layersTitle, layersImage: layersImage}))
     }else{
         return "";
@@ -163,4 +164,22 @@ function generateLegendForReport(){
 
 function generateMapScale(){
     return $(".ol-scale-line-inner").html();
+}
+
+
+/**
+ * Convert an image
+ * to a base64 url
+ * @param  {String}   url
+ * @param  {Function} callback
+ * @param  {String}   [outputFormat=image/png]
+ */
+function convertImgToBase64URL(imgElement){
+    var canvas = document.createElement('CANVAS'),
+        ctx = canvas.getContext('2d');
+    canvas.height = imgElement.height;
+    canvas.width = imgElement.width;
+    ctx.drawImage(imgElement, 0,0);
+    console.log(canvas.toDataURL("image/png"));
+    return (canvas.toDataURL("image/png"));
 }

@@ -101,7 +101,8 @@ class ReportGenerator {
     private function generateLegendArrayListLayerImages($layersImages){
         $layersImagesArray = new Java("java.util.ArrayList");
         foreach($layersImages as $image){
-            $layersImagesArray->add($image);
+            $imagedata = file_get_contents($image);
+            $layersImagesArray->add(base64_encode($imagedata));
         }
         return $layersImagesArray;
     }

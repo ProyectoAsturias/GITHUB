@@ -147,7 +147,7 @@
 				<textFieldExpression><![CDATA[$V{layerName}]]></textFieldExpression>
 			</textField>
 			<subreport>
-				<reportElement stretchType="RelativeToBandHeight" x="1" y="26" width="594" height="60" uuid="9b8a30ab-b76b-419b-8b12-4e0828c2a31d"/>
+				<reportElement stretchType="RelativeToBandHeight" x="0" y="26" width="594" height="60" isRemoveLineWhenBlank="true" uuid="9b8a30ab-b76b-419b-8b12-4e0828c2a31d"/>
 				<subreportParameter name="columnValues">
 					<subreportParameterExpression><![CDATA[$V{columnValues}]]></subreportParameterExpression>
 				</subreportParameter>
