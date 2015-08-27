@@ -30,9 +30,9 @@
 		</band>
 	</title>
 	<detail>
-		<band height="81" splitType="Stretch">
+		<band height="35" splitType="Stretch">
 			<textField isStretchWithOverflow="true">
-				<reportElement x="0" y="0" width="555" height="63" isRemoveLineWhenBlank="true" uuid="747c7121-1732-4076-a8a7-c3f8e0d5c12f"/>
+				<reportElement stretchType="RelativeToTallestObject" x="0" y="0" width="555" height="13" isRemoveLineWhenBlank="true" uuid="747c7121-1732-4076-a8a7-c3f8e0d5c12f"/>
 				<textFieldExpression><![CDATA[$P{description}]]></textFieldExpression>
 			</textField>
 		</band>
