@@ -48,6 +48,7 @@ function deleteReport(){
     if (isset($_SESSION["reportGenerator"])){
         $reportGenerator = $_SESSION["reportGenerator"];
         unlink($reportGenerator->outputPath);
+        $_SESSION["reportGenerator"] = null;
     }
 }
 
@@ -55,10 +56,15 @@ function startReport(){
     if (session_status() == PHP_SESSION_NONE) {
         session_start();
     }
-    if (isset($_SESSION["reportGenerator"])){
+    if (!isset($_SESSION["reportGenerator"])){
+        global $reportGenerator;
+        $reportGenerator = new ReportGenerator(realpath(".")."/../reports/".$_POST["reportName"].".jrxml", realpath(".")."/../tmpReports/".date(time()).".pdf", JAVA_INC_URL);
+        $_SESSION["reportGenerator" ] = $reportGenerator;
+    }else{
         global $reportGenerator;
         $reportGenerator = $_SESSION["reportGenerator"];
         $reportGenerator = new ReportGenerator(realpath(".")."/../reports/".$_POST["reportName"].".jrxml", $reportGenerator->outputPath, JAVA_INC_URL);
+        $_SESSION["reportGenerator" ] = $reportGenerator;
     }
     $reportGenerator->initializeReport();
 }
