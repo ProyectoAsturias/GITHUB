@@ -17,6 +17,7 @@
 	<parameter name="referencia" class="java.lang.String"/>
 	<parameter name="title" class="java.lang.String"/>
 	<parameter name="mapImage" class="java.lang.String"/>
+	<parameter name="IMAGES_DIR" class="java.lang.String"/>
 	<queryString>
 		<![CDATA[SELECT
 referencia_catastral,
@@ -57,7 +58,7 @@ and referencia_catastral like '%$P!{referencia}%' --and parcelas.referencia_cata
 			</line>
 			<image>
 				<reportElement x="161" y="-14" width="473" height="95" uuid="64599e03-e8f7-4550-a4c2-f1c551745372"/>
-				<imageExpression><![CDATA["/usr/local/LocalGIS.MODELO/visores/apache2/htdocs/JasperReports/images/portada.jpg"]]></imageExpression>
+				<imageExpression><![CDATA[$P{IMAGES_DIR}+"portada.jpg"]]></imageExpression>
 			</image>
 			<textField>
 				<reportElement x="1" y="68" width="781" height="26" uuid="4581530e-2324-40d3-83eb-c2d3229ba1ef"/>
@@ -95,7 +96,7 @@ and referencia_catastral like '%$P!{referencia}%' --and parcelas.referencia_cata
 					<bottomPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
 					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
 				</box>
-				<imageExpression><![CDATA["/usr/local/LocalGIS.MODELO/visores/apache2/htdocs/JasperReports/images/leyenda.jpg"]]></imageExpression>
+				<imageExpression><![CDATA[$P{IMAGES_DIR}+"leyenda.jpg"]]></imageExpression>
 			</image>
 			<rectangle>
 				<reportElement key="rectangle-3" x="367" y="20" width="0" height="0" uuid="0e548b9b-14a0-47fc-8c80-8b09a3c487fc"/>

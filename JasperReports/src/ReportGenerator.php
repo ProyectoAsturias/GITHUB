@@ -24,8 +24,8 @@ class ReportGenerator {
         $this->reportParams->__client->cancelProxyCreationTag = 0;
         $this->reportParams->put("dataTables", new Java("java.util.ArrayList"));
         $this->reportParams->put("legendData", new Java("java.util.ArrayList"));
-        $this->reportParams->put("SUBREPORT_DIR", realpath("../reports/"));
-        $this->reportParams->put("IMAGES_DIR", realpath("../images/"));
+        $this->reportParams->put("SUBREPORT_DIR", realpath("../reports/subreports/")."/");
+        $this->reportParams->put("IMAGES_DIR", realpath("../images/")."/");
     }
 
     function extractReportToPdf(){

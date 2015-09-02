@@ -1,5 +1,5 @@
 <?php
-define('JAVA_INC_URL','http://localhost:8093/JavaBridge/java/Java.inc');
+define('JAVA_INC_URL','http://localhost:9090/JavaBridge/java/Java.inc');
 require_once("ReportGenerator.php");
 
 $reportGenerator = null;
