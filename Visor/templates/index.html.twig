@@ -24,8 +24,8 @@
 
     <script src="../../Common/html2canvas/html2canvas.js" type="text/javascript"></script>
     <script src="../../Common/canvas2Image/canvas2image.js" type="text/javascript"></script>
+    <script src="../../ViewGenerator/js/Visor%20Generator/loadVisorData.js" type="text/javascript"></script>
 
-    <script src="../../ViewGenerator/js/Map Functions/createMap.js" type="text/javascript"></script>
 
 
     <script src="../../ViewGenerator/js/Map%20Functions/createMap.js" type="text/javascript"></script>
@@ -44,8 +44,13 @@
     <script src="../../Common/js/createLayersJSON.js"></script>
 
 
+    <script>
+        visorName = "{{ visorName }}";
+        visorData = JSON.parse(replaceAllSubstring("{{ visorData|json_encode()}}", "&quot;", "\""));
+    </script>
 
     <title>Dynamic HTML creation</title>
+
 </head>
 <body>
 {% include "map_template.html.twig" %}
@@ -107,14 +112,12 @@
 
 
 
-{% include "legend.html.twig" %}
 {% include "printModal_template.html.twig" %}
-
 
 <div style="clear: both"></div>
 
     {% for functionBar in visorData.functionsBar %}
-        <div class="functionsBar container" style="top: {{ functionBar.position.top - 110}}px; left: {{ functionBar.position.left }};">
+        <div class="functionsBar container" style="top: {{ functionBar.position.top - 140}}px; left: {{ functionBar.position.left +300}}px;">
             {% for function in functionBar.functions %}
                 <div class="functionContainer col-md-1" style="display: block; top: 30%">
                     {% include "functions/"~function|lower~"_template.html.twig" %}
@@ -122,6 +125,14 @@
             {% endfor %}
         </div>
     {% endfor %}
+
+{% if visorData.legendFrame != "" %}
+    {% include "legend.html.twig" %}
+    <script>
+        $(".legendBar").css("top", (parseInt(visorData.legendFrame.position.top, 10)-140)+"px");
+        $(".legendBar").css("left", (parseInt(visorData.legendFrame.position.left, 10)+300)+"px");
+    </script>
+{% endif %}
 {#{% include "SLD Editor/sldEditorModal_template.html.twig" %}#}
 
 

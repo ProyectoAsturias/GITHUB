@@ -18,7 +18,7 @@
 		<band height="145" splitType="Stretch">
 			<image>
 				<reportElement x="122" y="0" width="315" height="73" uuid="a7a723ee-8c39-4073-8070-8fc76be75b44"/>
-				<imageExpression><![CDATA["C:\\Users\\JOSE\\Desktop\\captura.jpg"]]></imageExpression>
+				<imageExpression><![CDATA["/usr/local/LocalGIS.MODELO/visores/apache2/htdocs/JasperReports/images/portada.jpg"]]></imageExpression>
 			</image>
 			<textField>
 				<reportElement x="0" y="97" width="555" height="40" isRemoveLineWhenBlank="true" uuid="427ffb71-fa79-4087-8e36-6968a0fecf2c"/>

@@ -1,5 +1,6 @@
 <?php
 	require_once("../Common/php/DBConnection.php");
+	require_once("apiGeoserverFunc.php");
 	
 	/**
 	 * Devuelve una lista con los wms más comunmente utilizados.
@@ -7,7 +8,7 @@
 	 */
 	function getWms() {
 		$dbConnection = new DBConnection("UserContent");
-		$query='SELECT wms FROM "Users" WHERE id='.$_SESSION["userid"];
+		$query='SELECT wms FROM "Users" WHERE id='.$_SESSION["userId"];
 		$result = pg_query($query) or die('Error: '.pg_last_error());
 		$dbConnection->close();
 
@@ -85,7 +86,7 @@
 			$query='CREATE OR REPLACE VIEW "'.$dbConnection->schema.'"."'.$mapName.'_'.$layerName.'" AS '.$select_layer.' FROM '.$from;
 			$result = pg_query($query) or die('Error: '.pg_last_error());
 			$dbConnection->close();
-
+			reloadCache();
 			return $result;
 		}
 		else
@@ -185,7 +186,7 @@
 	 */
 	function delView($layerName){
 		$dbConnection = new DBConnection(null,"localgisVistas");
-		pg_query('DROP VIEW '.$dbConnection->schema.'."'.$GLOBALS['mapName'].'_'.$layerName.'"');
+		pg_query('DROP VIEW "'.$dbConnection->schema.'"."'.$GLOBALS['mapName'].'_'.$layerName.'"');
 		$dbConnection->close();
 	}
 	

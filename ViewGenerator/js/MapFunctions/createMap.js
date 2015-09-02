@@ -55,6 +55,7 @@ function createMap() {
             source: new ol.source.OSM()
         });
         osmLayer.name = "OpenStreet Maps";
+        osmLayer.base = true;
         map.addLayer(osmLayer);
 
     }else{
@@ -62,6 +63,7 @@ function createMap() {
             source: new ol.source.OSM()
         });
         osmLayer.name = "OpenStreet Maps";
+        osmLayer.base = true;
         map.addLayer(osmLayer);
     }
 }

@@ -22,7 +22,7 @@
     $redirectURL = "../../Tables/php/tables.php";
 
     session_start();
-    if(isset($_SESSION['username'])){
+    if(isset($_SESSION['userName'])){
         echo $twig->render('loginIndex.html.twig', array(
             "logged" => true,
             "redirectURL" => $redirectURL,

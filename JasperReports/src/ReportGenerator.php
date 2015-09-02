@@ -25,6 +25,7 @@ class ReportGenerator {
         $this->reportParams->put("dataTables", new Java("java.util.ArrayList"));
         $this->reportParams->put("legendData", new Java("java.util.ArrayList"));
         $this->reportParams->put("SUBREPORT_DIR", realpath("../reports/"));
+        $this->reportParams->put("IMAGES_DIR", realpath("../images/"));
     }
 
     function extractReportToPdf(){

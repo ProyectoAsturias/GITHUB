@@ -1,11 +1,11 @@
-$(document).ready(function(){
+function toolsDraggable(){
     makeFunctionsBarDraggable();
     makeToolsSortable();
     $(".ol-scale-line").draggable({
         containment: $(".ol-viewport")
     })
     makeLegendBarDraggable();
-});
+}
 
 /**
  * Make every element with class functionBar draggable.
@@ -21,6 +21,10 @@ function makeFunctionsBarDraggable() {
 
 function makeToolsSortable(){
     $(".functionsBar").sortable({
+        connectWith: ".functionsBar",
+        cursor: "move",
+        placeholder: "ui-state-highlight",
+        opacity: "0.5",
         helper: "clone",
         revert: false,
         tolerance: "pointer",
@@ -36,6 +40,7 @@ function makeToolsSortable(){
             }
         },
         receive: function(event, ui){
+            console.log(event);
             var index = $(this).children().index($(ui.item[0]));
             if (index == -1) return;
             var element = $(ui.item[0]).clone(true).removeClass('box ui-draggable ui-draggable-dragging').addClass('box-clone');
@@ -70,3 +75,4 @@ function makeLegendBarDraggable() {
         cancel: ".functionContainer"
     });
 }
+
