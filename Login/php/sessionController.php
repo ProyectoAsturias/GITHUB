@@ -33,7 +33,7 @@
         $row=pg_fetch_row($result);
         $connection->close();
 
-        $login=true;
+        $login=false;
         $userId=0;
         $entityId=0;
         if($row){
@@ -41,9 +41,8 @@
             $entityId=$row[1];
             $login= true;
         }
-        //if ($login && $row[1]!=null){
-        if ($login){
-        session_start();
+        if ($login && $row[1]!=null){
+	    session_start();
             $_SESSION["userName"]=$userName;
             $_SESSION["userId"]=$userId;
             $_SESSION["userEntityId"]=$entityId;
@@ -79,7 +78,7 @@
     }
 
     function registerUser($userId,$userName){
-       /* $connection=new DBConnection("UserContent");
+        $connection=new DBConnection("UserContent");
         $query="SELECT name FROM \"Users\" WHERE id='".$userId."' and name='".$userName."'";
         $result=pg_query($query);
         $row=pg_fetch_row($result);
@@ -87,6 +86,6 @@
             $query="INSERT INTO \"Users\" (id, name) VALUES (".$userId.",'".$userName."')";
             $result=pg_query($query);
         }
-        $connection->close();*/
+        $connection->close();
     }
 ?>

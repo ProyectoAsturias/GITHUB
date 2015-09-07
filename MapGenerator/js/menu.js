@@ -152,6 +152,7 @@ function showListFamilies(){
 			//console.log(response);
 			var familyList = JSON.parse(response);
 			$("#selectFamily").empty();
+
 			for(var i=0; i<familyList.length; i++){
 				var familyId=familyList[i].id;
 				var familyName=familyList[i].name;
@@ -159,6 +160,30 @@ function showListFamilies(){
 			}
 			$('#selectFamily').prop('selectedIndex', -1);
 			$(".chosen-select").trigger("chosen:updated");		
+		},
+		error:function(error){
+			console.log("Error al mostrar la lista de familias: "+error);
+		}
+	})
+	var getLayers= true;
+	$.ajax({
+		type : "POST",
+		url : apiPath+"apiLocalgis.php",
+		data : {
+			tag:"getLayers",
+			getLayers: getLayers
+		},
+		success : function (response) {
+			//console.log(response);
+			var layerList = JSON.parse(response);
+			$("#selectLayer").empty();
+			for(var i=0; i<layerList.length; i++){
+				var layerId=layerList[i].id;
+				var layerName=layerList[i].name;
+				$("#selectLayer").append("<option value=\""+layerId+"\" name=\""+layerName+"\">"+layerName+"</option>");
+			}
+			$('#selectLayer').prop('selectedIndex', -1);
+			$(".chosen-select").trigger("chosen:updated");	
 		},
 		error:function(error){
 			console.log("Error al mostrar la lista de familias: "+error);

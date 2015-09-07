@@ -16,7 +16,7 @@ $(document).ready(function(){
             entityParams=JSON.parse(response);
             if(entityParams.length==0){
                 entityParams.push("Asturias");
-                entityParams.push(25830);
+                entityParams.push(23030);
                 entityParams.push(33001);
             }
             createMapsTable($("#table"));
@@ -44,7 +44,7 @@ function createMapsTable(target){
     retrieveUserMaps(function(jsonMaps){
         var mapsData = JSON.parse(jsonMaps);
         var columns = [{checkbox: "true"},{field:"image", title: "Imagen"}, {field: "id", title: "ID Mapa", sortable: "true"},{field:"name", title:"Nombre", sortable: "true"},
-            {field:"description", title:"Descripción"},{field:"date_update", title:"Última modificación", sortable: "true"}, {field:"date_creation", title:"Fecha creación", sortable: "true"},
+            {field:"description", title:"Descripción", titleTooltip:"click para editar descripción"},{field:"date_update", title:"Última modificación", sortable: "true"}, {field:"date_creation", title:"Fecha creación", sortable: "true"},
             {field: "WMS", title: "WMS", formatter:"WmsFormatter"},
             {field: "published", title: "Publicado", sortable: "true", formatter:"publishedFormatter"},{field:"synchronized", title:"Sincronizado", formatter:"synchronizedFormatter"}];   
         if (mapsData){
@@ -93,7 +93,7 @@ function retrieveUserVisors(callback){
 
 function convertBinaryDataToImages(mapsData){
     mapsData.forEach(function (map){
-	   map.image="<div id=\""+map.name+"\" class=\"imgMap\"></div>";
+	   map.image="<div id=\""+map.name+"\" class=\"imgMap\" title=\"Haga click en la imagen para editar el mapa\"></div>";
        mapNames.push(map.name);
     });
     return mapsData;
@@ -107,7 +107,7 @@ function publishedFormatter(value, row, index){
 }
 
 function WmsFormatter(value, row, index){
-    return "<button class='btn btn-success btn-block' onclick=\"getWmsLink('"+row.name+"')\">Link WMS</button>";
+    return "<button class='btn btn-success btn-block' title=\"Obtener link Wms\" onclick=\"getWmsLink('"+row.name+"')\">Link WMS</button>";
 }
 
 function synchronizedFormatter(value, row, index){
@@ -130,6 +130,9 @@ function mapsClickEventsHandler(){
     $('#table').on("sort.bs.table", function(event,name,order){
         appendImages();
     });
+    $('#table').on("search.bs.table", function(){
+        appendImages();
+    });    
     $('#table').on("click-cell.bs.table", function(event,field,value,row){
         if(field=="image"){
             if(row.published=="t")
@@ -201,7 +204,7 @@ function getImageMap(mapName) {
                 layersNames += service.Capability.Layer.Layer[i].Name;
                 var bBox = "" + service.Capability.Layer.BoundingBox[0].extent[0] + "," + service.Capability.Layer.BoundingBox[0].extent[1] + "," + service.Capability.Layer.BoundingBox[0].extent[2] + "," + service.Capability.Layer.BoundingBox[0].extent[3] + "";
             }
-            html = "<img class=\"imageMap\" onerror=\"if (this.src != 'error.jpg') this.src = '../../Common/images/noPreview.jpg';\" src='" + urlWms + "?REQUEST=GetMap&service=wms&format=image/jpeg&WIDTH=120&HEIGHT=120&LAYERS=" + layersNames + "&srs=EPSG:4326&bbox=" + bBox + "' />";
+            html = "<img class=\"imageMap\" onerror=\"if (this.src != 'error.jpg') this.src = '../../Common/images/noPreview.jpg';\" alt=\"Vista previa no disponible\" src='" + urlWms + "?REQUEST=GetMap&service=wms&format=image/jpeg&WIDTH=120&HEIGHT=120&LAYERS=" + layersNames + "&srs=EPSG:4326&bbox=" + bBox + "' />";
             $("#" + mapName + "").empty();
             $("#" + mapName + "").append(html);
         },

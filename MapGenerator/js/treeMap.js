@@ -122,11 +122,11 @@ function generateLayerListHTML(){
 
 function generateNode(layer){
 	var node = $("<li><div class='layerName'>"+layer.name +"</div>" +
-	"<span class='glyphicon glyphicon-remove removeLayer'></span>" +
-	"<span class='glyphicon glyphicon-eye-open visibilityLayer' ></span>" +
-	"<span class='glyphicon glyphicon-cog attributesLayer'></span>" +
-	"<span class='glyphicon glyphicon-tint stylesLayer'></span>" +
-	"<span class='glyphicon glyphicon-list-alt infoLayer'></span>" +
+	"<span class='glyphicon glyphicon-remove removeLayer' title=\"Borrar capa\"></span>" +
+	"<span class='glyphicon glyphicon-eye-open visibilityLayer' title=\"Visiblidad de capa\"></span>" +
+	"<span class='glyphicon glyphicon-cog attributesLayer' title=\"Seleccionar atributos\"></span>" +
+	"<span class='glyphicon glyphicon-tint stylesLayer' title=\"Seleccionar estilo\"></span>" +
+	"<span class='glyphicon glyphicon-list-alt infoLayer' title=\"Editar datos de la capa\"></span>" +
 	"</li>")
 		.data("layer", layer)
 		.appendTo($("#layersList ol"));

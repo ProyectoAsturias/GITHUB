@@ -1,5 +1,7 @@
 var map;
-
+var layersCounter=0;
+var maxLayers=1;
+var layersList=[];
 /**
 * Inicialización de la variable map de openlayers 3
 **/
@@ -14,7 +16,7 @@ function initMap() {
 	$("#userName").append(userName);
 
 	map = new ol.Map({
-		target : 'map',
+		target : 'olmap',
 		renderer : 'canvas',
 		view : new ol.View({
 			center : center,
@@ -56,7 +58,7 @@ function addLayer(name,wms,style) {
 		preload : Infinity,
 		url : wms,
 		params : {
-			'LAYERS' : map.name+":"+name,
+			'LAYERS' : name,
 			'TILED' : true,
 			'STYLES': style,
 		}
@@ -190,13 +192,7 @@ function removeLayer(layer, callback) {
 * Carga un wms en Geoserver
 **/
 function importWms(wms) {
-	/*var wms;
-	if($('#wms').val()!="")
-		wms=$('#wms').val();
-	else if($("#selectWms").val()!=null)
-		wms=$("#selectWms").val();
-	else
-		return;*/
+
 	//Obtener title y lista de capas que forman el wms
 	$.ajax({
 		type : "GET",
@@ -210,12 +206,16 @@ function importWms(wms) {
 			var service = parser.read(response);
 			var capabilities = service.Capability;
 			var title = service.Service.Title;
-			title=title.replace(/ /gi,'_');
-			var listLayers = [];
-			
-			for(var i=0; i<capabilities.Layer.Layer.length; i++)
-				listLayers.push(capabilities.Layer.Layer[i].Name);
-			$.ajax({
+			for(var i=0; i<capabilities.Layer.Layer.length; i++){
+				var style="";
+				if (wms=="http://ovc.catastro.meh.es/Cartografia/WMS/ServidorWMS.aspx")
+					catastro(capabilities.Layer.Layer[i].Name,wms);
+				else
+					addLayer(capabilities.Layer.Layer[i].Name,wms,style);
+			}
+			drawTree();
+
+			/*$.ajax({
 				type: "POST",
 				url: apiPath+"apiGeoserver.php",
 				data:{
@@ -226,14 +226,13 @@ function importWms(wms) {
 					listLayers: listLayers
 				},
 				success: function(response){
-					//console.log(response);
+					console.log(response);
 					drawTree();
 				},
 				error: function(error) {
 					console.log("Error al cargar el mapa: ".error);				 
 				}
-			});
-
+			});*/
 		},
 		error:function(error){
 			alert("Error al importar un wms: "+error);
@@ -247,7 +246,7 @@ function importWms(wms) {
 function importMap(){
 	if($("#selectMap").val()!=null){
 		var id=$("#selectMap").val();
-
+		$("#modalCounterLayers .modal-header").empty().append("<h4 class=\"modal-title\">Importando Mapa</h4>");
 		console.log("Importando map: #"+id);
 		$.ajax({
 			type: "POST",
@@ -258,7 +257,18 @@ function importMap(){
 			},
 			success: function(response){
 				console.log(response);
+				layersCounter=1;
+				var modalList="";
 				var layerList = JSON.parse(response);
+				maxLayers=layerList.length;
+				for(var i=0; i<layerList.length; i++){
+					j=i+1;
+					modalList+="<label for=\"layerName"+j+"\">"+layerList[i].name+"</label><div id=\"layerName"+j+"\" class=\"updatedLayer\"><span class='glyphicon glyphicon-remove-sign' style='color:red;'></span></div></br>";
+				}
+				$("#modalCounterLayers .modal-body").empty();
+				$("#modalCounterLayers .modal-body").append(modalList);
+				$("#modalCounterLayers").modal("show");
+
 				for(var i=0; i<layerList.length; i++){
 					importLayer(layerList[i]);
 				}
@@ -287,7 +297,7 @@ function importMap(){
 				})
 			},
 			error: function(error) {
-				console.log("Error al cargar el mapa: ".error);				 
+				console.log("Error al cargar el mapa: ".error);
 			}
 		});
 	}
@@ -302,9 +312,8 @@ function importMap(){
 function importFamily(familyId){	
 	if($("#selectFamily").val()!=null || familyId!=null){
 		var id=$("#selectFamily").val() || familyId;
-
+		$("#modalCounterLayers .modal-header").empty().append("<h4 class=\"modal-title\">Importando Familia</h4>");
 		console.log("Importando familia: #"+id);
-
 		$.ajax({
 			type: "POST",
 			url : apiPath+"apiLocalgis.php",
@@ -314,7 +323,17 @@ function importFamily(familyId){
 			},
 			success: function(response){
 				//console.log(response);
+				layersCounter=1;
+				var modalList="";
 				var layerList = JSON.parse(response);
+				maxLayers=layerList.length;
+				for(var i=0; i<layerList.length; i++){
+					j=i+1;
+					modalList+="<label for=\"layerName"+j+"\">"+layerList[i].name+"</label><div id=\"layerName"+j+"\" class=\"updatedLayer\"><span class='glyphicon glyphicon-remove-sign' style='color:red;'></span></div></br>";
+				}
+				$("#modalCounterLayers .modal-body").empty();
+				$("#modalCounterLayers .modal-body").append(modalList);
+				$("#modalCounterLayers").modal("show");
 				for(var i=0; i<layerList.length; i++){
 					importLayer(layerList[i]);
 				}
@@ -403,10 +422,14 @@ function importLayer(layer,mapId){
 			},
 			success: function(response){
 				console.log("Importando capa: #"+name);
+				$("#layerName"+layersCounter+"").empty().append("<span class='glyphicon glyphicon-ok-sign' style='color:green;'></span>");
+				layersCounter++;
 				console.log(response);
 				//update MAP Table
 				updateDatabaseMap();
 				drawTree();
+				if(layersCounter>maxLayers)
+					$("#modalCounterLayers").modal("hide");
 			},
 			error: function(error) {
 				console.log("Error al cargar la capa: ".error);				 
@@ -433,47 +456,21 @@ function clearMap(){
 	});
 }
 
-function baseLayer(layerName){
-	removeOldBaseLayer();
-	if (layerName=="OSM"){
-    	var osmLayer = new ol.layer.Tile({
-    		source: new ol.source.OSM()
-    	});
-    	osmLayer.name = "OpenStreet Maps";
-    	osmLayer.base = true;
-    	map.getLayers().insertAt(0,osmLayer);
-    	var html="<span data-label-placement>OpenStreet Map</span> <span class=\"caret\"></span>";
-    	$("#baseLayerButton #baseButton").empty().append(html);
-   	}
-   	else if(layerName=="BAL"){
-   		var bingAerialLayer= new ol.layer.Tile({
-   			source: new ol.source.BingMaps({
-        		key: 'Ak-dzM4wZjSqTlzveKz5u0d4IQ4bRzVI309GxmkgSVr1ewS6iPSrOvOKhA-CJlm3',
-        		imagerySet:'Aerial'
-        	})
-   		})
-    	bingAerialLayer.name = "Bing Aerial Layer";
-    	bingAerialLayer.base = true;
-    	map.getLayers().insertAt(0,bingAerialLayer);
-    	var html="<span data-label-placement>Bing Aerial Layer</span> <span class=\"caret\"></span>";
-    	$("#baseLayerButton #baseButton").empty().append(html);
-   	}
-   	else if(layerName=="MQS"){
-   		var mapQuest= new ol.layer.Tile({
-      		source: new ol.source.MapQuest({layer: 'sat'})
-  		})
-  		mapQuest.name= "Map Quest Sat";
-  		mapQuest.base = true;
-  		map.getLayers().insertAt(0,mapQuest);
-    	var html="<span data-label-placement>Map Quest Satelite</span> <span class=\"caret\"></span>";
-    	$("#baseLayerButton #baseButton").empty().append(html);
-   	}
-}
-
-function removeOldBaseLayer(){
-	var layersArray=map.getLayers().getArray();
-	for(var i=0;i<layersArray.length;i++){
-		if(layersArray[i].base==true)
-			map.removeLayer(layersArray[i])
-	}
+function catastro(name,wms){
+	var format = 'image/png';
+	var untiled = new ol.layer.Image({
+		source: new ol.source.ImageWMS({
+		  ratio: 1,
+		  url: wms,
+		  params: {
+			'FORMAT': format,
+			'VERSION': '1.1.1',  
+			STYLES: '',
+			LAYERS:  name,
+		  }
+		})
+	});
+	untiled.name=name;
+	map.addLayer(untiled);
+	drawTree();
 }
