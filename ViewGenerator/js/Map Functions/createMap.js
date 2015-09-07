@@ -35,6 +35,7 @@ function createMap() {
     map = new ol.Map({
         target: 'map',  // The DOM element that will contains the map
         interactions: ol.interaction.defaults({ doubleClickZoom: false }),
+        controls: ol.control.defaults({attribution: false}),
         renderer: 'canvas',
         view: new ol.View({
             projection: ('EPSG:4230', 'EPSG:900913'),
@@ -47,18 +48,19 @@ function createMap() {
         try {
             addLayersAndGroupsFromWMS(mapDetails["WMSUrl"]);
             map.mapURL = mapDetails["WMSUrl"];
+
         }catch (error){
             console.log("WOP");
         }
-
         //TEMPORAL
         addBaseOSMLayer();
 
     }else{
         addBaseOSMLayer();
     }
-
     map.addControl(new ol.control.ScaleLine());
+    if (typeof (toolsDraggable) == "function")
+        toolsDraggable();
 }
 
 function destroyMap(){
@@ -70,6 +72,7 @@ function addBaseOSMLayer(){
         source: new ol.source.OSM()
     });
     osmLayer.name = "OpenStreet Maps";
+    osmLayer.base = true;
     map.addLayer(osmLayer);
 }
 
@@ -96,23 +99,26 @@ function addLayersAndGroupsFromWMS(WMSUrl){
         url: WMSUrl + '?request=getcapabilities&service=wms',
         crossDomain : true
     })
-        .then(function(response) {
-            var capabilitiesParser = parser.read(response);
-            console.log(capabilitiesParser);
-            for(var i = 0; i < capabilitiesParser.Capability.Layer.Layer.length; i ++){
-                console.log(capabilitiesParser.Capability.Layer.Layer[i]);
-                layersNames.push(capabilitiesParser.Capability.Layer.Layer[i].Name);
-                //aqui debemos sacar el campo abstract, ya que nos dice si la capa es un grupo o no
-                grupos.push(capabilitiesParser.Capability.Layer.Layer[i].Abstract)
+    .then(function(response) {
+        var capabilitiesParser = parser.read(response);
+        console.log(capabilitiesParser);
+        var bBox =capabilitiesParser.Capability.Layer.BoundingBox[0].extent;
+        var extent = ol.extent.applyTransform(bBox, ol.proj.getTransform("EPSG:4326", "EPSG:3857"));
+        map.getView().fitExtent(extent, map.getSize());
+        for(var i = 0; i < capabilitiesParser.Capability.Layer.Layer.length; i ++){
+            console.log(capabilitiesParser.Capability.Layer.Layer[i]);
+            layersNames.push(capabilitiesParser.Capability.Layer.Layer[i].Name);
+            //aqui debemos sacar el campo abstract, ya que nos dice si la capa es un grupo o no
+            grupos.push(capabilitiesParser.Capability.Layer.Layer[i].Abstract)
+        }
+        for(var j = 0; j < layersNames.length; j ++) {
+            if(grupos[j] && grupos[j].includes("Layer-Group")){
+                addGroupToMap(j, WMSUrl);
+                continue;
             }
-            for(var j = 0; j < layersNames.length; j ++) {
-                if(grupos[j] && grupos[j].includes("Layer-Group")){
-                    addGroupToMap(j, WMSUrl);
-                    continue;
-                }
-                addLayerToMap(j, WMSUrl);
-            }
-        });
+            addLayerToMap(j, WMSUrl);
+        }
+    });
 }
 
 

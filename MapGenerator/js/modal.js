@@ -260,9 +260,17 @@ function appendModalLayer(nameMap,layer){
 function addKeyword(){
     var keyword= $('#keyword').val();
     keyword=keyword.trim();
-    if(keyword)
-        $("#keywordList").append("<option value=\""+keyword+"\">"+keyword+"</option>");
-    $('#keyword').val("");
+    var checkKeyword=true;
+    if (keyword) {
+		$("#keywordList option").each(function () {
+			var listKeyword = $(this).val();
+			if (listKeyword == keyword)
+				checkKeyword = false;
+		});
+		if (checkKeyword)
+	        $("#keywordList").append("<option value=\""+keyword+"\">"+keyword+"</option>");
+		$('#keyword').val("");
+	}
 }
 
 function delKeyword(){
@@ -301,78 +309,81 @@ function updateLayerInfo(){
 }
 
 function appendModalStyles(nameMap,layer){
-        mapName= nameMap;
-        globalLayer=layer;
+    mapName= nameMap;
+    globalLayer=layer;  
 	var styleName="";
-        var layerName= layer.name;
-        var parser = new ol.format.WMSCapabilities();
-        //llamada al GetCapabilities
-        $.ajax({
-                type: "GET",
-                dataType : 'text',
-                url: server+"geoserver/"+mapName+"/wms?request=getCapabilities&service=wms",
-                success: function (response) {
-                        var service = parser.read(response);
-                        var capabilities = service.Capability;
-                        var layers = [];
+    var layerName= layer.name;
+    var htmlTitle=	"<button type=\"button\" class=\"close\" data-dismiss=\"modal\">&times;</button>"+
+					"<h4 class=\"modal-title\">Seleccionar estilo : "+layerName+"</h4>"
+	$("#modalStyles .modal-header").html(htmlTitle); 
+    var parser = new ol.format.WMSCapabilities();
+    //llamada al GetCapabilities
+    $.ajax({
+        type: "GET",
+        dataType : 'text',
+        url: server+"geoserver/"+mapName+"/wms?request=getCapabilities&service=wms",
+        success: function (response) {
+            var service = parser.read(response);
+            var capabilities = service.Capability;
+            var layers = [];
 			var styleSrc="";
-                        for(var i=0; i<capabilities.Layer.Layer.length; i++){
-                                if (layerName==capabilities.Layer.Layer[i].Name){
-                                        var pickLayer= capabilities.Layer.Layer[i];
-                                }
+                for(var i=0; i<capabilities.Layer.Layer.length; i++){
+                        if (layerName==capabilities.Layer.Layer[i].Name){
+                                var pickLayer= capabilities.Layer.Layer[i];
                         }
+                }
 			defaultStyle=pickLayer.Style[0].Name;
 			var srcStyle =pickLayer.Style[0].LegendURL[0].OnlineResource;
 			var valueOpacity=globalLayer.getOpacity();
-                        var modalHTML="<label for=\"defaultStyle\">Estilo por defecto </label>"+
-					"<div><img id='legendStyle' src=\""+srcStyle+"\" /></div>"+
-                                        "<input type=\"text\" readonly  class=\"form-control\" id=\"defaultStyle\" value=\""+pickLayer.Style[0].Name+"\">"+
-					"<label for=\"opacityBar\">Transparencia</label>"+
-					"<input class='opacity' id=\"opacityBar\" value=\""+valueOpacity+"\" type='range' min='0' max='1' step='0.01'/>"+
-                                        "<label for=\"styleList\">Estilos disponibles</label>"+
-                                        "<select multiple class=\"form-control\" id=\"styleList\" tabindex=\"1\">"
-                        for(var i=1; i<pickLayer.Style.length; i++){
-                        	modalHTML +="<option value=\""+pickLayer.Style[i].Name+"\">"+pickLayer.Style[i].Name+"</option>";
-				styleSrc +="<input type=\"hidden\" id=\""+pickLayer.Style[i].Name+"\" value=\""+pickLayer.Style[i].LegendURL[0].OnlineResource+"\" \>";
-			}
-                        modalHTML +="</select><div id=\"styleSrc\">"+styleSrc+"</div>"+
-                                        "<button onclick='selectStyle()' id=\"selectStyle\" class=\"btn btn-info btn-block\" style=\"padding:0;\" >Seleccionar estilo</button>"+
-					"<label for=\"inputSld\">Carga un archivo SLD</label>"+
-					"<input id=\"inputSld\" name=\"inputSld\" type=\"file\" class=\"file-loading\">"+
-					"<div id=\"buttonStyles\"></div>"+
-                                "</div>"
-			$("#modalStyles .modal-body").html(modalHTML);
-
-			$('#inputSld').fileinput({
-			    uploadUrl:apiPath+"apiGeoserver.php", 
-			    uploadAsync: true,
-			    uploadExtraData:{
-				    tag:"uploadNewStyle",
-				    mapName:mapName,
-				    layerName:layerName,
-			    },
-			    allowedFileExtensions: ["sld"],
-			    previewClass:"bg-warning",
-			    dropZoneEnabled: false, 
-			});
-
-			$("#inputSld").on('fileuploaded', function(event,data ) {
-			    styleName=data.files[0].name.split(".");
-			    $("#modalStyles .modal-body").empty();
-			    appendModalStyles(mapName,layer);
-			});
-
-            $("#inputSld").on('fileuploaderror', function(event,data ) {
-                    console.log(data);
-                    console.log("error");
-            });
-            $("#modalStyles").modal("show");
-
-		},
-		error: function(error){
-			console.log(error);
+            var modalHTML="<label for=\"defaultStyle\">Estilo por defecto </label>"+
+				"<div><img id='legendStyle' src=\""+srcStyle+"\" /></div>"+
+                                    "<input type=\"text\" readonly  class=\"form-control\" id=\"defaultStyle\" value=\""+pickLayer.Style[0].Name+"\">"+
+				"<label for=\"opacityBar\">Transparencia</label>"+
+				"<input class='opacity' id=\"opacityBar\" value=\""+valueOpacity+"\" type='range' min='0' max='1' step='0.01'/>"+
+                                    "<label for=\"styleList\">Estilos disponibles</label>"+
+                                    "<select multiple class=\"form-control\" id=\"styleList\" tabindex=\"1\">"
+            for(var i=1; i<pickLayer.Style.length; i++){
+            modalHTML +="<option value=\""+pickLayer.Style[i].Name+"\">"+pickLayer.Style[i].Name+"</option>";
+			styleSrc +="<input type=\"hidden\" id=\""+pickLayer.Style[i].Name+"\" value=\""+pickLayer.Style[i].LegendURL[0].OnlineResource+"\" \>";
 		}
-	})
+                    modalHTML +="</select><div id=\"styleSrc\">"+styleSrc+"</div>"+
+                                    "<button onclick='selectStyle()' id=\"selectStyle\" class=\"btn btn-info btn-block\" style=\"padding:0;\" >Seleccionar estilo</button>"+
+				"<label for=\"inputSld\">Carga un archivo SLD</label>"+
+				"<input id=\"inputSld\" name=\"inputSld\" type=\"file\" class=\"file-loading\">"+
+				"<div id=\"buttonStyles\"></div>"+
+                            "</div>"
+		$("#modalStyles .modal-body").html(modalHTML);
+
+		$('#inputSld').fileinput({
+		    uploadUrl:apiPath+"apiGeoserver.php", 
+		    uploadAsync: true,
+		    uploadExtraData:{
+			    tag:"uploadNewStyle",
+			    mapName:mapName,
+			    layerName:layerName,
+		    },
+		    allowedFileExtensions: ["sld"],
+		    previewClass:"bg-warning",
+		    dropZoneEnabled: false, 
+		});
+
+		$("#inputSld").on('fileuploaded', function(event,data ) {
+		    styleName=data.files[0].name.split(".");
+		    $("#modalStyles .modal-body").empty();
+		    appendModalStyles(mapName,layer);
+		});
+
+        $("#inputSld").on('fileuploaderror', function(event,data ) {
+                console.log(data);
+                console.log("error");
+        });
+        $("#modalStyles").modal("show");
+
+	},
+	error: function(error){
+		console.log(error);
+	}
+})
 }
 
 function selectStyle(){
@@ -404,7 +415,11 @@ function updateStyle(){
 				styleName:newDefaultStyle,
             },
         	success: function (response) {
-                console.log(response);
+				globalLayer.getSource().updateParams({
+					'LAYERS' : map.name+":"+globalLayer.name,
+					'TILED' : true,
+					'STYLES': newDefaultStyle,
+				});
         	},
         	error:function(error){
                 console.log(error);
@@ -481,6 +496,8 @@ function addWmsUrl() {
 	var newWmsUrl = $('#newWmsUrl').val();
 	var checkUrl = true;
 	newWmsUrl = newWmsUrl.trim();
+	newWmsUrl = newWmsUrl.split("?");
+	newWmsUrl = newWmsUrl[0];
 	if (newWmsUrl) {
 		$("#wmsList option").each(function () {
 			var listUrl = $(this).val();

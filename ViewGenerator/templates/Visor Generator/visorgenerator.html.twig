@@ -4,20 +4,25 @@
     <meta charset="UTF-8">
 
     <link rel="stylesheet" href="../../Common/css/ol.css" type="text/css">
-    <link rel="stylesheet" href="../../Common/bootstrap-3.3.4/css/bootstrap.min.css" type="text/css">
+    <link rel="stylesheet" href="../../Common/bootstrap-3.3.4/css/bootstrap.css" type="text/css">
     <link rel="stylesheet" href="../../Common/bootstrap-3.3.4/css/bootstrap-theme.min.css" type="text/css">
     <link rel="stylesheet" href="../css/visorGeneratorStyle.css" type="text/css">
     <link rel="stylesheet" href="../../Common/css/bootstrap-treeview.css" type="text/css">
+    <link rel='stylesheet' href='../../Common/css/chosen.css'>
 
     <script src="../../Common/js/jquery.min.js" type="text/javascript"></script>
     <script src="../../Common/js/jquery-ui.min.js" type="text/javascript"></script>
     <script src="../../Common/js/ol.js" type="text/javascript"></script>
     <script src="../../Common/bootstrap-3.3.4/js/bootstrap.min.js"></script>
+    <script src="../../Common/js/baseLayers.js"></script>
     <script src="../../Common/js/bootstrap-treeview.js" type="text/javascript"></script>
+    <script src="../../Common/js/chosen.jquery.js"></script>
+    <script src="../../Common/js/configuration.js"></script>
 
     <script src="../js/Map Functions/createMap.js" type="text/javascript"></script>
 
     <script src="../js/Visor Generator/toolsDraggable.js" type="text/javascript"></script>
+    <script src="../js/Visor Generator/visorConfigTools.js" type="text/javascript"></script>
     <script src="../js/Visor Generator/createLayerTree.js" type="text/javascript"></script>
     <script src="../js/Visor Generator/functionDataAssigner.js" type="text/javascript"></script>
     <script src="../js/Visor Generator/saveVisor.js" type="text/javascript"></script>
@@ -28,6 +33,7 @@
     <script>
         visorName = "{{ visorName }}";
         visorData = JSON.parse(replaceAllSubstring("{{ visorData|json_encode()}}", "&quot;", "\""));
+        console.log(visorData);
     </script>
     <title>Generador de visores</title>
 </head>
@@ -44,19 +50,28 @@
 
                             {% if visorData == "" %}
                                 {% include "Visor Generator/functionBar.html.twig" %}
+                                {% include "Visor Generator/legend.html.twig" %}
                             {% else %}
 
                                 {% for functionBar in visorData.functionsBar %}
-                                    <div class="functionsBar container" style="top: {{ functionBar.position.top }}; left: {{ functionBar.position.left }} ;">
+                                    <div class="functionsBar container {{functionBar.type}}" id="{{functionBar.id}}" style="top: {{ functionBar.position.top }}; left: {{ functionBar.position.left }} ;">
+                                        <div class="iconFunctionBar"><div class="fixedIcon"><span class='glyphicon glyphicon-remove removeFunctionBar'></span></div></div>
+
                                         {% for function in functionBar.functions %}
-                                            <div class="functionContainer col-md-1" style="display: block; top: 30%">
+                                            <div class="functionContainer col-md-1" style="display: block; margin-top:10px;">
                                                 {% include "functions/"~function|lower~"_template.html.twig" %}
                                             </div>
                                         {% endfor %}
                                     </div>
                                 {% endfor %}
                             {% endif %}
-                            {% include "Visor Generator/legend.html.twig" %}
+                            {% if visorData.legendFrame != "" %}
+                                {% include "Visor Generator/legend.html.twig" %}
+                                <script>
+                                    $(".legendBar").css("top", visorData.legendFrame.position.top);
+                                    $(".legendBar").css("left", visorData.legendFrame.position.left);
+                                </script>
+                            {% endif %}
                             {% include "Visor Generator/visorgeneratormap.html.twig" %}
                         </div>
 
@@ -64,5 +79,7 @@
 
                 </div>
             </div>
+    {% include "Visor Generator/modal.html.twig" %}
+
 </body>
 </html>

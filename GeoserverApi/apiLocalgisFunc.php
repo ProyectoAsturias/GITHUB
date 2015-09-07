@@ -59,7 +59,7 @@
 		if(isset($_POST['idFamily'])){ 
 			$idFamily=$_POST['idFamily'];
 			$dbConnection = new DBConnection();
-			$query = "SELECT DISTINCT(l.id_layer),d.traduccion FROM layerfamilies_layers_relations as r,layers as l , dictionary d WHERE r.id_layerfamily='".$idFamily."' AND r.id_layer=l.id_layer AND l.id_name=d.id_vocablo AND d.locale='es_ES' ".$GLOBALS['whereEntity']." ORDER BY d.traduccion";			
+			$query = "SELECT DISTINCT(l.id_layer),d.traduccion FROM layerfamilies_layers_relations as r,layers as l , dictionary d WHERE r.id_layerfamily='".$idFamily."' AND r.id_layer=l.id_layer AND l.id_name=d.id_vocablo AND d.locale='es_ES' ORDER BY d.traduccion";			
 			$result = pg_query($query) or die('Error: '.pg_last_error());
 			$dbConnection->close();
 
@@ -83,7 +83,12 @@
 			$idMap=$_POST['idMap'];
 
 			$dbConnection = new DBConnection();
-			$query="SELECT ls.id_layer,d.traduccion FROM layers_styles as ls, layers as l , dictionary d WHERE id_map=".$idMap." AND l.id_layer=ls.id_layer AND l.id_name=d.id_vocablo AND d.locale='es_ES' ".$GLOBALS['whereEntity']." ORDER BY position";
+			$where="";
+			if(isset($_SESSION["entityId"]))
+	            $where="AND l.id_entidad=".$_SESSION["entityId"];
+	        else if(isset($_POST['entityId']))
+	            $where="AND l.id_entidad=".$_POST['entityId'];
+			$query="SELECT ls.id_layer,d.traduccion FROM layers_styles as ls, layers as l , dictionary d WHERE id_map=".$idMap." AND l.id_layer=ls.id_layer AND l.id_name=d.id_vocablo AND d.locale='es_ES' ".$where." ORDER BY position";
 			$result = pg_query($query) or die('Error: '.pg_last_error());
 			$dbConnection->close();
 
@@ -157,7 +162,7 @@
 			$where=" AND id_map='".$mapId."'";
 
 		$dbConnection = new DBConnection();
-		$query = "SELECT s.xml FROM layers_styles as l, styles as s WHERE l.id_style=s.id_style AND id_layer='".$layerId.$where."'";
+		$query = "SELECT DISTINCT(s.xml) FROM layers_styles as l, styles as s WHERE l.id_style=s.id_style AND id_layer='".$layerId.$where."'";
 		$result = pg_query($query) or die('Error: '.pg_last_error());
 		
 		$styles = array();
@@ -166,7 +171,7 @@
 			while ($row = pg_fetch_array($result, null, PGSQL_ASSOC)) {
 				$SLD = $row["xml"];
 				$styleName = str_replace(" ", "_", explode("</Name>",explode("<Name>",$SLD)[1])[0]);
-				$numSld=substr_count($SLD,"<UserStyle>");
+				/*$numSld=substr_count($SLD,"<UserStyle>");
 				$exp=explode("<UserStyle>",$SLD);
 				$header=$exp[0];
 				$end=explode("</UserStyle>",$SLD)[$numSld];
@@ -176,10 +181,52 @@
 						$sld_xml.=$end;
 					$style = new LocalgisStyle($styleName,$sld_xml);
 					array_push($styles, $style);
-				}
+				}*/
+				$style= new LocalgisStyle($styleName,$SLD);
+				array_push($styles, $style);
 			}
 		}
 		$dbConnection->close();
 		return $styles;
+	}
+
+	/**
+	 * Devuelve los parámetros de entidad
+	 * @return object
+	 */
+	function getEntityData(){
+		$params=array();
+		$dbConnection = new DBConnection();
+		$query = "SELECT replace(nombreoficial,' ','')as name,srid FROM entidad_supramunicipal WHERE 1=1 ".$GLOBALS['whereEntity'];
+		$result = pg_query($query) or die('Error: '.pg_last_error());
+		$numRows=pg_num_rows($result);
+		while ($row = pg_fetch_array($result, null, PGSQL_ASSOC)) {
+			array_push($params,$row['name']);
+			array_push($params,$row['srid']);
+		}
+		$query = "SELECT id_municipio FROM entidades_municipios WHERE 1=1 ".$GLOBALS['whereEntity'];
+		$result = pg_query($query) or die('Error: '.pg_last_error());
+		$numRows=pg_num_rows($result);
+		while ($row = pg_fetch_array($result, null, PGSQL_ASSOC))
+			array_push($params,$row['id_municipio']);
+		$dbConnection->close();
+		return json_encode($params);
+	}
+
+	/**
+	 * Devuelve los nombres de todas las entidades
+	 * @return object
+	 */
+	function getEntityNames(){
+		$params=array();
+		$dbConnection = new DBConnection();
+		$query = "SELECT replace(nombreoficial,' ','')as name, id_entidad FROM entidad_supramunicipal ORDER BY name";
+		$result = pg_query($query) or die('Error: '.pg_last_error());
+		$numRows=pg_num_rows($result);
+		while ($row = pg_fetch_array($result, null, PGSQL_ASSOC)) {
+			$p=[$row['name'],$row['id_entidad']];
+			array_push($params,$p);
+		}
+		return json_encode($params);
 	}
 ?>

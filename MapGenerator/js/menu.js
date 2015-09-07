@@ -27,7 +27,8 @@ function menuDatosLayersLocalgis(){
 }
 
 function back(){
-	window.location="http://"+serverIp+"/Tables/php/tables.php";
+	console.log(server);
+	window.location=serverGS+"Tables/php/tables.php";
 }
 
 function confirmSaveMap(){
@@ -40,7 +41,7 @@ function confirmSaveMap(){
 function confirmClearMap(){
 	bootbox.confirm("El contenido del mapa será eliminado", function(result) {
 		if (result)
-			success("El contenido del mapa ha sido eliminado.");
+			clearMap();
 	});
 }
 
@@ -56,7 +57,7 @@ function showListWms() {
     "<button onclick='selectWms()' id=\"importWms\" class=\"btn btn-info btn-block\" style=\"padding:0;\" >Importar Wms</button>"+
     "</div><div id=\"buttonWmsList\" class=\"col-xs-2\">"+
     "<button onclick='editWmsList()' id=\"editWmsList\" class=\"btn btn-info btn-block\" style=\"height:100%;\" >Editar Lista Wms</button></div>");
-		
+	$('.chosen-select').chosen({width:"100%",search_contains: true,});	
 	$.ajax({
 		type : "POST",
 		url : apiPath+"apiDatabase.php",
@@ -64,23 +65,20 @@ function showListWms() {
 			tag:"getWms"
 		},
 		success:function (response) {
-			//console.log(response)
+			console.log(response)
 			var wmsList = JSON.parse(response);
 			$("#selectWms").empty();
-			//console.log(wmsList);
+			console.log(wmsList);
 			for(var i=0; i<wmsList.length; i++)
 				$("#selectWms").append("<option value=\""+wmsList[i]+"\">"+wmsList[i]+"</option>");
 			$('#selectWms').prop('selectedIndex', -1);
-			$('.chosen-select').chosen({
-				width:"100%",
-				search_contains: true,
-			});
+			$('.chosen-select').trigger("chosen:updated");
 		},
 		error:function(error){
 			$("#selectWms").append("<option value='http://ogc.bgs.ac.uk/cgi-bin/BGS_Bedrock_and_Superficial_Geology/wms'>http://ogc.bgs.ac.uk/cgi-bin/BGS_Bedrock_and_Superficial_Geology/wms</option>");
 			$('.chosen-select').chosen({
 				width:"100%",
-				search_contains: true,
+				search_contains:true,
 			});
 			console.log("Ocurrió un error. Compruebe su conexión al servidor.");
 			console.log("Error al mostrar la lista de wms: "+error);
@@ -111,6 +109,7 @@ function showListMaps(){
 			"<select id=\"selectMap\" class=\"chosen-select\" ></select>"+
 			"<button onclick='importMap()' id=\"importMap\" class=\"btn btn-info btn-block\" style=\"padding:0;\">Importar Mapa</button>"+
 		"</div>");
+	$('.chosen-select').chosen({width:"100%",search_contains:true,});
 	$.ajax({
 		type: "POST",
 		url : apiPath+"apiLocalgis.php",
@@ -126,7 +125,7 @@ function showListMaps(){
 				$("#selectMap").append("<option value=\""+mapId+"\" name=\""+mapName+"\">"+mapName+"</option>");
 			}
 			$('#selectMap').prop('selectedIndex', -1);
-			$('.chosen-select').chosen({width:"100%"});
+			$('.chosen-select').trigger("chosen:updated");
 		},
 		error:function(error){
 			console.log("Error al mostrar la lista de mapas: "+error);
@@ -142,6 +141,7 @@ function showListFamilies(){
 			"<select id=\"selectLayer\" class=\"chosen-select\" ></select>"+
 			"<button onclick='importLayer()' id=\"importLayers\" class=\"btn btn-info btn-block\" style=\"padding:0;\">Importar Capa</button>"+
 		"</div>");
+	$('.chosen-select').chosen({width:"100%",search_contains:true,});
 	$.ajax({
 		type : "POST",
 		url : apiPath+"apiLocalgis.php",
@@ -149,6 +149,7 @@ function showListFamilies(){
 			tag:"getFamilies"
 		},
 		success : function (response) {
+			//console.log(response);
 			var familyList = JSON.parse(response);
 			$("#selectFamily").empty();
 			for(var i=0; i<familyList.length; i++){
@@ -157,8 +158,7 @@ function showListFamilies(){
 				$("#selectFamily").append("<option value=\""+familyId+"\" name=\""+familyName+"\">"+familyName+"</option>");
 			}
 			$('#selectFamily').prop('selectedIndex', -1);
-			$(".chosen-select").trigger("chosen:updated");
-			$('.chosen-select').chosen({width:"100%"});			
+			$(".chosen-select").trigger("chosen:updated");		
 		},
 		error:function(error){
 			console.log("Error al mostrar la lista de familias: "+error);

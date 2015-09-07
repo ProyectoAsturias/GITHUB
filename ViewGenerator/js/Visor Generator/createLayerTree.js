@@ -28,7 +28,8 @@ function generateNode(layer){
 function generateTreeData(){
     var treeData = [{text: "Mapa", nodes: [], state: {checked: true}}];
     map.getLayers().forEach(function(layer, index){
-       treeData[0].nodes.push(generateNode(layer));
+        if(!layer.base)
+            treeData[0].nodes.push(generateNode(layer));
     });
     return treeData;
 }

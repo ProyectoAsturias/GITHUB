@@ -18,6 +18,7 @@ function createJson() {
     var visorData = {};
     visorData["mapDetails"] = extractMapDetails();
     visorData["functionsBar"] = extractFunctionsBar();
+    visorData["legendFrame"] = extractLegendFrame();
     return visorData;
 }
 
@@ -56,6 +57,8 @@ function extractFunctionsBar(){
     var functionsStructure = new Array();
     $(".functionsBar").each(function(){
         var functionBar = {
+            "id": $(this)[0].id ,
+            "type": $(this)[0].classList[2],
             "position" : {"top" : $(this).css("top"), "left" : $(this).css("left")},
             "functions" : []};
         $(this).find(".function").each(function(){
@@ -63,5 +66,18 @@ function extractFunctionsBar(){
         });
         functionsStructure.push(functionBar);
     });
+    console.log(functionsStructure);
     return functionsStructure;
+}
+
+function extractLegendFrame(){
+    if ($(".legendBar") != undefined){
+        var legendBar = {
+            "position": {"top": $(".legendBar").css("top"), "left": $(".legendBar").css("left")}
+        }
+        return legendBar;
+    }else{
+        return "";
+    }
+
 }

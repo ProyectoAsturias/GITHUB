@@ -19,12 +19,14 @@
     <script src="../../Common/js/ol.js" type="text/javascript"></script>
     <script src="../../Common/bootstrap-3.3.4/js/bootstrap.min.js"></script>
     <script src="../../Common/js/bootstrap-treeview.js" type="text/javascript"></script>
-    <script src="../../Common/jsPDF/jsPDF.js" type="text/javascript"></script>
+    <script src="../../Common/pdfjs/build/pdf.js" type="text/javascript"></script>
+    <script src="../../Common/Jsonix/Jsonix-all.js"></script>
+    <script src="../../Common/js/configuration.js"></script>
 
     <script src="../../Common/html2canvas/html2canvas.js" type="text/javascript"></script>
     <script src="../../Common/canvas2Image/canvas2image.js" type="text/javascript"></script>
+    <script src="../../ViewGenerator/js/Visor%20Generator/loadVisorData.js" type="text/javascript"></script>
 
-    <script src="../../ViewGenerator/js/Map Functions/createMap.js" type="text/javascript"></script>
 
 
     <script src="../../ViewGenerator/js/Map%20Functions/createMap.js" type="text/javascript"></script>
@@ -36,15 +38,20 @@
     <script src="../../ViewGenerator/js/Map%20Functions/printMap.js" type="text/javascript"></script>
     <script src="../../ViewGenerator/js/Map%20Functions/toggleFullScreen.js" type="text/javascript"></script>
     <script src="../../ViewGenerator/js/Map%20Functions/retrieveData.js" type="text/javascript"></script>
-    <script src="../../ViewGenerator/js/Map%20Functions/layersVisibility.js" type="text/javascript"></script>
+
     <script src="../../ViewGenerator/js/Map%20Functions/export.js" type="text/javascript"></script>
 
     <script src="../../ViewGenerator/js/Visor%20Generator/legend.js" text="text/javascript"></script>
     <script src="../../Common/js/createLayersJSON.js"></script>
 
 
+    <script>
+        visorName = "{{ visorName }}";
+        visorData = JSON.parse(replaceAllSubstring("{{ visorData|json_encode()}}", "&quot;", "\""));
+    </script>
 
     <title>Dynamic HTML creation</title>
+
 </head>
 <body>
 {% include "map_template.html.twig" %}
@@ -69,77 +76,49 @@
     }
 </style>
 
-<p id="description" style="position: relative; visibility: hidden"></p>
-<div id="dataTables">
-    <table >
+    <table id="dataTable">
         <tr>
             <th>Capa</th>
             <td>Capa 1</td>
         </tr>
         <tr>
-            <th>Atributo 1:</th>
+            <th>Atributo 1</th>
             <td>1201</td>
         </tr>
         <tr>
-            <th>Atributo 2:</th>
+            <th>Atributo 2</th>
             <td>351315</td>
         </tr>
         <tr>
-            <th>Atributo 3:</th>
-            <td>351531</td>
-        </tr>
-    </table>
-
-    <table >
-        <tr>
-            <th>Capa</th>
-            <td>Capa 2</td>
-        </tr>
-        <tr>
-            <th>Atributo 1:</th>
-            <td>1201</td>
-        </tr>
-        <tr>
-            <th>Atributo 2:</th>
-            <td>351315</td>
-        </tr>
-        <tr>
-            <th>Atributo 3:</th>
+            <th>Atributo 3</th>
             <td>351531</td>
         </tr>
         <tr>
-            <th>Atributo 4:</th>
+            <th>Atributo 4</th>
             <td>351531</td>
         </tr><tr>
-            <th>Atributo 5:</th>
+            <th>Atributo 5</th>
+            <td>351531</td>
+        </tr>
+        <tr>
+            <th>Atributo 6</th>
+            <td>351531</td>
+        </tr><tr>
+            <th>Atributo 7</th>
             <td>351531</td>
         </tr>
 
+
     </table>
 
-    <table >
-        <tr>
-            <th>Capa</th>
-            <td>Capa 3</td>
-        </tr>
-        <tr>
-            <th>Atributo 1:</th>
-            <td>1201</td>
-        </tr>
-        <tr>
-            <th>Atributo 2:</th>
-            <td>351315</td>
-        </tr>
-    </table>
-</div>
 
-{% include "legend.html.twig" %}
 
+{% include "printModal_template.html.twig" %}
 
 <div style="clear: both"></div>
 
     {% for functionBar in visorData.functionsBar %}
-        <div class="functionsBar container" style="top: {{ functionBar.position.top - 110}}px; left: {{ functionBar.position.left }};">
+        <div class="functionsBar container" style="top: {{ functionBar.position.top - 140}}px; left: {{ functionBar.position.left +300}}px;">
             {% for function in functionBar.functions %}
                 <div class="functionContainer col-md-1" style="display: block; top: 30%">
                     {% include "functions/"~function|lower~"_template.html.twig" %}
@@ -147,7 +126,17 @@
             {% endfor %}
         </div>
     {% endfor %}
+
+{% if visorData.legendFrame != "" %}
+    {% include "legend.html.twig" %}
+    <script>
+        $(".legendBar").css("top", (parseInt(visorData.legendFrame.position.top, 10)-140)+"px");
+        $(".legendBar").css("left", (parseInt(visorData.legendFrame.position.left, 10)+300)+"px");
+    </script>
+{% endif %}
 {#{% include "SLD Editor/sldEditorModal_template.html.twig" %}#}
+
+
 
 </body>
 </html>

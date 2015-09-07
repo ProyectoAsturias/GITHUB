@@ -1,0 +1,182 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="classic" pageWidth="842" pageHeight="595" orientation="Landscape" columnWidth="782" leftMargin="30" rightMargin="30" topMargin="20" bottomMargin="20" uuid="d4b6fa38-d49b-4d26-bee5-ac57886fda64">
+	<property name="ireport.scriptlethandling" value="0"/>
+	<property name="ireport.encoding" value="UTF-8"/>
+	<property name="ireport.zoom" value="1.0"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<import value="net.sf.jasperreports.engine.*"/>
+	<import value="java.util.*"/>
+	<import value="net.sf.jasperreports.engine.data.*"/>
+	<parameter name="ID_ENTIDAD" class="java.lang.String" isForPrompting="false">
+		<defaultValueExpression><![CDATA["96"]]></defaultValueExpression>
+	</parameter>
+	<parameter name="referencia" class="java.lang.String"/>
+	<parameter name="title" class="java.lang.String"/>
+	<parameter name="mapImage" class="java.lang.String"/>
+	<parameter name="IMAGES_DIR" class="java.lang.String"/>
+	<parameter name="legendData" class="java.util.ArrayList"/>
+	<parameter name="SUBREPORT_DIR" class="java.lang.String" isForPrompting="false">
+		<defaultValueExpression><![CDATA["./subreports/"]]></defaultValueExpression>
+	</parameter>
+	<queryString>
+		<![CDATA[SELECT
+referencia_catastral,
+--nombreparaje,
+coalesce(nombreparaje, ' ') AS nombreparaje,
+superficie_finca,
+superficie_construida_total,
+bezana_pgou_ai_2014.clasificacion,
+--bezana_pgou_ai_2014.nombre
+coalesce(bezana_pgou_ai_2014.nombre, ' ') AS "nombre"
+
+FROM PARCELAS
+WHERE
+(
+st_intersects(parcelas."GEOMETRY" , bezana_pgou_ai_2014."GEOMETRY" )
+and referencia_catastral like '%$P!{referencia}%' --and parcelas.referencia_catastral = bez_referencias_catastrales.referencia_catastral
+)]]>
+	</queryString>
+	<field name="referencia_catastral" class="java.lang.String"/>
+	<field name="nombreparaje" class="java.lang.String"/>
+	<field name="superficie_finca" class="java.math.BigDecimal"/>
+	<field name="superficie_construida_total" class="java.math.BigDecimal"/>
+	<field name="clasificacion" class="java.lang.String"/>
+	<field name="nombre" class="java.lang.String"/>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<title>
+		<band splitType="Stretch"/>
+	</title>
+	<pageHeader>
+		<band height="94" splitType="Stretch">
+			<line direction="BottomUp">
+				<reportElement key="line-3" x="0" y="68" width="780" height="1" uuid="f2f7a548-a8ca-482f-838a-c3e46946c4eb"/>
+				<graphicElement>
+					<pen lineWidth="2.0" lineStyle="Solid"/>
+				</graphicElement>
+			</line>
+			<image>
+				<reportElement x="161" y="-14" width="473" height="95" uuid="64599e03-e8f7-4550-a4c2-f1c551745372"/>
+				<imageExpression><![CDATA[$P{IMAGES_DIR}+"portada.jpg"]]></imageExpression>
+			</image>
+			<textField>
+				<reportElement x="1" y="68" width="781" height="26" uuid="4581530e-2324-40d3-83eb-c2d3229ba1ef"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="16" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{title}]]></textFieldExpression>
+			</textField>
+		</band>
+	</pageHeader>
+	<columnHeader>
+		<band splitType="Stretch"/>
+	</columnHeader>
+	<detail>
+		<band height="299" splitType="Stretch">
+			<rectangle>
+				<reportElement key="rectangle-1" mode="Transparent" x="-1" y="10" width="790" height="288" uuid="f40a382c-9960-4bb4-8feb-1d4738de92e7"/>
+			</rectangle>
+			<image scaleImage="FillFrame" hAlign="Center" vAlign="Top">
+				<reportElement key="image-1" mode="Opaque" x="5" y="20" width="777" height="268" forecolor="#000000" backcolor="#FFFFFF" uuid="09715f99-5736-4570-8e11-eb05f71df853"/>
+				<box>
+					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<graphicElement fill="Solid"/>
+				<imageExpression><![CDATA[new java.io.StringBufferInputStream( new org.w3c.tools.codec.Base64Decoder($P{mapImage}).processString() )]]></imageExpression>
+			</image>
+			<rectangle>
+				<reportElement key="rectangle-3" x="367" y="20" width="0" height="0" uuid="0e548b9b-14a0-47fc-8c80-8b09a3c487fc"/>
+			</rectangle>
+		</band>
+		<band height="84">
+			<printWhenExpression><![CDATA[$P{legendData}.size() != 0]]></printWhenExpression>
+			<rectangle>
+				<reportElement stretchType="RelativeToTallestObject" x="-1" y="0" width="781" height="76" uuid="e7bf34e7-a0e5-4d76-955f-d777d756f311"/>
+			</rectangle>
+			<subreport>
+				<reportElement x="5" y="11" width="775" height="54" isRemoveLineWhenBlank="true" uuid="ee4f17a3-602c-477b-8c88-865a57bfb6d6"/>
+				<subreportParameter name="legendTitles">
+					<subreportParameterExpression><![CDATA[$P{legendData}.get(1)]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="legendImages">
+					<subreportParameterExpression><![CDATA[$P{legendData}.get(0)]]></subreportParameterExpression>
+				</subreportParameter>
+				<dataSourceExpression><![CDATA[new net.sf.jasperreports.engine.data.JRBeanCollectionDataSource((List)$P{legendData}.get(1))]]></dataSourceExpression>
+				<subreportExpression><![CDATA[$P{SUBREPORT_DIR} + "/Vertical - legend_subreport.jasper"]]></subreportExpression>
+			</subreport>
+		</band>
+	</detail>
+	<columnFooter>
+		<band splitType="Stretch"/>
+	</columnFooter>
+	<pageFooter>
+		<band height="27" splitType="Stretch">
+			<textField pattern="" isBlankWhenNull="false">
+				<reportElement key="textField" x="564" y="6" width="170" height="19" forecolor="#000000" backcolor="#FFFFFF" uuid="1256d58e-5c4d-48ff-a11d-3d2ade2797d4"/>
+				<box>
+					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textElement textAlignment="Right">
+					<font size="10"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Pagina " + $V{PAGE_NUMBER} + " of "]]></textFieldExpression>
+			</textField>
+			<textField evaluationTime="Report" pattern="" isBlankWhenNull="false">
+				<reportElement key="textField" x="738" y="6" width="36" height="19" forecolor="#000000" backcolor="#FFFFFF" uuid="4b2e685d-c828-4ea3-a2b2-cacce89f5828"/>
+				<box>
+					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textElement>
+					<font size="10"/>
+				</textElement>
+				<textFieldExpression><![CDATA["" + $V{PAGE_NUMBER}]]></textFieldExpression>
+			</textField>
+			<line>
+				<reportElement key="line" x="0" y="3" width="780" height="1" uuid="bc565762-1d79-4402-a376-af5ff0bcb564"/>
+				<graphicElement>
+					<pen lineWidth="2.0" lineStyle="Solid"/>
+				</graphicElement>
+			</line>
+			<textField pattern="" isBlankWhenNull="false">
+				<reportElement key="textField" x="1" y="6" width="209" height="19" forecolor="#000000" backcolor="#FFFFFF" uuid="b59f0db5-a8e5-48ee-99ce-37ded38a6621"/>
+				<box>
+					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textElement>
+					<font size="10"/>
+				</textElement>
+				<textFieldExpression><![CDATA[new Date()]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement key="staticText-4" positionType="Float" x="178" y="6" width="379" height="17" forecolor="#000000" backcolor="#FFFFFF" uuid="12a2ead0-be97-41e3-9f80-fdc5dfe6f57b"/>
+				<box>
+					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textElement>
+					<font size="12" isBold="true" pdfFontName="Helvetica-Bold"/>
+				</textElement>
+				<text><![CDATA[Ayuntamiento de Santa Cruz de Bezana - Ficha Informativa]]></text>
+			</staticText>
+		</band>
+	</pageFooter>
+	<summary>
+		<band splitType="Stretch"/>
+	</summary>
+</jasperReport>

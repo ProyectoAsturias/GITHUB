@@ -7,13 +7,13 @@
     }
 
     if($_POST["method"] == "login"){
-        echo json_encode(login($_POST["username"], $_POST["password"]));
+        echo json_encode(login($_POST["userName"], $_POST["password"]));
     }
     elseif ($_POST["method"] == "logout"){
         logout();
     }
 
-    function login($username, $password, $redirect=""){
+    function login($userName, $password, $redirect=""){
         $connection=new DBConnection();
         //print("##".$password."##");
         
@@ -22,35 +22,36 @@
         //$password = openssl_encrypt($password, $method, 'GEOPISTA');
         //print("##".$password."##");
 
-        /*$query="SELECT id,id_entidad FROM iuseruserhdr WHERE name = '".$username."' AND password='".$password."'";
+        /*$query="SELECT id,id_entidad FROM iuseruserhdr WHERE name = '".$userName."' AND password='".$password."'";
         $result=pg_query($query) or die('Error: '.pg_last_error());
         $row=pg_fetch_row($result);
         $connection->close();*/
 
         //Provisional (sin pass)
-        $query="SELECT id,id_entidad FROM iuseruserhdr WHERE name = '".$username."'";
+        $query="SELECT id,id_entidad FROM iuseruserhdr WHERE name = '".$userName."'";
         $result=pg_query($query) or die('Error: '.pg_last_error());
         $row=pg_fetch_row($result);
         $connection->close();
 
-        $login=false;
-        $userid=0;
-        $entityid=0;
+        $login=true;
+        $userId=0;
+        $entityId=0;
         if($row){
-            $userid=$row[0];
-            $entityid=$row[1];
+            $userId=$row[0];
+            $entityId=$row[1];
             $login= true;
         }
+        //if ($login && $row[1]!=null){
         if ($login){
-            session_start();
-            $_SESSION["username"]=$username;
-            $_SESSION["userid"]=$userid;
-            $_SESSION["entityid"]=$entityid;
-            updateSession();
+        session_start();
+            $_SESSION["userName"]=$userName;
+            $_SESSION["userId"]=$userId;
+            $_SESSION["userEntityId"]=$entityId;
+            //updateSession();
             $loginResponse = new stdClass();
             $loginResponse->logged = true;
             $loginResponse->previousUrl = $_SERVER['HTTP_REFERER'];
-            //registerUser($userid,$username);
+            registerUser($userId,$userName);
             return $loginResponse;
         }else{
             $loginResponse = new stdClass();
@@ -74,13 +75,18 @@
     }
 
     function getUsername(){
-        return $_SESSION["username"];
+        return $_SESSION["userName"];
     }
 
-    function registerUser($userid,$username){
-        $connection=new DBConnection("UserContent");
-        $query="INSERT INTO \"Users\" (id, name) VALUES (".$userid.",'".$username."')";
+    function registerUser($userId,$userName){
+       /* $connection=new DBConnection("UserContent");
+        $query="SELECT name FROM \"Users\" WHERE id='".$userId."' and name='".$userName."'";
         $result=pg_query($query);
-        $connection->close();
+        $row=pg_fetch_row($result);
+        if($row[0]==''){
+            $query="INSERT INTO \"Users\" (id, name) VALUES (".$userId.",'".$userName."')";
+            $result=pg_query($query);
+        }
+        $connection->close();*/
     }
 ?>

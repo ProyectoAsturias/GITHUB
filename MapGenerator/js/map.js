@@ -4,28 +4,52 @@ var map;
 * Inicialización de la variable map de openlayers 3
 **/
 function initMap() {
+	//Zoom depende de si es asturias o un concejo
+	var center = getCenter();
+	var zoom = 7;
+
 	//console.log(mapName);
 	$("#editWmsButton").append("<h2>"+mapName+"</h2>");
 	//console.log(userName);
 	$("#userName").append(userName);
+
 	map = new ol.Map({
 		target : 'map',
 		renderer : 'canvas',
 		view : new ol.View({
-			center : [-434915.610107824, 5380511.6665677687],
-			zoom : 8
+			center : center,
+			zoom : zoom
 		})
 	});
 	map.name=mapName;
-	map.town=39073;
-	map.projection=23030;
 	drawTree();
+}
+
+/**
+* Obtiene el centro de la entidad
+**/
+function getCenter(){
+	/*$.ajax({
+		type: "POST",
+		url : apiPath+"apiLocalgis.php",
+		data : {
+			tag:"getCenter",
+			entityId: entityId
+		},
+		success: function (response) {
+			center=JSON.parse(response);
+		},
+		error:function(error){
+			alert("Error al tomar el punto central de la entidad : "+error);
+		}
+	});*/
+	return [-540136.8999724974, 5213958.799933833];
 }
 
 /**
 * Añade una capa sobre el objeto map
 **/
-function addLayer(name,wms) {
+function addLayer(name,wms,style) {
 	//console.log(map.name+":"+name);
 	//console.log(wms);
 	var source = new ol.source.TileWMS({
@@ -34,12 +58,14 @@ function addLayer(name,wms) {
 		params : {
 			'LAYERS' : map.name+":"+name,
 			'TILED' : true,
+			'STYLES': style,
 		}
 	})
 	var layer = new ol.layer.Tile({source:source});
 	layer.name = name;
 	updateLoadingBar(source);
 	map.addLayer(layer);
+	console.log(layer.getSource().getParams());
 	return layer;
 }
 
@@ -120,7 +146,7 @@ function removeLayer(layer, callback) {
 			},
 			success: function (response) {
 				console.log("##"+response+"##");
-				if(response=="\n0"){
+				if(response==0){
 					//console.log(layer.name);
 					map.removeLayer(layer);
 					//console.log(map.getLayers().getArray().length);
@@ -200,9 +226,7 @@ function importWms(wms) {
 					listLayers: listLayers
 				},
 				success: function(response){
-
 					//console.log(response);
-
 					drawTree();
 				},
 				error: function(error) {
@@ -212,9 +236,7 @@ function importWms(wms) {
 
 		},
 		error:function(error){
-
 			alert("Error al importar un wms: "+error);
-
 		}
 	});
 }
@@ -235,13 +257,13 @@ function importMap(){
 				idMap: id
 			},
 			success: function(response){
-				//console.log(response);
+				console.log(response);
 				var layerList = JSON.parse(response);
 				for(var i=0; i<layerList.length; i++){
 					importLayer(layerList[i]);
 				}
 				//Guardar campos en MAP
-				saveAttributes(id,layerList);
+				//saveAttributes(id,layerList);
 				//Importar ortofoto
 				$.ajax({
 					type: "POST",
@@ -251,6 +273,7 @@ function importMap(){
 						idMap: id,
 					},
 					success: function(response){
+						//console.log(response);
 						var ortoFotos=JSON.parse(response);
 						for(var i=0; i<ortoFotos.length; i++){
 							var wms=ortoFotos[i].id.split("?");
@@ -258,8 +281,8 @@ function importMap(){
 							importWms(wms[0]);
 						}
 					},
-					error: function(response){
-						console.log(response);
+					error: function(error){
+						console.log(error);
 					}
 				})
 			},
@@ -376,9 +399,7 @@ function importLayer(layer,mapId){
 				layerId: id,
 				layerName: name,
 				mapId: mapId,
-				mapName: map.name,
-				town: map.town,
-				projection: map.projection
+				mapName: map.name
 			},
 			success: function(response){
 				console.log("Importando capa: #"+name);
@@ -412,3 +433,47 @@ function clearMap(){
 	});
 }
 
+function baseLayer(layerName){
+	removeOldBaseLayer();
+	if (layerName=="OSM"){
+    	var osmLayer = new ol.layer.Tile({
+    		source: new ol.source.OSM()
+    	});
+    	osmLayer.name = "OpenStreet Maps";
+    	osmLayer.base = true;
+    	map.getLayers().insertAt(0,osmLayer);
+    	var html="<span data-label-placement>OpenStreet Map</span> <span class=\"caret\"></span>";
+    	$("#baseLayerButton #baseButton").empty().append(html);
+   	}
+   	else if(layerName=="BAL"){
+   		var bingAerialLayer= new ol.layer.Tile({
+   			source: new ol.source.BingMaps({
+        		key: 'Ak-dzM4wZjSqTlzveKz5u0d4IQ4bRzVI309GxmkgSVr1ewS6iPSrOvOKhA-CJlm3',
+        		imagerySet:'Aerial'
+        	})
+   		})
+    	bingAerialLayer.name = "Bing Aerial Layer";
+    	bingAerialLayer.base = true;
+    	map.getLayers().insertAt(0,bingAerialLayer);
+    	var html="<span data-label-placement>Bing Aerial Layer</span> <span class=\"caret\"></span>";
+    	$("#baseLayerButton #baseButton").empty().append(html);
+   	}
+   	else if(layerName=="MQS"){
+   		var mapQuest= new ol.layer.Tile({
+      		source: new ol.source.MapQuest({layer: 'sat'})
+  		})
+  		mapQuest.name= "Map Quest Sat";
+  		mapQuest.base = true;
+  		map.getLayers().insertAt(0,mapQuest);
+    	var html="<span data-label-placement>Map Quest Satelite</span> <span class=\"caret\"></span>";
+    	$("#baseLayerButton #baseButton").empty().append(html);
+   	}
+}
+
+function removeOldBaseLayer(){
+	var layersArray=map.getLayers().getArray();
+	for(var i=0;i<layersArray.length;i++){
+		if(layersArray[i].base==true)
+			map.removeLayer(layersArray[i])
+	}
+}

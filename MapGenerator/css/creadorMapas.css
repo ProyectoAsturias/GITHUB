@@ -15,7 +15,7 @@
 
 #leftBar{
     height: 86vh;
-	padding-top:0.7vh;
+    padding-top:0.7vh;
     margin-top:1.3vh;
     min-height:740px ;
     background-color: lightgray;
@@ -36,27 +36,32 @@
 }
 
 #editWmsButton{
-	height: 6vh;
-	width:95%;
-	margin-left:2.5%;
-	margin-right:2.5%;
+    height: 6vh;
+    width:95%;
+    margin-left:2.5%;
+    margin-right:2.5%;
     min-height: 7ex;
-	background-color:#4E7AB1;
-	border-radius:7px;
-	overflow:hidden;
-	text-align:center;
-	border:solid 2px black;
+    background-color:#4E7AB1;
+    border-radius:7px;
+    overflow:hidden;
+    text-align:center;
+    border:solid 2px black;
+}
+
+#baseButton{
+    height:4vh;
+    min-height: 5ex;
 }
 
 h2{
-	font-family:"Franklin Gothic Medium";
-	display:inline;
-	color:white;
+    font-family:"Franklin Gothic Medium";
+    display:inline;
+    color:white;
 }
 
 #layersList{
-    height: 62vh;
-    min-height:584px;
+    height: 58vh;
+    min-height:484px;
     overflow:auto;
 }
 
@@ -177,7 +182,7 @@ li .glyphicon {
 }
 
 textarea {
-	resize: none;
+    resize: none;
 }
 
 li{
@@ -188,7 +193,7 @@ li{
 .layerName{
     float: left;
     white-space: nowrap;
-    max-width: 60%;
+    max-width: 50%;
     min-width: 35%;
     text-overflow: ellipsis;
     overflow-x: hidden;
