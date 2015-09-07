@@ -1,28 +1,51 @@
 var map;
-
+var layersCounter=0;
+var maxLayers=1;
+var layersList=[];
 /**
 * Inicialización de la variable map de openlayers 3
 **/
 function initMap() {
+	//Zoom depende de si es asturias o un concejo
+	var center = getCenter();
+	var zoom = 7;
+
 	//console.log(mapName);
 	$("#editWmsButton").append("<h2>"+mapName+"</h2>");
 	//console.log(userName);
 	$("#userName").append(userName);
-	var projection=23030;//getCookie("projection");
-	var town=39073;//getCookie("town"); 
 
 	map = new ol.Map({
-		target : 'map',
+		target : 'olmap',
 		renderer : 'canvas',
 		view : new ol.View({
-			center : [-434915.610107824, 5380511.6665677687],
-			zoom : 8
+			center : center,
+			zoom : zoom
 		})
 	});
 	map.name=mapName;
-	map.projection=projection;
-	map.town=town;
 	drawTree();
+}
+
+/**
+* Obtiene el centro de la entidad
+**/
+function getCenter(){
+	/*$.ajax({
+		type: "POST",
+		url : apiPath+"apiLocalgis.php",
+		data : {
+			tag:"getCenter",
+			entityId: entityId
+		},
+		success: function (response) {
+			center=JSON.parse(response);
+		},
+		error:function(error){
+			alert("Error al tomar el punto central de la entidad : "+error);
+		}
+	});*/
+	return [-540136.8999724974, 5213958.799933833];
 }
 
 /**
@@ -35,7 +58,7 @@ function addLayer(name,wms,style) {
 		preload : Infinity,
 		url : wms,
 		params : {
-			'LAYERS' : map.name+":"+name,
+			'LAYERS' : name,
 			'TILED' : true,
 			'STYLES': style,
 		}
@@ -125,7 +148,7 @@ function removeLayer(layer, callback) {
 			},
 			success: function (response) {
 				console.log("##"+response+"##");
-				if(response=="\n0"){
+				if(response==0){
 					//console.log(layer.name);
 					map.removeLayer(layer);
 					//console.log(map.getLayers().getArray().length);
@@ -169,13 +192,7 @@ function removeLayer(layer, callback) {
 * Carga un wms en Geoserver
 **/
 function importWms(wms) {
-	/*var wms;
-	if($('#wms').val()!="")
-		wms=$('#wms').val();
-	else if($("#selectWms").val()!=null)
-		wms=$("#selectWms").val();
-	else
-		return;*/
+
 	//Obtener title y lista de capas que forman el wms
 	$.ajax({
 		type : "GET",
@@ -189,12 +206,16 @@ function importWms(wms) {
 			var service = parser.read(response);
 			var capabilities = service.Capability;
 			var title = service.Service.Title;
-			title=title.replace(/ /gi,'_');
-			var listLayers = [];
-			
-			for(var i=0; i<capabilities.Layer.Layer.length; i++)
-				listLayers.push(capabilities.Layer.Layer[i].Name);
-			$.ajax({
+			for(var i=0; i<capabilities.Layer.Layer.length; i++){
+				var style="";
+				if (wms=="http://ovc.catastro.meh.es/Cartografia/WMS/ServidorWMS.aspx")
+					catastro(capabilities.Layer.Layer[i].Name,wms);
+				else
+					addLayer(capabilities.Layer.Layer[i].Name,wms,style);
+			}
+			drawTree();
+
+			/*$.ajax({
 				type: "POST",
 				url: apiPath+"apiGeoserver.php",
 				data:{
@@ -205,14 +226,13 @@ function importWms(wms) {
 					listLayers: listLayers
 				},
 				success: function(response){
-					//console.log(response);
+					console.log(response);
 					drawTree();
 				},
 				error: function(error) {
 					console.log("Error al cargar el mapa: ".error);				 
 				}
-			});
-
+			});*/
 		},
 		error:function(error){
 			alert("Error al importar un wms: "+error);
@@ -226,7 +246,7 @@ function importWms(wms) {
 function importMap(){
 	if($("#selectMap").val()!=null){
 		var id=$("#selectMap").val();
-
+		$("#modalCounterLayers .modal-header").empty().append("<h4 class=\"modal-title\">Importando Mapa</h4>");
 		console.log("Importando map: #"+id);
 		$.ajax({
 			type: "POST",
@@ -236,13 +256,24 @@ function importMap(){
 				idMap: id
 			},
 			success: function(response){
-				//console.log(response);
+				console.log(response);
+				layersCounter=1;
+				var modalList="";
 				var layerList = JSON.parse(response);
+				maxLayers=layerList.length;
+				for(var i=0; i<layerList.length; i++){
+					j=i+1;
+					modalList+="<label for=\"layerName"+j+"\">"+layerList[i].name+"</label><div id=\"layerName"+j+"\" class=\"updatedLayer\"><span class='glyphicon glyphicon-remove-sign' style='color:red;'></span></div></br>";
+				}
+				$("#modalCounterLayers .modal-body").empty();
+				$("#modalCounterLayers .modal-body").append(modalList);
+				$("#modalCounterLayers").modal("show");
+
 				for(var i=0; i<layerList.length; i++){
 					importLayer(layerList[i]);
 				}
 				//Guardar campos en MAP
-				saveAttributes(id,layerList);
+				//saveAttributes(id,layerList);
 				//Importar ortofoto
 				$.ajax({
 					type: "POST",
@@ -252,6 +283,7 @@ function importMap(){
 						idMap: id,
 					},
 					success: function(response){
+						//console.log(response);
 						var ortoFotos=JSON.parse(response);
 						for(var i=0; i<ortoFotos.length; i++){
 							var wms=ortoFotos[i].id.split("?");
@@ -259,13 +291,13 @@ function importMap(){
 							importWms(wms[0]);
 						}
 					},
-					error: function(response){
-						console.log(response);
+					error: function(error){
+						console.log(error);
 					}
 				})
 			},
 			error: function(error) {
-				console.log("Error al cargar el mapa: ".error);				 
+				console.log("Error al cargar el mapa: ".error);
 			}
 		});
 	}
@@ -280,9 +312,8 @@ function importMap(){
 function importFamily(familyId){	
 	if($("#selectFamily").val()!=null || familyId!=null){
 		var id=$("#selectFamily").val() || familyId;
-
+		$("#modalCounterLayers .modal-header").empty().append("<h4 class=\"modal-title\">Importando Familia</h4>");
 		console.log("Importando familia: #"+id);
-
 		$.ajax({
 			type: "POST",
 			url : apiPath+"apiLocalgis.php",
@@ -292,7 +323,17 @@ function importFamily(familyId){
 			},
 			success: function(response){
 				//console.log(response);
+				layersCounter=1;
+				var modalList="";
 				var layerList = JSON.parse(response);
+				maxLayers=layerList.length;
+				for(var i=0; i<layerList.length; i++){
+					j=i+1;
+					modalList+="<label for=\"layerName"+j+"\">"+layerList[i].name+"</label><div id=\"layerName"+j+"\" class=\"updatedLayer\"><span class='glyphicon glyphicon-remove-sign' style='color:red;'></span></div></br>";
+				}
+				$("#modalCounterLayers .modal-body").empty();
+				$("#modalCounterLayers .modal-body").append(modalList);
+				$("#modalCounterLayers").modal("show");
 				for(var i=0; i<layerList.length; i++){
 					importLayer(layerList[i]);
 				}
@@ -377,16 +418,18 @@ function importLayer(layer,mapId){
 				layerId: id,
 				layerName: name,
 				mapId: mapId,
-				mapName: map.name,
-				town: map.town,
-				projection: map.projection
+				mapName: map.name
 			},
 			success: function(response){
 				console.log("Importando capa: #"+name);
-				//console.log(response);
+				$("#layerName"+layersCounter+"").empty().append("<span class='glyphicon glyphicon-ok-sign' style='color:green;'></span>");
+				layersCounter++;
+				console.log(response);
 				//update MAP Table
 				updateDatabaseMap();
 				drawTree();
+				if(layersCounter>maxLayers)
+					$("#modalCounterLayers").modal("hide");
 			},
 			error: function(error) {
 				console.log("Error al cargar la capa: ".error);				 
@@ -413,15 +456,21 @@ function clearMap(){
 	});
 }
 
-function getCookie(cname) {
-    var name = cname + "=";
-    console.log(document.cookie);
-    var ca = document.cookie.split(';');
-    console.log(ca);
-    for(var i=0; i<ca.length; i++) {
-        var c = ca[i];
-        while (c.charAt(0)==' ') c = c.substring(1);
-        if (c.indexOf(name) == 0) return c.substring(name.length,c.length);
-    }
-    return "";
+function catastro(name,wms){
+	var format = 'image/png';
+	var untiled = new ol.layer.Image({
+		source: new ol.source.ImageWMS({
+		  ratio: 1,
+		  url: wms,
+		  params: {
+			'FORMAT': format,
+			'VERSION': '1.1.1',  
+			STYLES: '',
+			LAYERS:  name,
+		  }
+		})
+	});
+	untiled.name=name;
+	map.addLayer(untiled);
+	drawTree();
 }

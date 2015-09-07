@@ -1,3 +1,4 @@
+var googleLayer=true;
 function baseLayer(layerName){
 	removeOldBaseLayer();
 	if (layerName=="OSM"){
@@ -33,6 +34,11 @@ function baseLayer(layerName){
     	var html="<span data-label-placement>Map Quest Satelite</span> <span class=\"caret\"></span>";
     	$("#baseLayerButton #baseButton").empty().append(html);
    	}
+    else if(layerName=="GGM"){
+      var html="<span data-label-placement>Google Maps</span> <span class=\"caret\"></span>";
+      $("#baseLayerButton #baseButton").empty().append(html);
+      googleMapLayer(map);
+    }
 }
 
 function removeOldBaseLayer(){
@@ -41,4 +47,47 @@ function removeOldBaseLayer(){
 		if(layersArray[i].base==true)
 			map.removeLayer(layersArray[i])
 	}
+  //$('#gmap').hide();
+}
+
+function googleMapLayer(map){
+  if (googleLayer){
+    $("#gmap").addClass("fill");
+    googleLayer=false;
+    var gmap = new google.maps.Map(document.getElementById('gmap'), {
+      disableDefaultUI: true,
+      keyboardShortcuts: false,
+      draggable: false,
+      disableDoubleClickZoom: true,
+      scrollwheel: false,
+      streetViewControl: false
+    })
+    var view = map.getView();
+    var center= view.getCenter();
+    var zoom= view.getZoom();
+    view.on('change:center', function() {
+      var center = ol.proj.transform(view.getCenter(), 'EPSG:3857', 'EPSG:4326');
+      gmap.setCenter(new google.maps.LatLng(center[1], center[0]));
+    });
+    view.on('change:resolution', function() {
+      gmap.setZoom(view.getZoom());
+    });
+
+    var olMapDiv = document.getElementById('olmap');
+    var map = new ol.Map({
+      interactions: ol.interaction.defaults({
+        altShiftDragRotate: false,
+        dragPan: false,
+        rotate: false
+      }).extend([new ol.interaction.DragPan({kinetic: null})]),
+      target: olMapDiv,
+      view: view
+    });
+
+    view.setCenter(center);
+    view.setZoom(zoom);
+
+    olMapDiv.parentNode.removeChild(olMapDiv);
+    gmap.controls[google.maps.ControlPosition.TOP_LEFT].push(olMapDiv);
+  }
 }

@@ -1,5 +1,8 @@
 $(document).ready(function(){
     PrintEventHandler();
+    populatePrintReportsAvailable();
+    changeReportSelectorHandler();
+    removeReportHandler();
 });
 
 /**
@@ -8,98 +11,175 @@ $(document).ready(function(){
  * @return
  */
 function PrintEventHandler() {
-    $(".printMap").on("click", printMap);
+    $(".printMap").on("click", function(){
+        showPrintModal();
+        changePreview();
+    });
+    $("#printModalButton").on("click", function(){
+        printMap()
+    });
+
+    $("#printModal :checkbox, #printModal :text, #printModal textarea").change(function(){
+        changePreview();
+    })
 }
 
+function removeReportHandler(){
+    window.onbeforeunload = function(){
+        deleteReportOnServer();
+    }
+}
+
+function changeReportSelectorHandler(){
+    $('.reportsAvailable').on('change', function() {
+        changePreview();
+    });
+}
+
+function changePreview(){
+    $.ajax({
+        url: "../../JasperReports/src/generateReport.php",
+        data: {
+            reportName: $(".reportsAvailable").val(),
+            mapImage: generateMapImage(),
+            reportTitle: generateReportTitle(),
+            reportDescription: generateReportDescription(),
+            dataTables: generateDataTables(),
+            legendData: generateLegendForReport()
+        },
+        type: "POST",
+        success: function (response) {
+            console.log(response);
+            $("#previewCanvas iframe").attr("src", "../../JasperReports/src/generateReport.php?tag=downloadPdf");
+        }
+    });
+}
 /**
  * Start print task only for map content.
  * @method printMap
  * @return
  */
 function printMap(){
-    $.ajax({
-        url: "../../../JasperReports/src/generateReport.php",
-        data: {
-            reportPath: "C:/wamp/www/JasperReports/reports/Prueba1.jrxml",
-            mapImage: generateMapImage(),
-            fileName: new Date().getDate()+"_report"
-        },
-        method: "POST",
-        success: function (response) {
-            window.location = "../../../JasperReports/src/generateReport.php?tag=downloadPdf";
-            //window.location = "../../../../JasperReports/src/printPreview.php?file="+response;
-            //console.log(response);
-            //$("body").append('<iframe src="../../../../JasperReports/src/printPreview.php?file="'+response+'>');
+    $("#previewCanvas iframe").get(0).contentWindow.print();
+}
 
-            /*PDFJS.getDocument({data: atob(response)}).then(function getPDF(pdf){
-                function renderPages(pdfDoc) {
-                    for(var num = 1; num <= pdfDoc.numPages; num++)
-                        pdfDoc.getPage(num).then(renderPage);
-                }
-                pdf.getPage(1).then(function getPDFPage(page) {
-                    var scale = 1.5;
-                    var viewport = page.getViewport(scale);
-                    // Prepare canvas using PDF page dimensions.
-                    var canvas = document.getElementById('the-canvas');
-                    var context = canvas.getContext('2d');
-                    canvas.height = viewport.height;
-                    canvas.width = viewport.width;
-                    // Render PDF page into canvas context.
-                    var renderContext = {
-                        canvasContext: context,
-                        viewport: viewport
-                    };
-                    page.render(renderContext);
-                });
-            });*/
+function deleteReportOnServer(){
+    $.ajax({
+        url: "../../JasperReports/src/generateReport.php",
+        data: {
+            tag: "deleteReport"
+        },
+        type: "GET",
+        success: function(response){
         }
     });
 }
 
+function populatePrintReportsAvailable(){
+    $.ajax({
+        url: "../../JasperReports/src/generateReport.php",
+        data: {
+            tag: "getAvailableReports"
+        },
+        type: "GET",
+        success: function(response){
+            JSON.parse(response).forEach(function(reportName){
+                $(".reportsAvailable").append($('<option>', {
+                    value: reportName,
+                    text: reportName
+                }))
+            })
+        }
+    });
+}
+
+function generateReportTitle(){
+    if ($("#title :checkbox").is(":checked")){
+        if ($("#title :text").val() == ""){
+            return "Título del informe";
+        }else{
+            return $("#title :text").val();
+        }
+    }else{
+        return "";
+    }
+}
+
+function generateDataTables(){
+    if ($("#modalDatatables :checkbox").is(":checked")){
+        var tableHeaders = [];
+        var tableContent = [];
+        $('#dataTable tr').map(function() {
+            $(this).find('th').map(function() {
+                tableHeaders.push($(this).html())
+            }).get();
+            $(this).find('td').map(function() {
+                tableContent.push($(this).html())
+            }).get();
+        }).get();
+        return (JSON.stringify([{tableHeaders : tableHeaders, tableContent: tableContent}, {tableHeaders : tableHeaders, tableContent: tableContent}]));
+    }else{
+        return "";
+    }
+}
+
+function showPrintModal(){
+    $("#printModal").modal("show");
+}
 
 function generateMapImage(){
     var canvas = $("canvas").get(0);
     return canvas.toDataURL('image/jpeg');
 }
 
-function generateMapTitle(){
-    return "Título del Mapa";
-}
-
-function generateMapDescription(){
-    $("#description").html("Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut " +
-    "\nlabore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi" +
-    "\nut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.");
-
-}
-function generateLegendImage(callback){
-    html2canvas($(".legendBar").get(0),{
-        onrendered: function(canvas) {
-            callback(canvas.toDataURL('image/png'));
+function generateReportDescription(){
+    if ($("#description :checkbox").is(":checked")){
+        if ($("#description textarea").val() == ""){
+            return "Descripción del documento.";
+        }else{
+            return $("#description textarea").val();
         }
-    })
+    }else{
+        return "";
+    }
+}
+
+function generateLegendForReport(){
+    if ($("#modalLegend :checkbox").is(":checked")) {
+        var layersTitle = [];
+        var layersImage = [];
+        $(".legendBar #legendContent").children().each(function (i, elem) {
+            if ($(elem).hasClass("titleLayer")) {
+                layersTitle.push($(elem).find("label").html());
+            } else if ($(elem).hasClass("imgLayer")) {
+                layersImage.push(convertImgToBase64URL($(elem).find("img").get(0)));
+            }
+        });
+        console.log(layersImage);
+        return (JSON.stringify({layersTitle: layersTitle, layersImage: layersImage}))
+    }else{
+        return "";
+    }
 }
 
 function generateMapScale(){
     return $(".ol-scale-line-inner").html();
 }
 
-function generateTableImages(callback){
-    var images =[];
-    var numberOfTables = $("#dataTables").children().length;
-    $("#dataTables").children().each(function() {
-        var element = $(this);
-        var element = $(element).addClass("hugeTransform");
-        html2canvas(element.get(0), {
-            onrendered: function (canvas) {
-                var tableImage = canvas.toDataURL('image/png');
-                images.push(tableImage);
-                $(element).removeClass("hugeTransform");
-                if (images.length == numberOfTables){
-                    callback(images);
-                }
-            }
-        });
-    });
-}
 
+/**
+ * Convert an image
+ * to a base64 url
+ * @param  {String}   url
+ * @param  {Function} callback
+ * @param  {String}   [outputFormat=image/png]
+ */
+function convertImgToBase64URL(imgElement){
+    var canvas = document.createElement('CANVAS'),
+        ctx = canvas.getContext('2d');
+    canvas.height = imgElement.height;
+    canvas.width = imgElement.width;
+    ctx.drawImage(imgElement, 0,0);
+    console.log(canvas.toDataURL("image/png"));
+    return (canvas.toDataURL("image/png"));
+}

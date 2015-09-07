@@ -13,7 +13,7 @@
                 echo json_encode(downloadUserVisors($_SESSION["userName"]));
                 break;
             case "saveMap":
-                echo json_encode(saveMap($_POST["mapName"],$_POST["mapDescription"],$_POST["mapOwner"]));
+                echo json_encode(saveMap($_POST["mapName"],$_POST["mapDescription"],$_POST["mapOwner"],$_POST["entityId"]));
                 break;
             case "saveVisor":
                 echo json_encode(saveVisor($_POST["visorName"],$_POST["visorDescription"],$_POST["visorOwner"]));
@@ -40,7 +40,10 @@
                 echo json_encode(unpublicateMap($_POST["mapName"]));
                 break;
             case "updateDescription":
-                echo updateDescription($_POST["mapName"],$_POST["mapDescription"]);
+                echo json_encode(updateDescription($_POST["mapName"],$_POST["mapDescription"]));
+                break;
+            case "userMapNames":
+                echo json_encode(downloadUserMapNames($_SESSION["userName"]));
                 break;
             efault:
                 echo "Error userContent: Function ".$_POST["tag"]." don't exists.";
@@ -60,8 +63,8 @@
         return pg_fetch_all($result);
     }
 
-    function saveMap($mapName, $mapDescription, $userName){
-        $query = "INSERT INTO public.\"Maps\" (name, description, owner) VALUES ('".$mapName."','".$mapDescription."','".$userName."');";
+    function saveMap($mapName, $mapDescription, $userName, $entityId){
+        $query = "INSERT INTO public.\"Maps\" (name, description, owner, \"entityId\") VALUES ('".$mapName."','".$mapDescription."','".$userName."','".$entityId."');";
         $result = pg_query($query) or die('Error: '.pg_last_error());
         return $result;
     }
@@ -122,6 +125,12 @@
     function updateDescription($mapName, $mapDescription){
         $query = "UPDATE \"Maps\" SET date_update=now(), description='".$mapDescription."' WHERE name='".$mapName."'";
         $result = pg_query($query) or die('Error: '.pg_last_error());
-        return json_encode($result);
+        return $result;
+    }
+
+    function downloadUserMapNames($userName){
+        $query = "SELECT name FROM public.\"Maps\" WHERE owner='".$userName."';";
+        $result = pg_query($query) or die('Error: '.pg_last_error());
+        return pg_fetch_all($result);
     }
 ?>

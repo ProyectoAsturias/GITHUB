@@ -22,7 +22,7 @@ function showLegend(){
 function addToolBar(){
 	$("#addToolBar").click(function(event){
 		numToolBars=numToolBars+1;
-		var newToolBar=	"<div class=\"functionsBar container\" id=\"toolBar"+numToolBars+"\">"+
+		var newToolBar=	"<div class=\"functionsBar container horizontal\" id=\"toolBar"+numToolBars+"\">"+
 							"<div class=\"iconFunctionBar\"><div class=\"fixedIcon\"><span class='glyphicon glyphicon-remove removeFunctionBar'></span></div></div>"+
 						"</div>"
 		$('#mapContainer').append(newToolBar);
@@ -48,6 +48,11 @@ function addVerticalToolBar(){
 function hideToolBar(){
 	$(".removeFunctionBar").click(function(event){
 		console.log(event.target.parentNode.parentNode.parentNode.id);
-		$("#"+event.target.parentNode.parentNode.parentNode.id+"").hide();
+		$("#"+event.target.parentNode.parentNode.parentNode.id+"").remove();
 	});
+}
+
+function back(){
+	console.log(server);
+	window.location=serverGS+"Tables/php/tables.php";
 }

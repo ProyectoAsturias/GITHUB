@@ -20,13 +20,15 @@ function printMap(){
     $.ajax({
         url: "../../../JasperReports/src/generateReport.php",
         data: {
-            reportPath: "C:/wamp/www/JasperReports/reports/Prueba1.jrxml",
+            //reportPath: "classic_vertical_ESTE!!!.jrxml",
+            reportPath: "Prueba1.jrxml",
             mapImage: generateMapImage(),
             fileName: new Date().getDate()+"_report"
         },
         method: "POST",
         success: function (response) {
-            window.location = "../../../JasperReports/src/generateReport.php?tag=downloadPdf";
+            console.log(response);
+            //window.location = "../../JasperReports/src/generateReport.php?tag=downloadPdf";
             //window.location = "../../../../JasperReports/src/printPreview.php?file="+response;
             //console.log(response);
             //$("body").append('<iframe src="../../../../JasperReports/src/printPreview.php?file="'+response+'>');

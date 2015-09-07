@@ -13,6 +13,13 @@ function addDataAttributes(){
     zoomAreaDataAssign();
     emptySpaceAssign();
     exportDataAssign();
+    configurationAssign();
+    helpAssign();
+    homeinfoAssign();
+    lastviewAssign();
+    mailAssign();
+    selectionAssign();
+    updateAssign();
 }
 
 function exportDataAssign(){
@@ -51,7 +58,27 @@ function zoomControlDataAssign(){
 function zoomAreaDataAssign(){
     $(".areaZoom").data("function", "areaZoom");
 }
-
 function emptySpaceAssign(){
-    $(".empty").data("function", "empty");
+    $(".emptySpace").data("function", "emptySpace");
+}
+function configurationAssign(){
+    $(".configuration").data("function", "configuration");
+}
+function helpAssign(){
+    $(".help").data("function", "help");
+}
+function homeinfoAssign(){
+    $(".homeinfo").data("function", "homeinfo");
+}
+function lastviewAssign(){
+    $(".lastview").data("function", "lastview");
+}
+function mailAssign(){
+    $(".mail").data("function", "mail");
+}
+function selectionAssign(){
+    $(".selection").data("function", "selection");
+}
+function updateAssign(){
+    $(".update").data("function", "update");
 }

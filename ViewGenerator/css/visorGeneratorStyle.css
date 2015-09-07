@@ -36,14 +36,16 @@
     min-height: 18ex;
 }
 
-#attachMapText{
+#selectMap{
     margin-bottom: 10px;
-    width:80%;
+    /*width:80%;*/
 }
+
 #attachMapButton{
     width:80%;
     margin-bottom: 10px;
 }
+
 #openModalVisor{
     width:80%;
     overflow:hidden;
@@ -70,14 +72,21 @@
 }
 
 #layersTree{
-    height: 45vh;
-    min-height: 53ex;
+    height: 41vh;
+    min-height: 48ex;
 }
 
 #baseLayerButton{
     height:4vh;
     min-height: 5ex;
 }
+
+#backButton{
+    margin-top:2px;
+    height:3.8vh;
+    min-height: 4.8ex;
+}
+
 
 #baseButton {
     overflow: hidden;
@@ -115,9 +124,9 @@
     z-index: 1;
 }
 
-/*.functionsBar .functionContainer{
+.functionsBar .functionContainer{
     top: -5px !important;
-}*/
+}
 
 .functionsBar .functionContainer:hover{
     top: -5px !important;
@@ -246,7 +255,7 @@
     background-repeat:no-repeat;
     background-size: contain;
 }
-.homeInfo{
+.homeinfo{
     cursor: pointer;
     height: 38px;
     width: 38px;
@@ -254,7 +263,7 @@
     background-repeat:no-repeat;
     background-size: contain;
 }
-.lastView{
+.lastview{
     cursor: pointer;
     height: 38px;
     width: 38px;
@@ -343,6 +352,7 @@ li{
 
 .iconVerticalFunctionBar{
     position:absolute;
+    top:0px;
     left:0.5vw;
 }
 .fixedVerticalIcon{
@@ -365,9 +375,11 @@ li{
     -webkit-border-radius: 15px;
     -moz-border-radius: 15px;
     border-radius: 15px;
-    width:5vw;
+    width:70px;
     height:45vh;
     background-color:beige;
+    padding-left: 0;
+    padding-top: 15px;
     position: absolute;
     top: 250px;
     left: 250px;

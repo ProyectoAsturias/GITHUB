@@ -43,7 +43,7 @@ function login(userName, password){
     $.ajax({
         type: "POST",
         url: "sessionController.php",
-        data: {method: "login", userName: userName, password: password}
+	data: {method: "login", userName: userName, password: password}
     })
         .done(function(response){
             console.log(response);
@@ -52,7 +52,8 @@ function login(userName, password){
                 return;
             }
             else{
-                window.location.replace(redirectUrl);
+		console.log(redirectUrl);
+                window.location=redirectUrl;
             }
         })
 }

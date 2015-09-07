@@ -48,6 +48,7 @@ function createMap() {
         try {
             addLayersAndGroupsFromWMS(mapDetails["WMSUrl"]);
             map.mapURL = mapDetails["WMSUrl"];
+
         }catch (error){
             console.log("WOP");
         }
@@ -100,6 +101,9 @@ function addLayersAndGroupsFromWMS(WMSUrl){
     .then(function(response) {
         var capabilitiesParser = parser.read(response);
         console.log(capabilitiesParser);
+        var bBox =capabilitiesParser.Capability.Layer.BoundingBox[0].extent;
+        var extent = ol.extent.applyTransform(bBox, ol.proj.getTransform("EPSG:4326", "EPSG:3857"));
+        map.getView().fitExtent(extent, map.getSize());
         for(var i = 0; i < capabilitiesParser.Capability.Layer.Layer.length; i ++){
             console.log(capabilitiesParser.Capability.Layer.Layer[i]);
             layersNames.push(capabilitiesParser.Capability.Layer.Layer[i].Name);

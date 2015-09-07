@@ -414,7 +414,8 @@ class ApiRest {
 		if($styleList->styles!=null){
 			$styleList=$styleList->styles->style;
 			foreach($styleList as $style)
-				$result=$result.$this->delStyle($style->name,$workspaceName);
+				if($style->name!="point" && $style->name!="line" && $style->name!="polygon")
+					$result=$result.$this->delStyle($style->name,$workspaceName);
 		}
 		
 		return $result;
@@ -627,7 +628,7 @@ class ApiRest {
 	 * @param $workspaceName
      */
 	public function uploadSldStyle($workspaceName, $url_file, $styleName) {
-		$curl='curl -u admin:geoserver -XPUT -H "Content-type: application/vnd.ogc.sld +xml" -d @'.$url_file.' http://localhost:8080/geoserver/rest/workspaces/'.$workspaceName.'/styles/'.$styleName;
+		$curl='curl -u admin:geoserver -XPUT -H "Content-type: application/vnd.ogc.sld +xml" -d @'.$url_file.' http://192.168.1.4:8080/geoserver/rest/workspaces/'.$workspaceName.'/styles/'.$styleName;
 		$rslt = shell_exec($curl);
 		return $rslt;
 		//return $this->runApi('workspaces/'.urlencode($workspaceName).'/styles'.urlencode($styleName), 'PUT', htmlentities('@'.$url_file, ENT_COMPAT),"application/vnd.ogc.sld +xml");
@@ -657,8 +658,8 @@ class ApiRest {
 	 * @return mixed|string
      */
 	public function createStyle($workspaceName, $SLD, $styleName) {
-		//curl -v -u admin:geoserver -XPOST -H 'Content-type: application/xml' -d '<style><name>tmp</name><filename>sld.prueba</filename></style>' http://localhost:8080/geoserver/rest/workspaces/Arbolado/styles
-		$dir='styles/';
+		//curl -v -u admin:geoserver -XPOST -H 'Content-type: application/xml' -d '<style><name>tmp</name><filename>sld.prueba</filename></style>' http://localhost:8090/geoserver/rest/workspaces/Arbolado/styles
+		$dir='styles/';	
 		$file_sld = $styleName.'.sld';
 		if (!file_exists($dir) || !is_dir($dir))
 			mkdir($dir,0777);
@@ -950,7 +951,7 @@ class ApiRest {
 	 * @return mixed|string
      */
 	public function reload(){
-		//curl -u admin:password -v -XPOST http://localhost:8080/geoserver/rest/reload
+		//curl -u admin:password -v -XPOST http://localhost:8090/geoserver/rest/reload
 		return $this->runApi('reload', 'POST');
 	}
 }

@@ -16,7 +16,7 @@ if (!isset($_SESSION['userName'])) header("Location: ../../Login/php/loginView.p
 if(isset($_GET["visorName"]) && ($_GET["visorName"]!= "")){
 
     $visorData = loadVisorContent($_GET["visorName"]);
-
+    
     echo $twig->render('Visor Generator/visorgenerator.html.twig', array(
         "functions" => ["areazoom" , "clickcoordinates" , "configuration" , "dataretrieve" , "draw" , "export" , "fullscreen" , "help" , "homeinfo" , "lastview" ,"mail" , "panto" , "printmap" , "selection" , "update" ,"zoomin", "zoomout", "empty"],
         "userName" => $_SESSION["userName"],

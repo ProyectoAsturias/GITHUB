@@ -4,8 +4,17 @@
 	if(isset($_POST["tag"])){
 		session_start();
 		$whereEntity="";
-		if($_SESSION["entityId"]!=0)
-			$whereEntity="AND id_entidad=".$_SESSION["entityId"];
+        if(isset($_SESSION["entityId"]))
+            $whereEntity="AND id_entidad=".$_SESSION["entityId"];
+        else if(isset($_POST['entityId'])){
+            $whereEntity="AND id_entidad=".$_POST['entityId'];
+            $_SESSION["entityId"]=$_POST['entityId'];
+        }
+        else {
+			$whereEntity="AND id_entidad=".$_SESSION["userEntityId"];
+            $_SESSION["entityId"]=null;
+        }
+
         switch ($_POST["tag"]) {
             case "getMaps":
                 echo getMaps();

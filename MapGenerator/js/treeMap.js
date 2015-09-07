@@ -31,8 +31,11 @@ function loadWmsTree(wms) {
 			var capabilities = service.Capability;
 			var title = service.Service.Title;
 			var layers = [];
-			//console.log(capabilities);
+			console.log(capabilities);
 			if(capabilities.Layer.Layer!=undefined){
+				var bBox=capabilities.Layer.BoundingBox[0].extent;
+				var extent=ol.extent.applyTransform(bBox, ol.proj.getTransform("EPSG:4326", "EPSG:3857"));
+				map.getView().fitExtent(extent, map.getSize());
 				for(var i=0; i<capabilities.Layer.Layer.length; i++){
 					if (!searchLayerByName(capabilities.Layer.Layer[i].Name)){
 						var style="";
@@ -119,11 +122,11 @@ function generateLayerListHTML(){
 
 function generateNode(layer){
 	var node = $("<li><div class='layerName'>"+layer.name +"</div>" +
-	"<span class='glyphicon glyphicon-remove removeLayer'></span>" +
-	"<span class='glyphicon glyphicon-eye-open visibilityLayer' ></span>" +
-	"<span class='glyphicon glyphicon-cog attributesLayer'></span>" +
-	"<span class='glyphicon glyphicon-tint stylesLayer'></span>" +
-	"<span class='glyphicon glyphicon-list-alt infoLayer'></span>" +
+	"<span class='glyphicon glyphicon-remove removeLayer' title=\"Borrar capa\"></span>" +
+	"<span class='glyphicon glyphicon-eye-open visibilityLayer' title=\"Visiblidad de capa\"></span>" +
+	"<span class='glyphicon glyphicon-cog attributesLayer' title=\"Seleccionar atributos\"></span>" +
+	"<span class='glyphicon glyphicon-tint stylesLayer' title=\"Seleccionar estilo\"></span>" +
+	"<span class='glyphicon glyphicon-list-alt infoLayer' title=\"Editar datos de la capa\"></span>" +
 	"</li>")
 		.data("layer", layer)
 		.appendTo($("#layersList ol"));

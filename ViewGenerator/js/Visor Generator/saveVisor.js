@@ -56,6 +56,8 @@ function extractFunctionsBar(){
     var functionsStructure = new Array();
     $(".functionsBar").each(function(){
         var functionBar = {
+            "id": $(this)[0].id ,
+            "type": $(this)[0].classList[2],
             "position" : {"top" : $(this).css("top"), "left" : $(this).css("left")},
             "functions" : []};
         $(this).find(".function").each(function(){
@@ -63,5 +65,6 @@ function extractFunctionsBar(){
         });
         functionsStructure.push(functionBar);
     });
+    console.log(functionsStructure);
     return functionsStructure;
 }

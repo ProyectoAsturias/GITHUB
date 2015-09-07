@@ -19,7 +19,7 @@
         
         $method = "aes-128-cbc";
         //falta aplicar PBEKeySpec con salt (actualmente no encripta correctamente)
-        $password = openssl_encrypt($password, $method, 'GEOPISTA');
+        //$password = openssl_encrypt($password, $method, 'GEOPISTA');
         //print("##".$password."##");
 
         /*$query="SELECT id,id_entidad FROM iuseruserhdr WHERE name = '".$userName."' AND password='".$password."'";
@@ -42,11 +42,11 @@
             $login= true;
         }
         if ($login && $row[1]!=null){
-            session_start();
+	    session_start();
             $_SESSION["userName"]=$userName;
             $_SESSION["userId"]=$userId;
-            $_SESSION["entityId"]=$entityId;
-            updateSession();
+            $_SESSION["userEntityId"]=$entityId;
+            //updateSession();
             $loginResponse = new stdClass();
             $loginResponse->logged = true;
             $loginResponse->previousUrl = $_SERVER['HTTP_REFERER'];
@@ -79,9 +79,13 @@
 
     function registerUser($userId,$userName){
         $connection=new DBConnection("UserContent");
-        $wms="http://ovc.catastro.meh.es/Cartografia/WMS/ServidorWMS.aspx,http://ogc.larioja.org/wms/request.php,http://ogc.bgs.ac.uk/cgi-bin/BGS_Bedrock_and_Superficial_Geology/wms";
-        $query="INSERT INTO \"Users\" (id, name, wms) VALUES (".$userId.",'".$userName."','".$wms."')";
+        $query="SELECT name FROM \"Users\" WHERE id='".$userId."' and name='".$userName."'";
         $result=pg_query($query);
+        $row=pg_fetch_row($result);
+        if($row[0]==''){
+            $query="INSERT INTO \"Users\" (id, name) VALUES (".$userId.",'".$userName."')";
+            $result=pg_query($query);
+        }
         $connection->close();
     }
 ?>
