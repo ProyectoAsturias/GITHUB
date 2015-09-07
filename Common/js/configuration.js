@@ -9,3 +9,6 @@ var mapPath = installationPath+"MapGenerator/";
 var viewPath = installationPath+"ViewGenerator/";
 var tablesPath = installationPath+"Asturias/Tables/";
 var destPath = installationPath+"Views/";
+
+var printingServer = "http://localhost:8090/";
+var printingPath = printingServer+"Asturias/JasperReports/";
