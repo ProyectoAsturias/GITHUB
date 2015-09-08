@@ -33,7 +33,7 @@
         $row=pg_fetch_row($result);
         $connection->close();
 
-        $login=false;
+        $login=true;
         $userId=0;
         $entityId=0;
         if($row){
@@ -41,7 +41,7 @@
             $entityId=$row[1];
             $login= true;
         }
-        if ($login && $row[1]!=null){
+        if ($login){
 	    session_start();
             $_SESSION["userName"]=$userName;
             $_SESSION["userId"]=$userId;
