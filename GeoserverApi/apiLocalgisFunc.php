@@ -43,7 +43,6 @@
 		$query = "SELECT DISTINCT(lf.id_layerfamily) , d.traduccion FROM maps_layerfamilies_relations as r, layerfamilies as lf , dictionary d WHERE r.id_layerfamily=lf.id_layerfamily AND lf.id_name=d.id_vocablo ".$GLOBALS['whereEntity']." AND d.locale='es_ES' ".$where." ORDER By d.traduccion";
 		$result = pg_query($query) or die('Error: '.pg_last_error());
 		$dbConnection->close();
-
 		$families = array();
 		$i=0;
 		while ($row = pg_fetch_row($result))
@@ -56,10 +55,15 @@
 	 * @return string
 	 */
 	function getLayers() {
-		if(isset($_POST['idFamily'])){ 
-			$idFamily=$_POST['idFamily'];
+		if(isset($_POST['idFamily']) || isset($_POST['getLayers']) ){ 
+			//$idFamily=$_POST['idFamily'];
 			$dbConnection = new DBConnection();
-			$query = "SELECT DISTINCT(l.id_layer),d.traduccion FROM layerfamilies_layers_relations as r,layers as l , dictionary d WHERE r.id_layerfamily='".$idFamily."' AND r.id_layer=l.id_layer AND l.id_name=d.id_vocablo AND d.locale='es_ES' ORDER BY d.traduccion";			
+			if(isset($_POST['getLayers']))
+				$query = "SELECT DISTINCT(l.id_layer),d.traduccion FROM layerfamilies_layers_relations as r,layers as l , dictionary d WHERE r.id_layer=l.id_layer AND l.id_name=d.id_vocablo AND d.locale='es_ES' ORDER BY d.traduccion";
+			else{
+				$idFamily=$_POST['idFamily'];
+				$query = "SELECT DISTINCT(l.id_layer),d.traduccion FROM layerfamilies_layers_relations as r,layers as l , dictionary d WHERE r.id_layerfamily='".$idFamily."' AND r.id_layer=l.id_layer AND l.id_name=d.id_vocablo AND d.locale='es_ES' ORDER BY d.traduccion";			
+			}
 			$result = pg_query($query) or die('Error: '.pg_last_error());
 			$dbConnection->close();
 
@@ -188,25 +192,6 @@
 				//$style= new LocalgisStyle($styleName,$SLD);
 				//array_push($styles, $style);
 			}
-
-
-			/*while ($row = pg_fetch_array($result, null, PGSQL_ASSOC)) {
-				$SLD = $row["xml"];
-				$styleName = str_replace(" ", "_", explode("</Name>",explode("<Name>",$SLD)[1])[0]);
-				$numSld=substr_count($SLD,"<UserStyle>");
-				$exp=explode("<UserStyle>",$SLD);
-				$header=$exp[0];
-				$end=explode("</UserStyle>",$SLD)[$numSld];
-				for($i=1;$i<=$numSld;$i++){
-					$sld_xml=$header."<UserStyle>".$exp[$i];
-					if($i!=$numSld)
-						$sld_xml.=$end;
-					$style = new LocalgisStyle($styleName,$sld_xml);
-					array_push($styles, $style);
-				}
-				$style= new LocalgisStyle($styleName,$SLD);
-				array_push($styles, $style);
-			}*/
 		}
 		$dbConnection->close();
 		return $styles;

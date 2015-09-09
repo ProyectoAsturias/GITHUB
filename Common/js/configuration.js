@@ -7,5 +7,8 @@ var installationPath = "../../";
 var apiPath = installationPath+"GeoserverApi/";
 var mapPath = installationPath+"MapGenerator/";
 var viewPath = installationPath+"ViewGenerator/";
-var tablesPath = installationPath+"Tables/";
+var tablesPath = installationPath+"Asturias/Tables/";
 var destPath = installationPath+"Views/";
+
+var printingServer = "http://localhost:8090/";
+var printingPath = printingServer+"Asturias/JasperReports/";

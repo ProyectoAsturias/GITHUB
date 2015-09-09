@@ -59,7 +59,8 @@ function createMap() {
         addBaseOSMLayer();
     }
     map.addControl(new ol.control.ScaleLine());
-    toolsDraggable();
+    if (typeof (toolsDraggable) == "function")
+        toolsDraggable();
 }
 
 function destroyMap(){

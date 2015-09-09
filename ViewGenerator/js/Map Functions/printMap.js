@@ -38,7 +38,8 @@ function changeReportSelectorHandler(){
 
 function changePreview(){
     $.ajax({
-        url: "../../JasperReports/src/generateReport.php",
+        //url: "../../JasperReports/src/generateReport.php",
+        url: printingPath + "src/generateReport.php",
         data: {
             reportName: $(".reportsAvailable").val(),
             mapImage: generateMapImage(),
@@ -49,8 +50,7 @@ function changePreview(){
         },
         type: "POST",
         success: function (response) {
-            console.log(response);
-            $("#previewCanvas iframe").attr("src", "../../JasperReports/src/generateReport.php?tag=downloadPdf");
+            $("#previewCanvas iframe").attr("src", printingPath + "src/generateReport.php?tag=getPreview");
         }
     });
 }
@@ -60,12 +60,13 @@ function changePreview(){
  * @return
  */
 function printMap(){
-    $("#previewCanvas iframe").get(0).contentWindow.print();
+    //$("#previewCanvas iframe").get(0).contentWindow.print();
+    window.open(printingPath + "src/generateReport.php?tag=downloadPdf", "_blank");
 }
 
 function deleteReportOnServer(){
     $.ajax({
-        url: "../../JasperReports/src/generateReport.php",
+        url: printingPath + "src/generateReport.php",
         data: {
             tag: "deleteReport"
         },
@@ -77,12 +78,13 @@ function deleteReportOnServer(){
 
 function populatePrintReportsAvailable(){
     $.ajax({
-        url: "../../JasperReports/src/generateReport.php",
+        url: printingPath + "src/generateReport.php",
         data: {
             tag: "getAvailableReports"
         },
         type: "GET",
         success: function(response){
+            console.log(response);
             JSON.parse(response).forEach(function(reportName){
                 $(".reportsAvailable").append($('<option>', {
                     value: reportName,

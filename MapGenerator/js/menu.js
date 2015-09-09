@@ -117,10 +117,9 @@ function showListMaps(){
 			tag:"getMaps"
 		},
 		success: function(response) {
-			//console.log(response);
 			var mapList=JSON.parse(response);
 			for(var i=0;i<mapList.length; i++){
-				var mapName= mapList[i].name;
+				var mapName= utf8_decode(mapList[i].name);
 				var mapId = mapList[i].id;
 				$("#selectMap").append("<option value=\""+mapId+"\" name=\""+mapName+"\">"+mapName+"</option>");
 			}
@@ -152,13 +151,38 @@ function showListFamilies(){
 			//console.log(response);
 			var familyList = JSON.parse(response);
 			$("#selectFamily").empty();
+
 			for(var i=0; i<familyList.length; i++){
 				var familyId=familyList[i].id;
-				var familyName=familyList[i].name;
+				var familyName=utf8_decode(familyList[i].name);
 				$("#selectFamily").append("<option value=\""+familyId+"\" name=\""+familyName+"\">"+familyName+"</option>");
 			}
 			$('#selectFamily').prop('selectedIndex', -1);
 			$(".chosen-select").trigger("chosen:updated");		
+		},
+		error:function(error){
+			console.log("Error al mostrar la lista de familias: "+error);
+		}
+	})
+	var getLayers= true;
+	$.ajax({
+		type : "POST",
+		url : apiPath+"apiLocalgis.php",
+		data : {
+			tag:"getLayers",
+			getLayers: getLayers
+		},
+		success : function (response) {
+			//console.log(response);
+			var layerList = JSON.parse(response);
+			$("#selectLayer").empty();
+			for(var i=0; i<layerList.length; i++){
+				var layerId=layerList[i].id;
+				var layerName=utf8_decode(layerList[i].name);
+				$("#selectLayer").append("<option value=\""+layerId+"\" name=\""+layerName+"\">"+layerName+"</option>");
+			}
+			$('#selectLayer').prop('selectedIndex', -1);
+			$(".chosen-select").trigger("chosen:updated");	
 		},
 		error:function(error){
 			console.log("Error al mostrar la lista de familias: "+error);
@@ -195,4 +219,45 @@ function showListLayers(){
 			console.log("Error al mostrar la lista de capas: "+error);
 		}
 	})
+}
+
+function utf8_decode(str_data) {
+	var tmp_arr = [],
+		i = 0,
+		ac = 0,
+		c1 = 0,
+		c2 = 0,
+		c3 = 0,
+		c4 = 0;
+
+	str_data += '';
+
+	while (i < str_data.length) {
+		c1 = str_data.charCodeAt(i);
+		if (c1 <= 191) {
+			tmp_arr[ac++] = String.fromCharCode(c1);
+			i++;
+		} else if (c1 <= 223) {
+			c2 = str_data.charCodeAt(i + 1);
+			tmp_arr[ac++] = String.fromCharCode(((c1 & 31) << 6) | (c2 & 63));
+			i += 2;
+		} else if (c1 <= 239) {
+			// http://en.wikipedia.org/wiki/UTF-8#Codepage_layout
+			c2 = str_data.charCodeAt(i + 1);
+			c3 = str_data.charCodeAt(i + 2);
+			tmp_arr[ac++] = String.fromCharCode(((c1 & 15) << 12) | ((c2 & 63) << 6) | (c3 & 63));
+			i += 3;
+		} else {
+			c2 = str_data.charCodeAt(i + 1);
+			c3 = str_data.charCodeAt(i + 2);
+			c4 = str_data.charCodeAt(i + 3);
+			c1 = ((c1 & 7) << 18) | ((c2 & 63) << 12) | ((c3 & 63) << 6) | (c4 & 63);
+			c1 -= 0x10000;
+			tmp_arr[ac++] = String.fromCharCode(0xD800 | ((c1 >> 10) & 0x3FF));
+			tmp_arr[ac++] = String.fromCharCode(0xDC00 | (c1 & 0x3FF));
+			i += 4;
+		}
+	}
+
+	return tmp_arr.join('');
 }

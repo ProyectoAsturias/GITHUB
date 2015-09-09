@@ -1,4 +1,4 @@
-$(document).ready(function(){
+$(document).ready(function () {
     loginEventHandler();
 });
 
@@ -10,8 +10,9 @@ function loginEventHandler(){
     });
 }
 
-function validateLogin(){
-    if (validateUsername() && validatePassword()) return true;
+function validateLogin() {
+    if (validateUsername() && validatePassword())
+        return true;
     return false;
 }
 
@@ -23,33 +24,40 @@ function validateUsername(){
     return true;
 }
 
-function validatePassword(){
-    if(!$("#loginForm input[name='password']").val()){
+function validatePassword() {
+    if (!$("#loginForm input[name='password']").val()) {
         showErrorMessage("Debe introducir una contraseña.");
         return false;
     }
     return true;
 }
 
-function showErrorMessage(errorMessage){
+function showErrorMessage(errorMessage) {
     $("#loginAlert p").html(errorMessage);
     $("#loginAlert").slideDown(500);
-    setTimeout(function(){
+    setTimeout(function () {
         $("#loginAlert").slideUp(500);
     }, 3000);
 }
 
-function login(userName, password){
+function login(userName, password) {
     $.ajax({
-        type: "POST",
-        url: "sessionController.php",
-	data: {method: "login", userName: userName, password: password}
+        type : "POST",
+        url : "sessionController.php",
+        data : {
+            method : "login",
+            userName : userName,
+            password : password
+        }
     })
-        .done(function(response){
+        .done(function (response) {
             console.log(response);
-            if (!JSON.parse(response).logged){
+            if (!JSON.parse(response).logged) {
                 showErrorMessage(JSON.parse(response).errorMessage);
                 return;
+            } else {
+                console.log(redirectUrl);
+                window.location = redirectUrl;
             }
             else{
 		console.log(redirectUrl);
@@ -57,4 +65,3 @@ function login(userName, password){
             }
         })
 }
-

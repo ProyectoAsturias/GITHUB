@@ -7,28 +7,29 @@
             <div id="leftBar">
                 <div id="mapName">
                     <!-- Trigger the modal with a button -->
-                    <button id="editWmsButton" type="button" class="btn btn-info btn-block" onclick="appendModalWms()"></button>
+                    <button id="editWmsButton" type="button" class="btn btn-info btn-block" onclick="appendModalWms()" title="Editar datos del WMS" ></button>
                 </div>
                 <div id="layersList">
                     <ol class="simple_with_animation vertical">
                     </ol>
                 </div>
                 <div id="baseLayerButton" class="dropup">
-                    <button data-toggle="dropdown" class="btn btn-primary btn-block dropdown-toggle" id="baseButton"><span data-label-placement>Seleccione capa base</span> <span class="caret"></span></button>
+                    <button data-toggle="dropdown" class="btn btn-primary btn-block dropdown-toggle" id="baseButton" title="Seleccionar capa base" ><span data-label-placement>OpenStreetMap</span> <span class="caret"></span></button>
                     <ul class="dropdown-menu" style="width:100%">
                       <li><button class="btn btn-block" onclick="baseLayer('OSM')">OpenStreetMap</button></li>
                       <li><button class="btn btn-block" onclick="baseLayer('BAL')">Bing Aerial Layer</button></li>
                       <li><button class="btn btn-block" onclick="baseLayer('MQS')">Map Quest Satelite</button></li>
+                      <li><button class="btn btn-block" onclick="baseLayer('GGM')">Google Maps</button></li>
                     </ul>
                 </div>
                 <div class="btn-group btn-group-justified" role="group">
-                    <a href="#" id="saveMapButton" class="btn btn-lg btn-success" onclick="back()"><span class="glyphicon glyphicon-chevron-left"></span> Volver </a>
-                    <a href="#" id="cancelMapButton" class="btn btn-lg btn-danger" onclick="confirmClearMap()"><span class="glyphicon glyphicon-remove"></span>  </a>
+                    <a href="#" id="saveMapButton" class="btn btn-lg btn-success" onclick="back()" title="Volver"><span class="glyphicon glyphicon-chevron-left"></span> Volver </a>
+                    <a href="#" id="cancelMapButton" class="btn btn-lg btn-danger" onclick="confirmClearMap()" title="Borrar mapa"><span class="glyphicon glyphicon-remove"></span>  </a>
                 </div>
                 <div class="separator"></div>
                 <div id="logout">
                     <p>Conectado como: <span class="glyphicon glyphicon-user"></span><strong id="userName"></strong></p>
-                    <a href="#" class="btnLogout btn btn-lg btn-warning"><span class="glyphicon glyphicon-log-out"></span> Logout</a>
+                    <a href="#" class="btnLogout btn btn-lg btn-warning"><span class="glyphicon glyphicon-log-out"></span> Cerrar sesión</a>
                 </div>
             </div>
         </div>
