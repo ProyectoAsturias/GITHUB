@@ -11,7 +11,7 @@ $(document).ready(function(){
             tag:"getEntityData"
         },
         success: function (response) {
-            //console.log(response);
+            console.log(response);
             //Si no devuelve nada, es generico
             entityParams=JSON.parse(response);
             if(entityParams.length==0){
