@@ -10,6 +10,12 @@
 		var $host;
 
 		/**
+		 * Puerto de Geoserver.
+		 * @var string
+		 */
+		var $port;
+
+		/**
 		 * Usuario de Geoserver.
 		 * @var string
 		 */
@@ -47,11 +53,12 @@
 		 */
 		public function __construct($mapName=""){
 			$this->host="localhost";
+			$this->port="8090";
 			$this->user="admin";
 			$this->pass="geoserver";
 			$this->wsName=$mapName;
 			$this->dsName=$mapName;
-			$this->url='http://'.$this->host.':8080/geoserver';
+			$this->url='http://'.$this->host.':'.$this->port.'/geoserver';
 		}
 	}
 ?>

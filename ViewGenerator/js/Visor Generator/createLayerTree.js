@@ -3,10 +3,16 @@ $(document).ready(function(){
 });
 
 function updateTreeLayer(){
-    $(document).ajaxStop(function(){
+    if (map!= undefined && map.mapURL == ""){
         var treeData = generateTreeData();
         createLayerTree(treeData);
-    });
+
+    }else{
+        $(document).ajaxStop(function(){
+            var treeData = generateTreeData();
+            createLayerTree(treeData);
+        });
+    }
 }
 
 function generateNode(layer){
@@ -22,7 +28,8 @@ function generateNode(layer){
 function generateTreeData(){
     var treeData = [{text: "Mapa", nodes: [], state: {checked: true}}];
     map.getLayers().forEach(function(layer, index){
-       treeData[0].nodes.push(generateNode(layer));
+        if(!layer.base)
+            treeData[0].nodes.push(generateNode(layer));
     });
     return treeData;
 }

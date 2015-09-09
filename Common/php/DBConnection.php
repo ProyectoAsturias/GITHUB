@@ -47,20 +47,21 @@
 
 
 		public function __construct($database=null,$schema=null){
-			$this->host="192.168.127.129";
+			//$this->host="avanzastore.dyndns.org";
+			$this->host="192.168.1.66";
 			$this->port="5432";
 			if ($database==null)
-				$this->database="Localgis";
+				$this->database="geopista";
+				//$this->database="geopista_bezana";
 			else
 				$this->database=$database;
 			if ($schema==null)
 				$this->schema="public";
 			else
 				$this->schema=$schema;
-			$this->schema="public";
 			$this->user="postgres";
 			$this->pass="1234";
-			$this->conn = pg_connect("host=".$this->host." port=".$this->port." dbname=".$this->database." user=".$this->user." password=".$this->pass)  or die('Error: '.pg_last_error());
+			$this->conn = pg_connect("host=".$this->host." port=".$this->port." dbname=".$this->database." password=".$this->pass." user=".$this->user." password=".$this->pass)  or die('Error: '.pg_last_error());
 		}
 		
 		/**

@@ -23,6 +23,19 @@ function createJson() {
 
 function saveVisorData(visorData) {
     console.log(JSON.stringify(visorData));
+    $.ajax({
+        url: "../../Tables/php/userContent.php",
+        data: {
+            "tag" : "saveVisorContent",
+            "visorContent" : JSON.stringify(visorData),
+            "visorName" : visorName
+        },
+        method: "POST",
+        success: function (response) {
+            console.log("Guardado");
+            console.log(response);
+        }
+    });
 }
 
 /**
@@ -43,6 +56,8 @@ function extractFunctionsBar(){
     var functionsStructure = new Array();
     $(".functionsBar").each(function(){
         var functionBar = {
+            "id": $(this)[0].id ,
+            "type": $(this)[0].classList[2],
             "position" : {"top" : $(this).css("top"), "left" : $(this).css("left")},
             "functions" : []};
         $(this).find(".function").each(function(){
@@ -50,5 +65,6 @@ function extractFunctionsBar(){
         });
         functionsStructure.push(functionBar);
     });
+    console.log(functionsStructure);
     return functionsStructure;
 }

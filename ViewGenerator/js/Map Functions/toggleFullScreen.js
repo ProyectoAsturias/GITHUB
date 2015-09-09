@@ -20,7 +20,7 @@ function attachFullScreenControl() {
  * @return
  */
 function FullScreenEventHandler() {
-    $("#fullScreen").on("click", function (event) {
+    $(".fullScreen").on("click", function (event) {
         $("#fullScreenDefaultButton").trigger("click");
     });
 }

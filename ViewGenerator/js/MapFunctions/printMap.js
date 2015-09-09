@@ -8,7 +8,7 @@ $(document).ready(function(){
  * @return
  */
 function PrintEventHandler() {
-    $("#printMap").on("click", printMap);
+    $(".printMap").on("click", printMap);
 }
 
 /**
@@ -17,56 +17,91 @@ function PrintEventHandler() {
  * @return
  */
 function printMap(){
-    makeOverlaysResponsive();
-    window.print();
-}
+    $.ajax({
+        url: "../../../JasperReports/src/generateReport.php",
+        data: {
+            //reportPath: "classic_vertical_ESTE!!!.jrxml",
+            reportPath: "Prueba1.jrxml",
+            mapImage: generateMapImage(),
+            fileName: new Date().getDate()+"_report"
+        },
+        method: "POST",
+        success: function (response) {
+            console.log(response);
+            //window.location = "../../JasperReports/src/generateReport.php?tag=downloadPdf";
+            //window.location = "../../../../JasperReports/src/printPreview.php?file="+response;
+            //console.log(response);
+            //$("body").append('<iframe src="../../../../JasperReports/src/printPreview.php?file="'+response+'>');
 
-/**
- * In order to print overlays on the map, those must become responsive since they are generated with static position.
- * @method makeOverlaysResponsive
- * @return
- */
-function makeOverlaysResponsive() {
-    makeCoordinatesOverlayResponsive();
-    makeAreaOverlayResponsive();
-}
-
-/**
- * Changes some css attributes on coordinatesOverlay from static values to percentages. With that when printing is started this overlay stays
- * in the same position.
- * @method makeCoordinatesOverlayResponsive
- * @return
- */
-function makeCoordinatesOverlayResponsive() {
-    $("#coordinatesOverlay").parent().css('right', function () {
-        var rightMargin = $("#coordinatesOverlay").parent().css("right");
-        var rightPercentage = parseFloat(rightMargin) / parseFloat($("#mapContainer").width());
-        return rightPercentage * 100 + "%";
-    });
-
-    $("#coordinatesOverlay").parent().css('bottom', function () {
-        var bottomMargin = $("#coordinatesOverlay").parent().css("bottom");
-        var bottomPercentage = parseFloat(bottomMargin) / parseFloat($("#mapContainer").height());
-        return bottomPercentage * 100 + "%";
-    });
-}
-
-/**
- * Changes some css attributes on areaOverlay from static values to percentages. With that when printing is started this overlay stays
- * in the same position.
- * @method makeAreaOverlayResponsive
- * @return
- */
-function makeAreaOverlayResponsive() {
-    $("#areaOverlay").parent().css('right', function () {
-        var rightMargin = $("#areaOverlay").parent().css("right");
-        var rightPercentage = parseFloat(rightMargin) / parseFloat($("#mapContainer").width());
-        return rightPercentage * 100 + "%";
-    });
-
-    $("#areaOverlay").parent().css('bottom', function () {
-        var bottomMargin = $("#areaOverlay").parent().css("bottom");
-        var bottomPercentage = parseFloat(bottomMargin) / parseFloat($("#mapContainer").height());
-        return bottomPercentage * 100 + "%";
+            /*PDFJS.getDocument({data: atob(response)}).then(function getPDF(pdf){
+                function renderPages(pdfDoc) {
+                    for(var num = 1; num <= pdfDoc.numPages; num++)
+                        pdfDoc.getPage(num).then(renderPage);
+                }
+                pdf.getPage(1).then(function getPDFPage(page) {
+                    var scale = 1.5;
+                    var viewport = page.getViewport(scale);
+                    // Prepare canvas using PDF page dimensions.
+                    var canvas = document.getElementById('the-canvas');
+                    var context = canvas.getContext('2d');
+                    canvas.height = viewport.height;
+                    canvas.width = viewport.width;
+                    // Render PDF page into canvas context.
+                    var renderContext = {
+                        canvasContext: context,
+                        viewport: viewport
+                    };
+                    page.render(renderContext);
+                });
+            });*/
+        }
     });
 }
+
+
+function generateMapImage(){
+    var canvas = $("canvas").get(0);
+    return canvas.toDataURL('image/jpeg');
+}
+
+function generateMapTitle(){
+    return "Título del Mapa";
+}
+
+function generateMapDescription(){
+    $("#description").html("Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut " +
+    "\nlabore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi" +
+    "\nut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.");
+
+}
+function generateLegendImage(callback){
+    html2canvas($(".legendBar").get(0),{
+        onrendered: function(canvas) {
+            callback(canvas.toDataURL('image/png'));
+        }
+    })
+}
+
+function generateMapScale(){
+    return $(".ol-scale-line-inner").html();
+}
+
+function generateTableImages(callback){
+    var images =[];
+    var numberOfTables = $("#dataTables").children().length;
+    $("#dataTables").children().each(function() {
+        var element = $(this);
+        var element = $(element).addClass("hugeTransform");
+        html2canvas(element.get(0), {
+            onrendered: function (canvas) {
+                var tableImage = canvas.toDataURL('image/png');
+                images.push(tableImage);
+                $(element).removeClass("hugeTransform");
+                if (images.length == numberOfTables){
+                    callback(images);
+                }
+            }
+        });
+    });
+}
+

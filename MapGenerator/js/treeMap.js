@@ -4,14 +4,17 @@ $(document).ready(function(){
 
 function drawTree(){
 	if (!searchLayerByName("OpenStreet Maps")){
+ 		var source = new ol.source.OSM()
     	var osmLayer = new ol.layer.Tile({
-    		source: new ol.source.OSM()
+    		source: source
     	});
     	osmLayer.name = "OpenStreet Maps";
+    	osmLayer.base = true;
     	map.addLayer(osmLayer);
+		updateLoadingBar(source);
    	};
 	var wms=server+"geoserver/"+map.name+"/wms";
-	console.log(wms);
+	//console.log(wms);
 	loadWmsTree(wms);
 }
 
@@ -28,11 +31,17 @@ function loadWmsTree(wms) {
 			var capabilities = service.Capability;
 			var title = service.Service.Title;
 			var layers = [];
-			//console.log(wms+"?request=getCapabilities&service=wms");
+			console.log(capabilities);
 			if(capabilities.Layer.Layer!=undefined){
+				var bBox=capabilities.Layer.BoundingBox[0].extent;
+				var extent=ol.extent.applyTransform(bBox, ol.proj.getTransform("EPSG:4326", "EPSG:3857"));
+				map.getView().fitExtent(extent, map.getSize());
 				for(var i=0; i<capabilities.Layer.Layer.length; i++){
 					if (!searchLayerByName(capabilities.Layer.Layer[i].Name)){
-						var layer = addLayer(capabilities.Layer.Layer[i].Name,wms);
+						var style="";
+						if(capabilities.Layer.Layer[i].Style!=null && capabilities.Layer.Layer[i].Style[0].Name)
+							 style=capabilities.Layer.Layer[i].Style[0].Name;
+						var layer = addLayer(capabilities.Layer.Layer[i].Name,wms,style);
 						if(capabilities.Layer.Layer[i].cascaded==1)
 							layer.wms=true;
 						else
@@ -40,8 +49,8 @@ function loadWmsTree(wms) {
 						layers.push(layer);
 					}
 				}
-				updateTreeLayer();
 			}
+			updateTreeLayer();
 		},
 		error:function(error){
 			alert("Error: "+error);
@@ -66,6 +75,13 @@ function makeNodesSortable(){
 				_super($item, container);
 			});
 		},
+		onDrop: function ($item, container, _super, event) {
+			$item.removeClass(container.group.options.draggedClass).removeAttr("style");
+			$("body").removeClass(container.group.options.bodyClass);
+			var indexTo =  map.getLayers().getLength()-1-$item.index();
+			reorderOpenlayersMap(indexFrom, indexTo);
+			updateDatabaseMap();
+		},
 		onDragStart: function ($item, container, _super, event) {
 			var offset = $item.offset(),
 				pointer = container.rootGroup.pointer;
@@ -84,12 +100,6 @@ function makeNodesSortable(){
 		},
 		over: function (event, ui) {
 			$( this ).addClass( "ui-state-highlight" );
-		},
-		onDrop: function ($item, container, _super, event) {
-			$item.removeClass(container.group.options.draggedClass).removeAttr("style");
-			$("body").removeClass(container.group.options.bodyClass);
-			var indexTo =  map.getLayers().getLength()-1-$item.index();
-			reorderOpenlayersMap(indexFrom, indexTo);
 		}
 	});
 }
@@ -104,7 +114,8 @@ function generateLayerListHTML(){
 	$("#layersList ol").empty();
 	var reverseLayers = map.getLayers().getArray().slice(0).reverse();
 	reverseLayers.forEach(function (layer) {
-		generateNode(layer);
+		if(!layer.base)
+			generateNode(layer);
 	});
 	makeNodesSortable();
 }

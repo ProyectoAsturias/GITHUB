@@ -1,0 +1,131 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=no, width=device-width">
+
+    <link rel="stylesheet" href="../../Common/css/ol.css" type="text/css">
+    <link rel="stylesheet" href="../../Common/bootstrap-3.3.4/css/bootstrap.min.css" type="text/css">
+    <link rel="stylesheet" href="../../Common/bootstrap-3.3.4/css/bootstrap-theme.min.css" type="text/css">
+    <link rel="stylesheet" href="../../ViewGenerator/css/visorGeneratorStyle.css" type="text/css">
+    <link rel="stylesheet" href="../../Common/css/bootstrap-treeview.css" type="text/css">
+    <link rel="stylesheet" href="../css/visorStyle.css" type="text/css">
+    <link rel="stylesheet" href="../css/printVisor.css" type="text/css">
+
+
+    <script src="../../Common/js/jquery.min.js" type="text/javascript"></script>
+    <script src="../../Common/js/jquery-ui.min.js" type="text/javascript"></script>
+    <script src="../../Common/js/ol.js" type="text/javascript"></script>
+    <script src="../../Common/bootstrap-3.3.4/js/bootstrap.min.js"></script>
+    <script src="../../Common/js/bootstrap-treeview.js" type="text/javascript"></script>
+    <script src="../../Common/pdfjs/build/pdf.js" type="text/javascript"></script>
+    <script src="../../Common/Jsonix/Jsonix-all.js"></script>
+
+    <script src="../../Common/html2canvas/html2canvas.js" type="text/javascript"></script>
+    <script src="../../Common/canvas2Image/canvas2image.js" type="text/javascript"></script>
+
+    <script src="../../ViewGenerator/js/Map Functions/createMap.js" type="text/javascript"></script>
+
+
+    <script src="../../ViewGenerator/js/Map%20Functions/createMap.js" type="text/javascript"></script>
+    <script src="../../ViewGenerator/js/Map%20Functions/drawArea.js" type="text/javascript"></script>
+    <script src="../../ViewGenerator/js/Map%20Functions/zoomControl.js" type="text/javascript"></script>
+    <script src="../../ViewGenerator/js/Map%20Functions/clickCoordinates.js" type="text/javascript"></script>
+    <script src="../../ViewGenerator/js/Map%20Functions/zoomToArea.js" type="text/javascript"></script>
+    <script src="../../ViewGenerator/js/Map%20Functions/panToPosition.js" type="text/javascript"></script>
+    <script src="../../ViewGenerator/js/Map%20Functions/printMap.js" type="text/javascript"></script>
+    <script src="../../ViewGenerator/js/Map%20Functions/toggleFullScreen.js" type="text/javascript"></script>
+    <script src="../../ViewGenerator/js/Map%20Functions/retrieveData.js" type="text/javascript"></script>
+
+    <script src="../../ViewGenerator/js/Map%20Functions/export.js" type="text/javascript"></script>
+
+    <script src="../../ViewGenerator/js/Visor%20Generator/legend.js" text="text/javascript"></script>
+    <script src="../../Common/js/createLayersJSON.js"></script>
+
+
+
+    <title>Dynamic HTML creation</title>
+</head>
+<body>
+{% include "map_template.html.twig" %}
+
+<select id="layerSelect"></select>
+<select id="formatSelect">
+    <option>Shapefile</option>
+    <option>KML</option>
+    <option>GML</option>
+</select>
+
+<style>
+    table, th, td {
+        border: 1px solid black;
+        border-collapse: collapse;
+        font-family: "Lucida Grande", "Lucida Sans", Arial, sans-serif;
+        font-family: "HelveticaNeue-Light", "Helvetica Neue Light", "Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif;
+    }
+    th, td {
+        padding: 5px;
+        text-align: left;
+    }
+</style>
+
+    <table id="dataTable">
+        <tr>
+            <th>Capa</th>
+            <td>Capa 1</td>
+        </tr>
+        <tr>
+            <th>Atributo 1</th>
+            <td>1201</td>
+        </tr>
+        <tr>
+            <th>Atributo 2</th>
+            <td>351315</td>
+        </tr>
+        <tr>
+            <th>Atributo 3</th>
+            <td>351531</td>
+        </tr>
+        <tr>
+            <th>Atributo 4</th>
+            <td>351531</td>
+        </tr><tr>
+            <th>Atributo 5</th>
+            <td>351531</td>
+        </tr>
+        <tr>
+            <th>Atributo 6</th>
+            <td>351531</td>
+        </tr><tr>
+            <th>Atributo 7</th>
+            <td>351531</td>
+        </tr>
+
+
+    </table>
+
+
+
+{% include "legend.html.twig" %}
+{% include "printModal_template.html.twig" %}
+
+
+<div style="clear: both"></div>
+
+    {% for functionBar in visorData.functionsBar %}
+        <div class="functionsBar container" style="top: {{ functionBar.position.top - 110}}px; left: {{ functionBar.position.left }};">
+            {% for function in functionBar.functions %}
+                <div class="functionContainer col-md-1" style="display: block; top: 30%">
+                    {% include "functions/"~function|lower~"_template.html.twig" %}
+                </div>
+            {% endfor %}
+        </div>
+    {% endfor %}
+{#{% include "SLD Editor/sldEditorModal_template.html.twig" %}#}
+
+
+
+</body>
+</html>
+

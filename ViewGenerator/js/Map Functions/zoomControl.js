@@ -18,7 +18,7 @@ function zoomEventHandlers() {
  * @return
  */
 function ZoomInEventHandler() {
-    $("#zoomInButton").click(function () {
+    $(".zoomInButton").click(function () {
         doZoom(0.5);
     });
 }
@@ -29,7 +29,8 @@ function ZoomInEventHandler() {
  * @return
  */
 function ZoomOutEventHandler() {
-    $("#zoomOutButton").click(function () {
+    $(".zoomOutButton").click(function () {
+        console.log("adios")
         doZoom(2);
     });
 }

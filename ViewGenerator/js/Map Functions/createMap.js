@@ -35,46 +35,50 @@ function createMap() {
     map = new ol.Map({
         target: 'map',  // The DOM element that will contains the map
         interactions: ol.interaction.defaults({ doubleClickZoom: false }),
+        controls: ol.control.defaults({attribution: false}),
         renderer: 'canvas',
         view: new ol.View({
             projection: ('EPSG:4230', 'EPSG:900913'),
-            center: [-424339.90999686107,5372327.873439357],
-            zoom: 12
+            center: mapDetails.center,
+            zoom: mapDetails.zoomLevel
         })
     });
 
     if (mapDetails["WMSUrl"]) {
         try {
             addLayersAndGroupsFromWMS(mapDetails["WMSUrl"]);
-            map.wmsURL = mapDetails["WMSUrl"];
+            map.mapURL = mapDetails["WMSUrl"];
+
         }catch (error){
             console.log("WOP");
         }
-
         //TEMPORAL
-        var osmLayer = new ol.layer.Tile({
-            source: new ol.source.OSM()
-        });
-        osmLayer.name = "OpenStreet Maps";
-        map.addLayer(osmLayer);
+        addBaseOSMLayer();
 
     }else{
-        map.mapURL = "";
-        //TEMPORAL
-        var osmLayer = new ol.layer.Tile({
-            source: new ol.source.OSM()
-        });
-        osmLayer.name = "OpenStreet Maps";
-        map.addLayer(osmLayer);
+        addBaseOSMLayer();
     }
+    map.addControl(new ol.control.ScaleLine());
+    toolsDraggable();
 }
 
 function destroyMap(){
     map.setTarget(null);
 }
 
+function addBaseOSMLayer(){
+    var osmLayer = new ol.layer.Tile({
+        source: new ol.source.OSM()
+    });
+    osmLayer.name = "OpenStreet Maps";
+    osmLayer.base = true;
+    map.addLayer(osmLayer);
+}
+
 function updateMap(){
     destroyMap();
+    setMapCenter(map.getView().getCenter());
+    setMapZoomLevel(map.getView().getZoom());
     createMap();
 }
 
@@ -94,39 +98,42 @@ function addLayersAndGroupsFromWMS(WMSUrl){
         url: WMSUrl + '?request=getcapabilities&service=wms',
         crossDomain : true
     })
-        .then(function(response) {
-            var capabilitiesParser = parser.read(response);
-            console.log(capabilitiesParser);
-            for(var i = 0; i < capabilitiesParser.Capability.Layer.Layer.length; i ++){
-                console.log(capabilitiesParser.Capability.Layer.Layer[i]);
-                layersNames.push(capabilitiesParser.Capability.Layer.Layer[i].Name);
-                //aqui debemos sacar el campo abstract, ya que nos dice si la capa es un grupo o no
-                grupos.push(capabilitiesParser.Capability.Layer.Layer[i].Abstract)
+    .then(function(response) {
+        var capabilitiesParser = parser.read(response);
+        console.log(capabilitiesParser);
+        var bBox =capabilitiesParser.Capability.Layer.BoundingBox[0].extent;
+        var extent = ol.extent.applyTransform(bBox, ol.proj.getTransform("EPSG:4326", "EPSG:3857"));
+        map.getView().fitExtent(extent, map.getSize());
+        for(var i = 0; i < capabilitiesParser.Capability.Layer.Layer.length; i ++){
+            console.log(capabilitiesParser.Capability.Layer.Layer[i]);
+            layersNames.push(capabilitiesParser.Capability.Layer.Layer[i].Name);
+            //aqui debemos sacar el campo abstract, ya que nos dice si la capa es un grupo o no
+            grupos.push(capabilitiesParser.Capability.Layer.Layer[i].Abstract)
+        }
+        for(var j = 0; j < layersNames.length; j ++) {
+            if(grupos[j] && grupos[j].includes("Layer-Group")){
+                addGroupToMap(j, WMSUrl);
+                continue;
             }
-            for(var j = 0; j < layersNames.length; j ++) {
-                if(grupos[j] && grupos[j].includes("Layer-Group")){
-                    addGroupToMap(j, WMSUrl);
-                    continue;
-                }
-                addLayerToMap(j, WMSUrl);
-            }
-        });
+            addLayerToMap(j, WMSUrl);
+        }
+    });
 }
 
 
 function addGroupToMap(groupIndex, WMSUrl) {
-        var nombre=layersNames[groupIndex];
-        requestLayersForGroup(nombre, WMSUrl, function(layersInGroup){
-            if(layersInGroup.length == 0){
-                addLayerToMap(groupIndex, WMSUrl);
-                return;
-            }
-            var layerGroup = new ol.layer.Group({
-                layers: layersInGroup
-            });
-            layerGroup.name = nombre;
-            map.addLayer(layerGroup);
+    var nombre=layersNames[groupIndex];
+    requestLayersForGroup(nombre, WMSUrl, function(layersInGroup){
+        if(layersInGroup.length == 0){
+            addLayerToMap(groupIndex, WMSUrl);
+            return;
+        }
+        var layerGroup = new ol.layer.Group({
+            layers: layersInGroup
         });
+        layerGroup.name = nombre;
+        map.addLayer(layerGroup);
+    });
 }
 
 function requestLayersForGroup(groupName, WMSUrl, callback){
@@ -144,6 +151,7 @@ function requestLayersForGroup(groupName, WMSUrl, callback){
             objectResponse.layerDescriptions.forEach(function (layer){
                 var groupLayer = new ol.layer.Tile({
                     source: new ol.source.TileWMS({
+                        crossOrigin:'anonymous',
                         preload: Infinity,
                         url: WMSUrl,
                         servertype: "geoserver",
@@ -167,6 +175,7 @@ function addLayerToMap(layerIndex, WMSUrl){
     }
     var newlayer = new ol.layer.Tile({
         source: new ol.source.TileWMS({
+            crossOrigin:'anonymous',
             preload: Infinity,
             url: WMSUrl,
             serverType:'geoserver',
@@ -182,8 +191,8 @@ function addLayerToMap(layerIndex, WMSUrl){
 
 function searchAndRemoveLayer(layerToRemove){
     map.getLayers().forEach(function(layer){
-       if (layer.name == layerToRemove.name){
-           map.removeLayer(layer);
-       }
+        if (layer.name == layerToRemove.name){
+            map.removeLayer(layer);
+        }
     });
 }
