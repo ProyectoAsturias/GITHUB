@@ -55,14 +55,14 @@
 	 * @return string
 	 */
 	function getLayers() {
-		if(isset($_POST['idFamily']) || isset($_POST['getLayers']) ){ 
+		if(isset($_POST['idFamily']) || isset($_POST['getLayers']) ){
 			//$idFamily=$_POST['idFamily'];
 			$dbConnection = new DBConnection();
 			if(isset($_POST['getLayers']))
 				$query = "SELECT DISTINCT(l.id_layer),d.traduccion FROM layerfamilies_layers_relations as r,layers as l , dictionary d WHERE r.id_layer=l.id_layer AND l.id_name=d.id_vocablo AND d.locale='es_ES' ORDER BY d.traduccion";
 			else{
 				$idFamily=$_POST['idFamily'];
-				$query = "SELECT DISTINCT(l.id_layer),d.traduccion FROM layerfamilies_layers_relations as r,layers as l , dictionary d WHERE r.id_layerfamily='".$idFamily."' AND r.id_layer=l.id_layer AND l.id_name=d.id_vocablo AND d.locale='es_ES' ORDER BY d.traduccion";			
+				$query = "SELECT DISTINCT(l.id_layer),d.traduccion FROM layerfamilies_layers_relations as r,layers as l , dictionary d WHERE r.id_layerfamily='".$idFamily."' AND r.id_layer=l.id_layer AND l.id_name=d.id_vocablo AND d.locale='es_ES' ORDER BY d.traduccion";
 			}
 			$result = pg_query($query) or die('Error: '.pg_last_error());
 			$dbConnection->close();
