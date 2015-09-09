@@ -201,11 +201,12 @@
 	function getEntityData(){
 		$params=array();
 		$dbConnection = new DBConnection();
-		$query = "SELECT replace(nombreoficial,' ','')as name,srid FROM entidad_supramunicipal WHERE 1=1 ".$GLOBALS['whereEntity'];
+		$query = "SELECT replace(nombreoficial,' ','')as name,id_entidad,srid FROM entidad_supramunicipal WHERE 1=1 ".$GLOBALS['whereEntity'];
 		$result = pg_query($query) or die('Error: '.pg_last_error());
 		$numRows=pg_num_rows($result);
 		while ($row = pg_fetch_array($result, null, PGSQL_ASSOC)) {
 			array_push($params,$row['name']);
+			array_push($params,$row['id_entidad']);
 			array_push($params,$row['srid']);
 		}
 		$query = "SELECT id_municipio FROM entidades_municipios WHERE 1=1 ".$GLOBALS['whereEntity'];

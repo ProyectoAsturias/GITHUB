@@ -11,19 +11,20 @@ $(document).ready(function(){
             tag:"getEntityData"
         },
         success: function (response) {
-            //console.log(response);
+            $("body").append(response);
             //Si no devuelve nada, es generico
             entityParams=JSON.parse(response);
             if(entityParams.length==0){
                 entityParams.push("Asturias");
-                entityParams.push(23030);
+                entityParams.push(0);
+                entityParams.push(25830);
                 entityParams.push(33001);
             }
             createMapsTable($("#table"));
             mapsClickEventsHandler();
             createVisorsTable($("#tableVisors"));
             //linkToEditVisors();
-            //console.log(entityParams);
+            console.log(entityParams);
         },
         error:function(error){
             alert("Error al cargar los parámetros base : "+error);
@@ -46,7 +47,9 @@ function createMapsTable(target){
         var columns = [{checkbox: "true"},{field:"image", title: "Imagen"}, {field: "id", title: "ID Mapa", sortable: "true"},{field:"name", title:"Nombre", sortable: "true"},
             {field:"description", title:"Descripción", titleTooltip:"click para editar descripción"},{field:"date_update", title:"Última modificación", sortable: "true"}, {field:"date_creation", title:"Fecha creación", sortable: "true"},
             {field: "WMS", title: "WMS", formatter:"WmsFormatter"},
-            {field: "published", title: "Publicado", sortable: "true", formatter:"publishedFormatter"},{field:"synchronized", title:"Sincronizado", formatter:"synchronizedFormatter"}];   
+            {field: "published", title: "Publicado", sortable: "true", formatter:"publishedFormatter"},
+            {field:"synchronized", title:"Sincronizado", formatter:"synchronizedFormatter"},
+            {field:"entityId", title: "Id entidad", visible:false}];
         if (mapsData){
             mapsData = convertBinaryDataToImages(mapsData);
         }

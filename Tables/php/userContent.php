@@ -52,7 +52,7 @@
     }
 
     function downloadUserMaps($userName){
-        $query = "SELECT id, name, description, date_creation, date_update, published, image  FROM public.\"Maps\" WHERE owner='".$userName."';";
+        $query = "SELECT id, name, description, date_creation, date_update, published, image, \"entityId\"  FROM public.\"Maps\" WHERE owner='".$userName."';";
         $result = pg_query($query) or die('Error: '.pg_last_error());
         return pg_fetch_all($result);
     }

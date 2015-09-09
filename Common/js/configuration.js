@@ -1,4 +1,4 @@
-var serverUrl = "localhost";
+var serverUrl = "asturiasmodelo.dyndns.org";
 var port = "8090";
 var portGS = "8092";
 var server = "http://"+serverUrl+":"+port+"/";

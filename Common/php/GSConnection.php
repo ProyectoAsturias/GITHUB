@@ -52,7 +52,7 @@
 		 * @param string $mapName
 		 */
 		public function __construct($mapName=""){
-			$this->host="192.168.1.66";
+			$this->host="asturiasmodelo.dyndns.org";
 			$this->port="8090";
 			$this->user="admin";
 			$this->pass="geoserver";
