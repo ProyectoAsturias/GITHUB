@@ -34,9 +34,9 @@ function validatePassword(){
 function showErrorMessage(errorMessage){
     $("#loginAlert p").html(errorMessage);
     $("#loginAlert").slideDown(500);
-    /*setTimeout(function(){
+    setTimeout(function(){
         $("#loginAlert").slideUp(500);
-    }, 3000);*/
+    }, 3000);
 }
 
 function login(userName, password){

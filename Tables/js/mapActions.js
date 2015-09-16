@@ -53,7 +53,6 @@ function createNewMapEventsHandler(){
                     $('.chosen-select').chosen({
                         width:"100%",
                         search_contains: true,
-                        placeholder_text_single: "Seleccione una Entidad"
                     });
                 },
                 error:function(response){
@@ -77,7 +76,6 @@ function createNewMapEventsHandler(){
             $('.chosen-select').chosen({
                 width:"100%",
                 search_contains: true,
-                placeholder_text_single: "Seleccione una Entidad"
             }); 
             $("#modalNewMap").modal("show");
         }
@@ -87,9 +85,10 @@ function createNewMapEventsHandler(){
 
 function mapModalSaveButtonHandler(){
     $("#createMapModal").click(function(){
+        console.log(entityParams);
         var mapName = $("#newMapName").val();
         var projection=$("#selectProjection").val();
-        var town=entityParams[3];
+        var town=entityParams[2];
         var entityId;
         
         if($("#selectConcejo").val()==null){
@@ -102,6 +101,8 @@ function mapModalSaveButtonHandler(){
         }
         mapName=checkMapName(mapName);
 
+        console.log(entityId);
+		
         $.ajax({
             type: "POST",
             url : apiPath+"apiLocalgis.php",
@@ -111,8 +112,7 @@ function mapModalSaveButtonHandler(){
             },
             success: function (response) {
                 entityParams=JSON.parse(response);
-                //console.log(entityParams[3]);//entityParams);
-		town=entityParams[3];
+                console.log(entityParams);
 
                 var projection= $("#selectProjection").val();
 		var description= $("#newMapDescription").val();
@@ -126,6 +126,7 @@ function mapModalSaveButtonHandler(){
                     },
                     method: "POST",
                     success: function(response){
+                        console.log(response);
                         if (response == 1){
                             console.log("Ya existe un mapa con ese nombre");
                             return;
@@ -248,9 +249,9 @@ function publicateMapEventHandler(){
 function mapModalPublicateButtonHandler(){
     $("#publicateMapsModal").click(function(){
         $("#table").bootstrapTable('getSelections').forEach(function (row){
-            publicateMap(row.name).then(function(response){
+            publicateMap(row).then(function(response){
                 $("#modalPublicateMaps").modal("hide");
-                if(response==""){
+                if(response=="\n"){  
                     row.published = "t";
                     $("#table").bootstrapTable('updateRow', {index: getMapRowIndexById(row.id), row: row});
                     appendImages();
@@ -262,21 +263,21 @@ function mapModalPublicateButtonHandler(){
     })
 }
 
-function publicateMap(mapName){
+function publicateMap(map){
     return $.ajax({
         url: apiPath + "apiGeoserver.php",
         data:{
-            mapName: mapName,
+            mapName: map.name,
             tag: "enableWms"
         },
         method: "POST",
         success: function(response){
             console.log(response);
-            if(response==""){
+            if(response=="\n"){  
                 $.ajax({
                     url: "./userContent.php",
                     data: {
-                        mapName : mapName,
+                        mapName : map.name,
                         tag : "publicateMap"
                     },
                     method: "POST",
@@ -309,15 +310,14 @@ function mapModalUnpublicateButtonHandler(){
     $("#unpublicateMapsModal").click(function(){
         $("#table").bootstrapTable('getSelections').forEach(function (row){
             unpublicateMap(row).then(function(response){
-                console.log(response);
                 $("#modalUnpublicateMaps").modal("hide");
-                if(response==""){
+                if(response="\n"){
                     row.published = "f";
                     $("#table").bootstrapTable('updateRow', {index: getMapRowIndexById(row.id), row: row});
                     appendImages();
                 }
                 else
-                    alert("Error: No se pudo despublicar el mapa: " + response);
+                    alert("Error: No se pudo despublicar el mapa");
             })
         })
     })
@@ -332,7 +332,7 @@ function unpublicateMap(map){
         },
         method: "POST",
         success: function(response){
-            if(response==""){
+            if(response=="\n"){
                 $.ajax({
                     url: "./userContent.php",
                     data: {
@@ -352,7 +352,7 @@ function unpublicateMap(map){
                 console.log("Error al despublicar el mapa:"+response+".");
         },
         error: function (error){
-            alert("Error al despublicar el mapa:"+error);
+            console.log("Error al despublicar el mapa:"+error);
         }
     });
 }
@@ -360,6 +360,7 @@ function unpublicateMap(map){
 function activateWmsMap(mapName,entityId){
 	publicateMap(mapName);
 	$( document ).ajaxStop(function() {
+		//console.log("se cambia");
 		window.location.href = mapPath+'php/mapGenerator.php?mapName='+mapName+'&id='+entityId;
 	});
 }
@@ -389,7 +390,7 @@ function copyToClipBoard(){
 function getWmsLink(mapName){
     var headHtml ="<button type=\"button\" class=\"close\" data-dismiss=\"modal\">&times;</button>"+
                 "<h4 class=\"modal-title\">Link WMS:"+mapName+"</h4>";
-    var bodyHtml = "<textarea rows=\"2\" class=\"form-control\" id=\"linkWms\" style=\"resize:none;\">"+serverGS+"geoserver/"+mapName+"/wms?request=getCapabilities&service=WMS</textarea>";
+    var bodyHtml = "<textarea rows=\"2\" class=\"form-control\" id=\"linkWms\" style=\"resize:none;\">"+server+"geoserver/"+mapName+"/wms?request=getCapabilities&service=WMS</textarea>";
     $("#modalWmsLink .modal-header").empty().append(headHtml);
     $("#modalWmsLink .modal-body").empty().append(bodyHtml);
     $("#modalWmsLink").modal("show");
