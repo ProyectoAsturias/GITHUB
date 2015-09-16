@@ -57,7 +57,11 @@ function showListWms() {
     "<button onclick='selectWms()' id=\"importWms\" class=\"btn btn-info btn-block\" style=\"padding:0;\" >Importar Wms</button>"+
     "</div><div id=\"buttonWmsList\" class=\"col-xs-2\">"+
     "<button onclick='editWmsList()' id=\"editWmsList\" class=\"btn btn-info btn-block\" style=\"height:100%;\" >Editar Lista Wms</button></div>");
-	$('.chosen-select').chosen({width:"100%",search_contains: true,});	
+	$('.chosen-select').chosen({
+		width:"100%",
+		search_contains: true,
+		placeholder_text_single: "Seleccione un WMS"
+	});
 	$.ajax({
 		type : "POST",
 		url : apiPath+"apiDatabase.php",
@@ -79,6 +83,7 @@ function showListWms() {
 			$('.chosen-select').chosen({
 				width:"100%",
 				search_contains:true,
+				placeholder_text_single: "Seleccione un WMS"
 			});
 			console.log("Ocurrió un error. Compruebe su conexión al servidor.");
 			console.log("Error al mostrar la lista de wms: "+error);
@@ -124,7 +129,7 @@ function showListMaps(){
 	"<select id=\"selectMap\" class=\"chosen-select\" ></select>"+
 	"<button onclick='importMap()' id=\"importMap\" class=\"btn btn-info btn-block\" style=\"padding:0;\">Importar Mapa</button>"+
 	"</div>");
-	$('.chosen-select').chosen({width:"100%",search_contains:true,});
+	$('.chosen-select').chosen({width:"100%",search_contains:true,placeholder_text_single: "Seleccione un Mapa"});
 	$.ajax({
 		type: "POST",
 		url : apiPath+"apiLocalgis.php",
@@ -157,7 +162,8 @@ function showListFamilies(){
 	"<select id=\"selectLayer\" class=\"chosen-select\" ></select>"+
 	"<button onclick='importLayer()' id=\"importLayers\" class=\"btn btn-info btn-block\" style=\"padding:0;\">Importar Capa</button>"+
 	"</div>");
-	$('.chosen-select').chosen({width:"100%",search_contains:true,});
+	$('#selectFamily').chosen({width:"100%",search_contains:true,placeholder_text_single: "Seleccione una Familia"});
+	$('#selectLayer').chosen({width:"100%",search_contains:true,placeholder_text_single: "Seleccione una Capa"});
 	$.ajax({
 		type : "POST",
 		url : apiPath+"apiLocalgis.php",
@@ -179,6 +185,30 @@ function showListFamilies(){
 		},
 		error:function(error){
 			console.log("Error al mostrar la lista de familias: "+error);
+		}
+	})
+	var getLayers = true;
+	$.ajax({
+		type : "POST",
+		url : apiPath + "apiLocalgis.php",
+		data : {
+			tag : "getLayers",
+			getLayers : getLayers
+		},
+		success : function (response) {
+			//console.log(response);
+			var layerList = JSON.parse(response);
+			$("#selectLayer").empty();
+			for (var i = 0; i < layerList.length; i++) {
+				var layerId = layerList[i].id;
+				var layerName = layerList[i].name;
+				$("#selectLayer").append("<option value=\"" + layerId + "\" name=\"" + layerName + "\">" + layerName + "</option>");
+			}
+			$('#selectLayer').prop('selectedIndex', -1);
+			$(".chosen-select").trigger("chosen:updated");
+		},
+		error : function (error) {
+			console.log("Error al mostrar la lista de familias: " + error);
 		}
 	})
 }

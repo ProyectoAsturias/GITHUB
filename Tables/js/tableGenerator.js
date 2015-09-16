@@ -11,7 +11,7 @@ $(document).ready(function(){
             tag:"getEntityData"
         },
         success: function (response) {
-            console.log(response);
+            //console.log(response);
             //Si no devuelve nada, es generico
             entityParams=JSON.parse(response);
             if(entityParams.length==0){
@@ -24,7 +24,7 @@ $(document).ready(function(){
             mapsClickEventsHandler();
             createVisorsTable($("#tableVisors"));
             //linkToEditVisors();
-            console.log(entityParams);
+            //console.log(entityParams);
         },
         error:function(error){
             alert("Error al cargar los parámetros base : "+error);
@@ -44,7 +44,7 @@ function createTable(target, columns, data){
 function createMapsTable(target){
     //console.log(entityParams[0]);
     retrieveUserMaps(function(jsonMaps){
-	console.log(jsonMaps);
+	//console.log(jsonMaps);
         var mapsData = JSON.parse(jsonMaps);
         var columns = [{checkbox: "true"},
 		{field:"image", title: "Imagen"}, 
@@ -204,7 +204,7 @@ function appendImages(){
 function getImageMap(mapName) {
     var html = "";
     var parser = new ol.format.WMSCapabilities();
-    var urlWms = server + 'geoserver/' + mapName + '/wms';
+    var urlWms = serverGS + 'geoserver/' + mapName + '/wms';
     $.ajax({
         type : "GET",
         dataType : 'text',
