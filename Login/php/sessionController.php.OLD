@@ -28,7 +28,7 @@
         $connection->close();*/
 
         //Provisional (sin pass)
-        $query="SELECT id,id_entidad FROM iuseruserhdr WHERE name = '".$userName."' AND bloqueado=FALSE AND fecha_proxima_modificacion > NOW()";
+        $query="SELECT id,id_entidad FROM iuseruserhdr WHERE name = '".$userName."'";
         $result=pg_query($query) or die('Error: '.pg_last_error());
         $row=pg_fetch_row($result);
         $connection->close();
@@ -55,7 +55,7 @@
         }else{
             $loginResponse = new stdClass();
             $loginResponse->logged = false;
-            $loginResponse->errorMessage = "Error en la autenticación, consulte a su administrador.";
+            $loginResponse->errorMessage = "Error en la autenticación.";
             return $loginResponse;
         }
     }
@@ -89,4 +89,3 @@
         $connection->close();
     }
 ?>
-

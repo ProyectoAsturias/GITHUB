@@ -21,7 +21,8 @@
 		 */
 		public function __construct($id,$name){
 			$this->id=$id;
-			$this->name=utf8_encode($name);
+			//$this->name=utf8_encode($name);
+			$this->name=$name;
 		}
 	}
 ?>

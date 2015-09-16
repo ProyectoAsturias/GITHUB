@@ -52,11 +52,6 @@ function createMap() {
         }catch (error){
             console.log("WOP");
         }
-        //TEMPORAL
-        addBaseOSMLayer();
-
-    }else{
-        addBaseOSMLayer();
     }
     map.addControl(new ol.control.ScaleLine());
     if (typeof (toolsDraggable) == "function")

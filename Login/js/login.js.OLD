@@ -34,16 +34,16 @@ function validatePassword(){
 function showErrorMessage(errorMessage){
     $("#loginAlert p").html(errorMessage);
     $("#loginAlert").slideDown(500);
-    /*setTimeout(function(){
+    setTimeout(function(){
         $("#loginAlert").slideUp(500);
-    }, 3000);*/
+    }, 3000);
 }
 
 function login(userName, password){
     $.ajax({
         type: "POST",
         url: "sessionController.php",
-        data: {method: "login", userName: userName, password: password}
+	data: {method: "login", userName: userName, password: password}
     })
         .done(function(response){
             console.log(response);
@@ -52,9 +52,8 @@ function login(userName, password){
                 return;
             }
             else{
-                console.log(redirectUrl);
+		console.log(redirectUrl);
                 window.location=redirectUrl;
             }
         })
 }
-

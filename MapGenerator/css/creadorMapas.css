@@ -212,3 +212,11 @@ li{
     min-height: 7ex;
     width: 13em;
 }
+
+.updatedLayer{
+    float:right;
+}
+div.fill {
+    width: 100%;
+    height: 100%;
+}

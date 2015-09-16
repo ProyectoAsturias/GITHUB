@@ -16,6 +16,7 @@ $(document).ready(function(){
             entityParams=JSON.parse(response);
             if(entityParams.length==0){
                 entityParams.push("Asturias");
+                entityParams.push(0);
                 entityParams.push(25830);
                 entityParams.push(33001);
             }
@@ -41,12 +42,21 @@ function createTable(target, columns, data){
 }
 
 function createMapsTable(target){
+    //console.log(entityParams[0]);
     retrieveUserMaps(function(jsonMaps){
+	//console.log(jsonMaps);
         var mapsData = JSON.parse(jsonMaps);
-        var columns = [{checkbox: "true"},{field:"image", title: "Imagen"}, {field: "id", title: "ID Mapa", sortable: "true"},{field:"name", title:"Nombre", sortable: "true"},
-            {field:"description", title:"Descripción"},{field:"date_update", title:"Última modificación", sortable: "true"}, {field:"date_creation", title:"Fecha creación", sortable: "true"},
-            {field: "WMS", title: "WMS", formatter:"WmsFormatter"},
-            {field: "published", title: "Publicado", sortable: "true", formatter:"publishedFormatter"},{field:"synchronized", title:"Sincronizado", formatter:"synchronizedFormatter"}];   
+        var columns = [{checkbox: "true"},
+		{field:"image", title: "Imagen"}, 
+		{field: "id", title: "ID Mapa", sortable: "true"},
+		{field:"name", title:"Nombre", sortable: "true"},
+        {field:"description", title:"Descripción", titleTooltip:"click para editar descripción"},
+		{field:"date_update", title:"Última modificación", sortable: "true"},
+		{field:"date_creation", title:"Fecha creación", sortable: "true"},
+        {field: "WMS", title: "WMS", formatter:"WmsFormatter"},
+        {field: "published", title: "Publicado", sortable: "true", formatter:"publishedFormatter"},
+        {field:"synchronized", title:"Sincronizado", formatter:"synchronizedFormatter"},
+        {field:"entityId", title: "Id entidad", visible:false}];
         if (mapsData){
             mapsData = convertBinaryDataToImages(mapsData);
         }
@@ -58,9 +68,15 @@ function createMapsTable(target){
 function createVisorsTable(target){
     retrieveUserVisors(function(jsonVisors){
         var visorsData = JSON.parse(jsonVisors);
-        var columns = [{checkbox: "true"}, {field: "id", title: "ID Visor", sortable: "true"},{field:"name", title:"Nombre", sortable: "true"},
-            {field:"description", title:"Descripción"},{field:"date_update", title:"Última modificación", sortable: "true"}, {field:"date_creation", title:"Fecha creación", sortable: "true"},
-            {field:"editVisor", title:"Editar Visor",formatter:"formatterEditVisor"},{field:"Visor", title:"Visor", formatter:"FormatterAccessToVisor"},{title: "Descargar", formatter:"downloadVisorLink"}];
+        var columns = [{checkbox: "true"}, 
+	    {field: "id", title: "ID Visor", sortable: "true"},
+	    {field:"name", title:"Nombre", sortable: "true"},
+            {field:"description", title:"Descripción"},
+	    {field:"date_update", title:"Última modificación", sortable: "true"}, 
+	    {field:"date_creation", title:"Fecha creación", sortable: "true"},
+            {field:"editVisor", title:"Editar Visor",formatter:"formatterEditVisor"},
+	    {field:"Visor", title:"Visor", formatter:"FormatterAccessToVisor"},
+	    {title: "Descargar", formatter:"downloadVisorLink"}];
         createTable(target, columns, visorsData);
     });
 }
@@ -93,7 +109,7 @@ function retrieveUserVisors(callback){
 
 function convertBinaryDataToImages(mapsData){
     mapsData.forEach(function (map){
-	   map.image="<div id=\""+map.name+"\" class=\"imgMap\"></div>";
+	   map.image="<div id=\""+map.name+"\" class=\"imgMap\" title=\"Haga click en la imagen para editar el mapa\"></div>";
        mapNames.push(map.name);
     });
     return mapsData;
@@ -107,7 +123,7 @@ function publishedFormatter(value, row, index){
 }
 
 function WmsFormatter(value, row, index){
-    return "<button class='btn btn-success btn-block' onclick=\"getWmsLink('"+row.name+"')\">Link WMS</button>";
+    return "<button class='btn btn-success btn-block' title=\"Obtener link Wms\" onclick=\"getWmsLink('"+row.name+"')\">Link WMS</button>";
 }
 
 function synchronizedFormatter(value, row, index){
@@ -130,6 +146,9 @@ function mapsClickEventsHandler(){
     $('#table').on("sort.bs.table", function(event,name,order){
         appendImages();
     });
+    $('#table').on("search.bs.table", function(){
+        appendImages();
+    });    
     $('#table').on("click-cell.bs.table", function(event,field,value,row){
         if(field=="image"){
             if(row.published=="t")
@@ -185,7 +204,7 @@ function appendImages(){
 function getImageMap(mapName) {
     var html = "";
     var parser = new ol.format.WMSCapabilities();
-    var urlWms = server + 'geoserver/' + mapName + '/wms';
+    var urlWms = serverGS + 'geoserver/' + mapName + '/wms';
     $.ajax({
         type : "GET",
         dataType : 'text',
@@ -201,7 +220,7 @@ function getImageMap(mapName) {
                 layersNames += service.Capability.Layer.Layer[i].Name;
                 var bBox = "" + service.Capability.Layer.BoundingBox[0].extent[0] + "," + service.Capability.Layer.BoundingBox[0].extent[1] + "," + service.Capability.Layer.BoundingBox[0].extent[2] + "," + service.Capability.Layer.BoundingBox[0].extent[3] + "";
             }
-            html = "<img class=\"imageMap\" onerror=\"if (this.src != 'error.jpg') this.src = '../../Common/images/noPreview.jpg';\" src='" + urlWms + "?REQUEST=GetMap&service=wms&format=image/jpeg&WIDTH=120&HEIGHT=120&LAYERS=" + layersNames + "&srs=EPSG:4326&bbox=" + bBox + "' />";
+            html = "<img class=\"imageMap\" onerror=\"if (this.src != 'error.jpg') this.src = '../../Common/images/noPreview.jpg';\" alt=\"Vista previa no disponible\" src='" + urlWms + "?REQUEST=GetMap&service=wms&format=image/jpeg&WIDTH=120&HEIGHT=120&LAYERS=" + layersNames + "&srs=EPSG:4326&bbox=" + bBox + "' />";
             $("#" + mapName + "").empty();
             $("#" + mapName + "").append(html);
         },
@@ -209,6 +228,31 @@ function getImageMap(mapName) {
             html = "<img class=\"imageMap\" src = '../../Common/images/noPreview.jpg';\" />";
             $("#" + mapName + "").empty();
             $("#" + mapName + "").append(html);
+        }
+    });
+}
+
+function updateDescription(mapName,id){
+    var mapDescription=$('#description').val();
+    $.ajax({
+        url: "../php/userContent.php",
+        data: {
+            tag : "updateDescription",
+            mapName : mapName,
+            mapDescription: mapDescription,
+        },
+        method: "POST",
+        success: function (response) {
+            console.log(response);
+            var row=$("#table").bootstrapTable('getRowByUniqueId',""+id+"");
+            //console.log(row);
+            row.description = mapDescription;
+            $("#table").bootstrapTable('updateRow', {index: getMapRowIndexById(row.id), row: row});
+            appendImages();
+            console.log("Descripción de Mapa actualizada.");
+        },
+        error: function (error){
+            console.log("Error al actualizar descripción del mapa:"+error);
         }
     });
 }

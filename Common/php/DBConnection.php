@@ -47,12 +47,13 @@
 
 
 		public function __construct($database=null,$schema=null){
-			//$this->host="avanzastore.dyndns.org";
-			$this->host="192.168.1.66";
-			$this->port="5432";
+			$this->host="asturiasmodelo.dyndns.org";
+			//$this->host="192.168.1.66";
+			$this->port="15432";
+			//$this->port="5432";
 			if ($database==null)
-				$this->database="Localgis";
-				//$this->database="geopista_bezana";
+				//$this->database="Localgis";
+				$this->database="geopista";
 			else
 				$this->database=$database;
 			if ($schema==null)

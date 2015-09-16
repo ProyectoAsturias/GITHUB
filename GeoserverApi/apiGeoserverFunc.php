@@ -60,13 +60,14 @@
 			$town=$_SESSION['town'];
 			$projection=$_SESSION['projection'];
 			$layerDescription="Capa de Localgis";
-			echo $projection;
+			echo $town."-";
+			echo $projection."-";
 
 			echo createDBView($layerId,$GLOBALS['mapName']."_".$layerName,$projection,$town);
 			if(($result=$GLOBALS['geoserver']->addLayer($GLOBALS['gsConnection']->wsName, $GLOBALS['gsConnection']->dsName, $layerName, $layerDescription, $projection))!="")
 				print("Advice: ".$result."\n");
-			else
-				addStyles($layerId,$layerName,$mapId);
+			//else
+				//addStyles($layerId,$layerName,$mapId);
 		}
 		else
 			echo "Error: Parameters missed.";
