@@ -51,12 +51,6 @@ function createMap() {
         }catch (error){
             console.log("WOP");
         }
-    }else{
-        var osmLayer = new ol.layer.Tile({
-            source: new ol.source.OSM()
-        });
-        osmLayer.name = "OpenStreet Maps";
-        map.addLayer(osmLayer);
     }
 }
 

@@ -1,19 +1,11 @@
 <?php
 	require_once("apiLocalgisFunc.php");
 
-	if(isset($_POST["tag"])){
-		session_start();
-		$whereEntity="";
-        if(isset($_SESSION["entityId"]))
-            $whereEntity="AND id_entidad=".$_SESSION["entityId"];
-        else if(isset($_POST['entityId'])){
-            $whereEntity="AND id_entidad=".$_POST['entityId'];
-            $_SESSION["entityId"]=$_POST['entityId'];
-        }
-        else {
-			$whereEntity="AND id_entidad=".$_SESSION["userEntityId"];
-            $_SESSION["entityId"]=null;
-        }
+if(isset($_POST["tag"])){
+    $whereEntity="";
+    if(isset($_POST['entityId'])){
+        $whereEntity="AND id_entidad=".$_POST['entityId'];
+    }
 
         switch ($_POST["tag"]) {
             case "getMaps":

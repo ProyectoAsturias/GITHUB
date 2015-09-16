@@ -398,6 +398,8 @@ function updateDatabaseMapInfo(i,layersInfo){
 * Carga la capa al ws
 **/
 function importLayer(layer,mapId){
+	console.log("AXO AXO");
+	console.log(mapId);
 	mapId || (mapId=-1);
 	var id;
 	var name;
@@ -421,6 +423,7 @@ function importLayer(layer,mapId){
 				mapName: map.name
 			},
 			success: function(response){
+				console.log(response);
 				console.log("Importando capa: #"+name);
 				$("#layerName"+layersCounter+"").empty().append("<span class='glyphicon glyphicon-ok-sign' style='color:green;'></span>");
 				layersCounter++;
@@ -445,14 +448,12 @@ function clearMap(){
 	console.log("ClearMap");
 	var listLayers=map.getLayers();
 	listLayers.forEach(function(layer){
-		if(layer.name!="OpenStreet Maps"){
-			removeLayer(layer,function(response){
-				if(map.getLayers().getArray().length==1){
-					success("El contenido del mapa ha sido eliminado.");
-					drawTree();
-				}
-			});
-		}
+		removeLayer(layer,function(response){
+			if(map.getLayers().getArray().length==1){
+				success("El contenido del mapa ha sido eliminado.");
+				drawTree();
+			}
+		});
 	});
 }
 

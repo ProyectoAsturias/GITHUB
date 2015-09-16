@@ -11,7 +11,7 @@ $(document).ready(function(){
             tag:"getEntityData"
         },
         success: function (response) {
-            $("body").append(response);
+            //console.log(response);
             //Si no devuelve nada, es generico
             entityParams=JSON.parse(response);
             if(entityParams.length==0){
@@ -24,7 +24,7 @@ $(document).ready(function(){
             mapsClickEventsHandler();
             createVisorsTable($("#tableVisors"));
             //linkToEditVisors();
-            console.log(entityParams);
+            //console.log(entityParams);
         },
         error:function(error){
             alert("Error al cargar los parámetros base : "+error);
@@ -42,14 +42,21 @@ function createTable(target, columns, data){
 }
 
 function createMapsTable(target){
+    //console.log(entityParams[0]);
     retrieveUserMaps(function(jsonMaps){
+	//console.log(jsonMaps);
         var mapsData = JSON.parse(jsonMaps);
-        var columns = [{checkbox: "true"},{field:"image", title: "Imagen"}, {field: "id", title: "ID Mapa", sortable: "true"},{field:"name", title:"Nombre", sortable: "true"},
-            {field:"description", title:"Descripción", titleTooltip:"click para editar descripción"},{field:"date_update", title:"Última modificación", sortable: "true"}, {field:"date_creation", title:"Fecha creación", sortable: "true"},
-            {field: "WMS", title: "WMS", formatter:"WmsFormatter"},
-            {field: "published", title: "Publicado", sortable: "true", formatter:"publishedFormatter"},
-            {field:"synchronized", title:"Sincronizado", formatter:"synchronizedFormatter"},
-            {field:"entityId", title: "Id entidad", visible:false}];
+        var columns = [{checkbox: "true"},
+		{field:"image", title: "Imagen"}, 
+		{field: "id", title: "ID Mapa", sortable: "true"},
+		{field:"name", title:"Nombre", sortable: "true"},
+        {field:"description", title:"Descripción", titleTooltip:"click para editar descripción"},
+		{field:"date_update", title:"Última modificación", sortable: "true"},
+		{field:"date_creation", title:"Fecha creación", sortable: "true"},
+        {field: "WMS", title: "WMS", formatter:"WmsFormatter"},
+        {field: "published", title: "Publicado", sortable: "true", formatter:"publishedFormatter"},
+        {field:"synchronized", title:"Sincronizado", formatter:"synchronizedFormatter"},
+        {field:"entityId", title: "Id entidad", visible:false}];
         if (mapsData){
             mapsData = convertBinaryDataToImages(mapsData);
         }
@@ -61,9 +68,15 @@ function createMapsTable(target){
 function createVisorsTable(target){
     retrieveUserVisors(function(jsonVisors){
         var visorsData = JSON.parse(jsonVisors);
-        var columns = [{checkbox: "true"}, {field: "id", title: "ID Visor", sortable: "true"},{field:"name", title:"Nombre", sortable: "true"},
-            {field:"description", title:"Descripción"},{field:"date_update", title:"Última modificación", sortable: "true"}, {field:"date_creation", title:"Fecha creación", sortable: "true"},
-            {field:"editVisor", title:"Editar Visor",formatter:"formatterEditVisor"},{field:"Visor", title:"Visor", formatter:"FormatterAccessToVisor"},{title: "Descargar", formatter:"downloadVisorLink"}];
+        var columns = [{checkbox: "true"}, 
+	    {field: "id", title: "ID Visor", sortable: "true"},
+	    {field:"name", title:"Nombre", sortable: "true"},
+            {field:"description", title:"Descripción"},
+	    {field:"date_update", title:"Última modificación", sortable: "true"}, 
+	    {field:"date_creation", title:"Fecha creación", sortable: "true"},
+            {field:"editVisor", title:"Editar Visor",formatter:"formatterEditVisor"},
+	    {field:"Visor", title:"Visor", formatter:"FormatterAccessToVisor"},
+	    {title: "Descargar", formatter:"downloadVisorLink"}];
         createTable(target, columns, visorsData);
     });
 }
@@ -191,7 +204,7 @@ function appendImages(){
 function getImageMap(mapName) {
     var html = "";
     var parser = new ol.format.WMSCapabilities();
-    var urlWms = server + 'geoserver/' + mapName + '/wms';
+    var urlWms = serverGS + 'geoserver/' + mapName + '/wms';
     $.ajax({
         type : "GET",
         dataType : 'text',
@@ -215,6 +228,31 @@ function getImageMap(mapName) {
             html = "<img class=\"imageMap\" src = '../../Common/images/noPreview.jpg';\" />";
             $("#" + mapName + "").empty();
             $("#" + mapName + "").append(html);
+        }
+    });
+}
+
+function updateDescription(mapName,id){
+    var mapDescription=$('#description').val();
+    $.ajax({
+        url: "../php/userContent.php",
+        data: {
+            tag : "updateDescription",
+            mapName : mapName,
+            mapDescription: mapDescription,
+        },
+        method: "POST",
+        success: function (response) {
+            console.log(response);
+            var row=$("#table").bootstrapTable('getRowByUniqueId',""+id+"");
+            //console.log(row);
+            row.description = mapDescription;
+            $("#table").bootstrapTable('updateRow', {index: getMapRowIndexById(row.id), row: row});
+            appendImages();
+            console.log("Descripción de Mapa actualizada.");
+        },
+        error: function (error){
+            console.log("Error al actualizar descripción del mapa:"+error);
         }
     });
 }

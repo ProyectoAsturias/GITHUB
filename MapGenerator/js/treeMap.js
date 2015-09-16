@@ -3,22 +3,13 @@ $(document).ready(function(){
 });
 
 function drawTree(){
-	if (!searchLayerByName("OpenStreet Maps")){
- 		var source = new ol.source.OSM()
-    	var osmLayer = new ol.layer.Tile({
-    		source: source
-    	});
-    	osmLayer.name = "OpenStreet Maps";
-    	osmLayer.base = true;
-    	map.addLayer(osmLayer);
-		updateLoadingBar(source);
-   	};
-	var wms=server+"geoserver/"+map.name+"/wms";
-	//console.log(wms);
+	var wms=serverGS+"geoserver/"+map.name+"/wms";
+	console.log(wms);
 	loadWmsTree(wms);
 }
 
 function loadWmsTree(wms) {
+	console.log(wms);
 	var parser = new ol.format.WMSCapabilities();
 	$.ajax({
 		type : "GET",
@@ -31,7 +22,7 @@ function loadWmsTree(wms) {
 			var capabilities = service.Capability;
 			var title = service.Service.Title;
 			var layers = [];
-			console.log(capabilities);
+			console.log(capabilities.Layer.Layer);
 			if(capabilities.Layer.Layer!=undefined){
 				var bBox=capabilities.Layer.BoundingBox[0].extent;
 				var extent=ol.extent.applyTransform(bBox, ol.proj.getTransform("EPSG:4326", "EPSG:3857"));
@@ -49,6 +40,7 @@ function loadWmsTree(wms) {
 						layers.push(layer);
 					}
 				}
+				//console.log(map.getLayers());
 			}
 			updateTreeLayer();
 		},
@@ -117,6 +109,7 @@ function generateLayerListHTML(){
 		if(!layer.base)
 			generateNode(layer);
 	});
+	console.log("sadfsdf");
 	makeNodesSortable();
 }
 

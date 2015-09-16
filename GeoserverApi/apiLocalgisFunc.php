@@ -55,14 +55,14 @@
 	 * @return string
 	 */
 	function getLayers() {
-		if(isset($_POST['idFamily']) || isset($_POST['getLayers']) ){ 
+		if(isset($_POST['idFamily']) || isset($_POST['getLayers']) ){
 			//$idFamily=$_POST['idFamily'];
 			$dbConnection = new DBConnection();
 			if(isset($_POST['getLayers']))
 				$query = "SELECT DISTINCT(l.id_layer),d.traduccion FROM layerfamilies_layers_relations as r,layers as l , dictionary d WHERE r.id_layer=l.id_layer AND l.id_name=d.id_vocablo AND d.locale='es_ES' ORDER BY d.traduccion";
 			else{
 				$idFamily=$_POST['idFamily'];
-				$query = "SELECT DISTINCT(l.id_layer),d.traduccion FROM layerfamilies_layers_relations as r,layers as l , dictionary d WHERE r.id_layerfamily='".$idFamily."' AND r.id_layer=l.id_layer AND l.id_name=d.id_vocablo AND d.locale='es_ES' ORDER BY d.traduccion";			
+				$query = "SELECT DISTINCT(l.id_layer),d.traduccion FROM layerfamilies_layers_relations as r,layers as l , dictionary d WHERE r.id_layerfamily='".$idFamily."' AND r.id_layer=l.id_layer AND l.id_name=d.id_vocablo AND d.locale='es_ES' ORDER BY d.traduccion";
 			}
 			$result = pg_query($query) or die('Error: '.pg_last_error());
 			$dbConnection->close();
@@ -174,7 +174,6 @@
 		if($numRows>0){
 			while ($row = pg_fetch_array($result, null, PGSQL_ASSOC)) {
 				$SLD = $row["xml"];
-				$styleName = str_replace(" ", "_", explode("</Name>",explode("<Name>",$SLD)[1])[0]);
 				$numSld=substr_count($SLD,"<UserStyle>");
 				$exp=explode("<UserStyle>",$SLD);
 				$header=$exp[0];
@@ -183,11 +182,15 @@
 					$sld_xml=$header."<UserStyle>".$exp[$i];
 					if($i!=$numSld)
 						$sld_xml.=$end;
+					$styleName = explode("</Name>",explode("<Name>",$sld_xml)[2])[0];
+					var_dump($styleName);
+					$styleName = explode(":_:",$styleName)[1];
+					var_dump($styleName);
 					$style = new LocalgisStyle($styleName,$sld_xml);
 					array_push($styles, $style);
 				}
-				/*$style= new LocalgisStyle($styleName,$SLD);
-				array_push($styles, $style);*/
+				//$style= new LocalgisStyle($styleName,$SLD);
+				//array_push($styles, $style);
 			}
 		}
 		$dbConnection->close();
@@ -202,7 +205,7 @@
 		$params=array();
 		$dbConnection = new DBConnection();
 		$query = "SELECT replace(nombreoficial,' ','')as name,id_entidad,srid FROM entidad_supramunicipal WHERE 1=1 ".$GLOBALS['whereEntity'];
-		$result = pg_query($query) or die('Error: '.pg_last_error());
+		$result=pg_query($query) or die('Error: '.pg_last_error());
 		$numRows=pg_num_rows($result);
 		while ($row = pg_fetch_array($result, null, PGSQL_ASSOC)) {
 			array_push($params,$row['name']);
@@ -210,6 +213,7 @@
 			array_push($params,$row['srid']);
 		}
 		$query = "SELECT id_municipio FROM entidades_municipios WHERE 1=1 ".$GLOBALS['whereEntity'];
+		
 		$result = pg_query($query) or die('Error: '.pg_last_error());
 		$numRows=pg_num_rows($result);
 		while ($row = pg_fetch_array($result, null, PGSQL_ASSOC))

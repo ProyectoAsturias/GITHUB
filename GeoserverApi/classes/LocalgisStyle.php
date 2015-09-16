@@ -20,7 +20,8 @@
 		 * @param string $sld
 		 */
 		public function __construct($name,$sld){
-			$this->name=utf8_encode($name);
+			//$this->name=utf8_encode($name);
+			$this->name=$name;
 			$this->sld=$sld;
 		}
 	}
