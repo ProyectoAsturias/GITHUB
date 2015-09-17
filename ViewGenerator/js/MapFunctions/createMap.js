@@ -50,6 +50,21 @@ function createMap() {
             console.log("WOP");
         }
 
+        //TEMPORAL
+        var osmLayer = new ol.layer.Tile({
+            source: new ol.source.OSM()
+        });
+        osmLayer.name = "OpenStreet Maps";
+        osmLayer.base = true;
+        map.addLayer(osmLayer);
+
+    }else{
+        var osmLayer = new ol.layer.Tile({
+            source: new ol.source.OSM()
+        });
+        osmLayer.name = "OpenStreet Maps";
+        osmLayer.base = true;
+        map.addLayer(osmLayer);
     }
 }
 

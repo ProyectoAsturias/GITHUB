@@ -1,12 +1,10 @@
-var visorBaseLayer = "Empty";
-
 $(document).ready(function(){
     JSONEventHandler();
 });
 
 function JSONEventHandler() {
     $("#saveVisorButton").click(function () {
-        saveVisorData(createJsonVisorData());
+        saveVisorData(createJson());
     });
 }
 
@@ -15,7 +13,7 @@ function JSONEventHandler() {
  * @method createJson
  * @return
  */
-function createJsonVisorData() {
+function createJson() {
     addDataAttributes();
     var visorData = {};
     visorData["mapDetails"] = extractMapDetails();
@@ -47,7 +45,7 @@ function saveVisorData(visorData) {
  * @return ObjectExpression
  */
 function extractMapDetails(){
-    return {"center": map.getView().getCenter(), "zoom": map.getView().getZoom(), "WMSUrl": map.mapURL, "baseLayer": visorBaseLayer};
+    return {"center": map.getView().getCenter(), "zoom": map.getView().getZoom(), "WMSUrl": map.mapURL};
 }
 
 /**
@@ -73,7 +71,7 @@ function extractFunctionsBar(){
 }
 
 function extractLegendFrame(){
-    if ($(".legendBar") !== undefined){
+    if ($(".legendBar") != undefined){
         var legendBar = {
             "position": {"top": $(".legendBar").css("top"), "left": $(".legendBar").css("left")}
         }
