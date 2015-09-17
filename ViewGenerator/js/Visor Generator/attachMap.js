@@ -3,9 +3,9 @@ $(document).ready(function(){
 })
 
 function attachMapEventHandler(){
-    $('.chosen-select').chosen({width:"80%",search_contains:true});
+    $('.chosen-select').chosen({width:"80%",search_contains:true, placeholder_text_single: "Seleccione un WMS"});
     $.ajax({
-        url: "../../../Tables/php/userContent.php",
+        url: "../../Tables/php/userContent.php",
         data: {
             tag: "userMapNames"
         },
@@ -21,7 +21,7 @@ function attachMapEventHandler(){
         }
     });
     $("#attachMapButton").click(function(){
-        var urlMap=server+"geoserver/"+$("#selectMap").val()+"/wms";
+        var urlMap=serverGS+"geoserver/"+$("#selectMap").val()+"/wms";
         attachMap(urlMap);
     });
 }
