@@ -24,7 +24,6 @@ function initMap() {
 		})
 	});
 	map.name=mapName;
-	setLoadedBaseLayer();
 	drawTree();
 }
 
@@ -424,7 +423,6 @@ function importLayer(layer,mapId){
 				mapName: map.name
 			},
 			success: function(response){
-				console.log(response);
 				console.log("Importando capa: #"+name);
 				$("#layerName"+layersCounter+"").empty().append("<span class='glyphicon glyphicon-ok-sign' style='color:green;'></span>");
 				layersCounter++;
@@ -449,12 +447,14 @@ function clearMap(){
 	console.log("ClearMap");
 	var listLayers=map.getLayers();
 	listLayers.forEach(function(layer){
-		removeLayer(layer,function(response){
-			if(map.getLayers().getArray().length==1){
-				success("El contenido del mapa ha sido eliminado.");
-				drawTree();
-			}
-		});
+		if(layer.name!="OpenStreet Maps"){
+			removeLayer(layer,function(response){
+				if(map.getLayers().getArray().length==1){
+					success("El contenido del mapa ha sido eliminado.");
+					drawTree();
+				}
+			});
+		}
 	});
 }
 
@@ -475,10 +475,4 @@ function catastro(name,wms){
 	untiled.name=name;
 	map.addLayer(untiled);
 	drawTree();
-}
-
-function setLoadedBaseLayer(){
-	if (loadedBaselayer != undefined){
-		baseLayer(loadedBaselayer);
-	}
 }

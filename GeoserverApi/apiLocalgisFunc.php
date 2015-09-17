@@ -183,9 +183,9 @@
 					if($i!=$numSld)
 						$sld_xml.=$end;
 					$styleName = explode("</Name>",explode("<Name>",$sld_xml)[2])[0];
-					var_dump($styleName);
+					//var_dump($styleName);
 					$styleName = explode(":_:",$styleName)[1];
-					var_dump($styleName);
+					//var_dump($styleName);
 					$style = new LocalgisStyle($styleName,$sld_xml);
 					array_push($styles, $style);
 				}
@@ -216,8 +216,10 @@
 		
 		$result = pg_query($query) or die('Error: '.pg_last_error());
 		$numRows=pg_num_rows($result);
+		$mun=[];
 		while ($row = pg_fetch_array($result, null, PGSQL_ASSOC))
-			array_push($params,$row['id_municipio']);
+			array_push($mun,$row['id_municipio']);
+		array_push($params,$mun);
 		$dbConnection->close();
 		return json_encode($params);
 	}

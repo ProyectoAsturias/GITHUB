@@ -60,14 +60,15 @@
 			$town=$_SESSION['town'];
 			$projection=$_SESSION['projection'];
 			$layerDescription="Capa de Localgis";
-			echo $town."-";
+			echo implode(",",$town);
+			echo "-";
 			echo $projection."-";
 
 			echo createDBView($layerId,$GLOBALS['mapName']."_".$layerName,$projection,$town);
 			if(($result=$GLOBALS['geoserver']->addLayer($GLOBALS['gsConnection']->wsName, $GLOBALS['gsConnection']->dsName, $layerName, $layerDescription, $projection))!="")
 				print("Advice: ".$result."\n");
-			//else
-				//addStyles($layerId,$layerName,$mapId);
+			else
+				addStyles($layerId,$layerName,$mapId);
 		}
 		else
 			echo "Error: Parameters missed.";
@@ -81,13 +82,13 @@
 		$styles = getStyles($layerId,$mapId);
 		$result=0;
 		for($i=0;$i<sizeof($styles);$i++){
-			$styleName=$styles[$i]->name."_".$i;
+			$styleName=$styles[$i]->name;//."_".$i;
 			print("Estilo: ".$styleName."\n");
 			if(($res=$GLOBALS['geoserver']->createStyle($GLOBALS['gsConnection']->wsName, $styles[$i]->sld, $styleName))!="")
 				$result=$result."Advice: ".$res."\n";
 			//Toma por defecto el primero
 			if($i==0)
-				$result=$result.setDefaultStyle($layerName,$styles[0]->name."_0");
+				$result=$result.setDefaultStyle($layerName,$styles[0]->name);//."_0");
 			if(($res=$GLOBALS['geoserver']->addStyleToLayer($layerName, $styleName, $GLOBALS['mapName']))!="")
 				$result=$result."Advice: ".$res."\n";
 		}

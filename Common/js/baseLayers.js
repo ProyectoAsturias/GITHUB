@@ -1,8 +1,6 @@
 var googleLayer=true;
-var gmap;
 function baseLayer(layerName){
 	removeOldBaseLayer();
-    saveBaseLayer(layerName);
 	if (layerName=="OSM"){
     	var osmLayer = new ol.layer.Tile({
     		source: new ol.source.OSM()
@@ -40,22 +38,15 @@ function baseLayer(layerName){
       var html="<span data-label-placement>Google Maps</span> <span class=\"caret\"></span>";
       $("#baseLayerButton #baseButton").empty().append(html);
       googleMapLayer(map);
-    }else if (layerName == "Empty"){
-      var html="<span data-label-placement>Sin capa base</span> <span class=\"caret\"></span>";
-      $("#baseLayerButton #baseButton").empty().append(html);
     }
 }
 
 function removeOldBaseLayer(){
-  var layersArray=map.getLayers().getArray();
-  for(var i=0;i<layersArray.length;i++){
-  	if(layersArray[i].base==true)
-  		map.removeLayer(layersArray[i])
-  }
-  /*if (gmap != undefined){
-    gmap = undefined;
-    $('#gmap').hide();
-  }*/
+	var layersArray=map.getLayers().getArray();
+	for(var i=0;i<layersArray.length;i++){
+		if(layersArray[i].base==true)
+			map.removeLayer(layersArray[i])
+	}
   //$('#gmap').hide();
 }
 
@@ -63,7 +54,7 @@ function googleMapLayer(map){
   if (googleLayer){
     $("#gmap").addClass("fill");
     googleLayer=false;
-    gmap = new google.maps.Map(document.getElementById('gmap'), {
+    var gmap = new google.maps.Map(document.getElementById('gmap'), {
       disableDefaultUI: true,
       keyboardShortcuts: false,
       draggable: false,
@@ -99,27 +90,4 @@ function googleMapLayer(map){
     olMapDiv.parentNode.removeChild(olMapDiv);
     gmap.controls[google.maps.ControlPosition.TOP_LEFT].push(olMapDiv);
   }
-}
-
-function saveBaseLayer(layerName){
-  if (typeof(mapName) !== "undefined"){
-    saveMapBaseLayer(mapName, layerName);
-  }else if (typeof(visorName) !== "undefined"){
-    visorBaseLayer = layerName;
-  }
-}
-
-function saveMapBaseLayer(mapName, layerName){
-  $.ajax({
-    url: "../../Tables/php/userContent.php",
-    data: {
-      "tag" : "saveMapBaselayer",
-      "mapName" : mapName,
-      "baselayerName" : layerName
-    },
-    method: "POST",
-    success: function (response) {
-      console.log(response);
-    }
-  });
 }

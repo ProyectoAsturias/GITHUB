@@ -628,7 +628,7 @@ class ApiRest {
 	 * @param $workspaceName
      */
 	public function uploadSldStyle($workspaceName, $url_file, $styleName) {
-		$curl='curl -u admin:geoserver -XPUT -H "Content-type: application/vnd.ogc.sld +xml" -d @'.$url_file.' http://192.168.1.4:8080/geoserver/rest/workspaces/'.$workspaceName.'/styles/'.$styleName;
+		$curl='curl -u admin:geoserver -XPUT -H "Content-type: application/vnd.ogc.sld +xml" -d @'.$url_file.' http://localhost:8090/geoserver/rest/workspaces/'.$workspaceName.'/styles/'.$styleName;
 		$rslt = shell_exec($curl);
 		return $rslt;
 		//return $this->runApi('workspaces/'.urlencode($workspaceName).'/styles'.urlencode($styleName), 'PUT', htmlentities('@'.$url_file, ENT_COMPAT),"application/vnd.ogc.sld +xml");
