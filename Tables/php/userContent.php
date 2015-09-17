@@ -42,6 +42,12 @@
             case "updateDescription":
                 echo json_encode(updateDescription($_POST["mapName"],$_POST["mapDescription"]));
                 break;
+            case "saveMapBaselayer":
+                echo json_encode(saveMapBaselayer($_POST["mapName"], $_POST["baselayerName"]));
+                break;
+            case "loadMapBaselayer":
+                echo json_encode(loadMapBaselayer($_POST["mapName"]));
+                break;
             case "userMapNames":
                 echo json_encode(downloadUserMapNames($_SESSION["userName"]));
                 break;
@@ -130,6 +136,19 @@
 
     function downloadUserMapNames($userName){
         $query = "SELECT name FROM public.\"Maps\" WHERE owner='".$userName."';";
+        $result = pg_query($query) or die('Error: '.pg_last_error());
+        return pg_fetch_all($result);
+    }
+
+    function saveMapBaselayer($mapName, $baselayerName){
+        $query = "UPDATE public.\"Maps\" SET baselayer = '".$baselayerName."' WHERE name = '".$mapName."';";
+        $result = pg_query($query) or die('Error: '.pg_last_error());
+        return $result;
+    }
+
+    function loadMapBaseLayer($mapName){
+        $dbConnection = new DBConnection("UserContent");
+        $query = "SELECT baselayer FROM public.\"Maps\" WHERE name='".$mapName."';";
         $result = pg_query($query) or die('Error: '.pg_last_error());
         return pg_fetch_all($result);
     }

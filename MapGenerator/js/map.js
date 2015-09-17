@@ -24,6 +24,7 @@ function initMap() {
 		})
 	});
 	map.name=mapName;
+	setLoadedBaseLayer();
 	drawTree();
 }
 
@@ -474,4 +475,10 @@ function catastro(name,wms){
 	untiled.name=name;
 	map.addLayer(untiled);
 	drawTree();
+}
+
+function setLoadedBaseLayer(){
+	if (loadedBaselayer != undefined){
+		baseLayer(loadedBaselayer);
+	}
 }
