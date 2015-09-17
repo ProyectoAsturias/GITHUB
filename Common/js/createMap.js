@@ -13,7 +13,7 @@ var layersGroupedNames = [];
  
 function setMapDetails(sentMapDetails){
     setMapURL(sentMapDetails["WMSUrl"]);
-    mapDetails["WMSUrl"] = 'http://192.168.127.128:8080/geoserver/Prueba1/wms';
+    //mapDetails["WMSUrl"] = 'http://192.168.127.128:8080/geoserver/Prueba1/wms';
     //setMapURL("http://ovc.catastro.meh.es/Cartografia/WMS/ServidorWMS.aspx");
     //mapDetails["WMSUrl"] = "http://ogc.bgs.ac.uk/cgi-bin/BGS_Bedrock_and_Superficial_Geology/wms";
     setMapCenter(sentMapDetails["center"]);
