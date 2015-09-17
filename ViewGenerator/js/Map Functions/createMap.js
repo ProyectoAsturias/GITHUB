@@ -17,6 +17,7 @@ function setMapDetails(sentMapDetails){
     //mapDetails["WMSUrl"] = "http://ogc.bgs.ac.uk/cgi-bin/BGS_Bedrock_and_Superficial_Geology/wms";
     setMapCenter(sentMapDetails["center"]);
     setMapZoomLevel(sentMapDetails["zoom"]);
+    setBaseLayer(sentMapDetails["baseLayer"]);
 }
 
 function setMapURL(WMSUrl){
@@ -30,6 +31,11 @@ function setMapCenter(center){
 function setMapZoomLevel(zoomLevel){
     mapDetails["zoomLevel"] = zoomLevel;
 }
+
+function setBaseLayer(layerName){
+    mapDetails["baseLayer"] = layerName;
+}
+
 
 function createMap() {
     map = new ol.Map({
@@ -52,15 +58,13 @@ function createMap() {
         }catch (error){
             console.log("WOP");
         }
-        //TEMPORAL
-        addBaseOSMLayer();
-
-    }else{
-        addBaseOSMLayer();
     }
     map.addControl(new ol.control.ScaleLine());
-    if (typeof (toolsDraggable) == "function")
+    if (typeof (toolsDraggable) == "function"){
         toolsDraggable();
+    }
+    console.log(mapDetails["baseLayer"]);
+    baseLayer(mapDetails["baseLayer"]);
 }
 
 function destroyMap(){

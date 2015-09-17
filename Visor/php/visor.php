@@ -24,5 +24,6 @@ $visorData = loadVisorContent($_GET["visorName"]);
 //$visorData = json_decode($json);
 
 echo $twig->render('index.html.twig', array(
+    "visorName" => $_GET["visorName"],
     "visorData" => json_decode($visorData[0]['content'])
 ));

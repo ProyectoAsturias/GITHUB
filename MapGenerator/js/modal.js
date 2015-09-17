@@ -30,7 +30,7 @@ function eyeIconClickHandler(){
 function deleteIconClickHandler(){
 	$(".removeLayer").click(function(event){
 		var parent = $(this).parent();
-		bootbox.confirm("¿Realmente desea eliminar esta capa?", function(result) {
+		bootbox.confirm("Â¿Realmente desea eliminar esta capa?", function(result) {
 			if (result){
 				removeLayer(parent.data("layer"),function(response){
 					parent.fadeOut("slow", function(){
@@ -57,7 +57,7 @@ function attributesClickHandler(){
 		        },
 		    	success: function (response) {
 		    		var dbLayers=JSON.parse(response);
-				    //Que aparezcan con el tick solo los que están presentes (attributes)
+				    //Que aparezcan con el tick solo los que estï¿½n presentes (attributes)
 					var modalHTML = "";
 					dbLayers.forEach(function (dbLayer){
 						if(dbLayer[0].id[0]==parent.data("layer").name){
@@ -113,13 +113,13 @@ function appendModalWms(){
 	$.ajax({
 		type: "GET",
 		dataType : 'text',
-		url: server+"geoserver/"+mapName+"/wms?request=getCapabilities&service=wms",
+		url: serverGS+"geoserver/"+mapName+"/wms?request=getCapabilities&service=wms",
 		success: function (response) {
 			var service = parser.read(response);
 			console.log(service);
-			var modalHTML="<label for=\"title\">Titulo del servicio Wms</label>"+
+			var modalHTML="<label for=\"title\">TÃ­tulo del servicio Wms</label>"+
 					"<input type=\"text\" class=\"form-control\" id=\"title\" value=\""+service.Service.Title+"\">"+
-					"<label for=\"abstract\">Descripción del servicio Wms</label>"+
+					"<label for=\"abstract\">DescripciÃ³n del servicio Wms</label>"+
 					"<textarea rows=\"3\" class=\"form-control\" id=\"abstract\">"+service.Service.Abstract+"</textarea>"+
 										"<label for=\"keywordList\">Palabras clave</label>"+
 					"<select multiple class=\"form-control\" id=\"keywordList\" tabindex=\"1\">"
@@ -128,16 +128,16 @@ function appendModalWms(){
 			modalHTML +="</select>"+
 				"<button onclick='delKeyword()' id=\"delKeyword\" class=\"btn btn-info btn-block\" style=\"padding:0;\" >Eliminar palabra clave</button>"+
 				"<input type=\"text\"  id=\"keyword\" style=\"width:100%; border-radius: 7px; \"/>" +
-				"<button onclick='addKeyword()' id=\"addKeyword\" class=\"btn btn-info btn-block\" style=\"padding:0;\" >Añadir palabra clave</button>"+
+				"<button onclick='addKeyword()' id=\"addKeyword\" class=\"btn btn-info btn-block\" style=\"padding:0;\" >AÃ±adir palabra clave</button>"+
 				"</div>"+
-				"<h3 style=\"textalign:center;\">Información de contacto</h3>"+
+				"<h3 style=\"textalign:center;\">InformaciÃ³n de contacto</h3>"+
 				"<div class=\"col-xs-12\" id=\"ContactInfo\">"+
 					"<div class=\"col-xs-6\">"+
 						"<label for=\"contactPerson\">Persona de contacto</label>"+
 						"<input type=\"text\" class=\"form-control\" id=\"contactPerson\" value=\""+service.Service.ContactInformation.ContactPersonPrimary.ContactPerson+" \">"+
-						"<label for=\"contactPosition\">Puesto en la organización</label>"+
+						"<label for=\"contactPosition\">Puesto en la organizaciÃ³n</label>"+
 						"<input type=\"text\" class=\"form-control\" id=\"contactPosition\" value=\""+service.Service.ContactInformation.ContactPosition+" \">"+
-						"<label for=\"address\">Dirección</label>"+
+						"<label for=\"address\">DirecciÃ³n</label>"+
 						"<input type=\"text\" class=\"form-control\" id=\"address\" value=\""+service.Service.ContactInformation.ContactAddress.Address+" \">"+
 						"<label for=\"stateOrProvince\">Provincia/Estado</label>"+
 						"<input type=\"text\" class=\"form-control\" id=\"stateOrProvince\" value=\""+service.Service.ContactInformation.ContactAddress.StateOrProvince+" \">"+
@@ -146,15 +146,15 @@ function appendModalWms(){
 						"<label for=\"fax\">Fax</label>"+
 						"<input type=\"text\" class=\"form-control\" id=\"fax\" value=\""+service.Service.ContactInformation.ContactFacsimileTelephone+" \">"+
 					"</div><div class=\"col-xs-6\">"+
-						"<label for=\"contactOrganization\">Organización</label>"+
+						"<label for=\"contactOrganization\">OrganizaciÃ³n</label>"+
 						"<input type=\"text\"  class=\"form-control\" id=\"contactOrganization\"  value=\""+service.Service.ContactInformation.ContactPersonPrimary.ContactOrganization+" \">"+
-						"<label for=\"addressType\">Tipo de dirección</label>"+
+						"<label for=\"addressType\">Tipo de direcciÃ³n</label>"+
 						"<input type=\"text\" class=\"form-control\" id=\"addressType\" value=\""+service.Service.ContactInformation.ContactAddress.AddressType+" \">"+
 						"<label for=\"city\">Ciudad</label>"+
 						"<input type=\"text\" class=\"form-control\" id=\"city\" value=\""+service.Service.ContactInformation.ContactAddress.City+" \">"+
 						"<label for=\"country\">Pais</label>"+
 						"<input type=\"text\" class=\"form-control\" id=\"country\" value=\""+service.Service.ContactInformation.ContactAddress.Country+" \">"+
-						"<label for=\"contactPhone\">Teléfono</label>"+
+						"<label for=\"contactPhone\">TelÃ©fono</label>"+
 						"<input type=\"text\" class=\"form-control\" id=\"contactPhone\" value=\""+service.Service.ContactInformation.ContactVoiceTelephone+" \">"+
 						"<label for=\"email\">E-mail</label>"+
 						"<input type=\"text\" class=\"form-control\" id=\"email\" value=\""+service.Service.ContactInformation.ContactElectronicMailAddress+" \">"+
@@ -232,9 +232,9 @@ function appendModalLayer(nameMap,layer){
 			var htmlTitle=	"<button type=\"button\" class=\"close\" data-dismiss=\"modal\">&times;</button>"+
 							"<h4 class=\"modal-title\">Modificar Datos de la capa: "+layerName+"</h4>"
 			$("#modalLayer .modal-header").html(htmlTitle);
-			var modalHTML="<label for=\"title\">Titulo de la capa</label>"+
+			var modalHTML="<label for=\"title\">TÃ­tulo de la capa</label>"+
 					"<input type=\"text\" class=\"form-control\" id=\"title\" value=\""+pickLayer.Title+"\">"+
-					"<label for=\"abstract\">Descripción de la capa</label>"+
+					"<label for=\"abstract\">DescripciÃ³n de la capa</label>"+
 					"<textarea rows=\"3\" class=\"form-control\" id=\"abstract\">"+pickLayer.Abstract+"</textarea>"+
 					"<label for=\"keywordList\">Palabras clave</label>"+
 					"<select multiple class=\"form-control\" id=\"keywordList\" tabindex=\"1\">"
@@ -243,7 +243,7 @@ function appendModalLayer(nameMap,layer){
 			modalHTML +="</select>"+
 					"<button onclick='delKeyword()' id=\"delKeyword\" class=\"btn btn-info btn-block\" style=\"padding:0;\" >Eliminar palabra clave</button>"+
 					"<input type=\"text\"  id=\"keyword\" style=\"width:100%; border-radius: 7px; \"/>" +
-					"<button onclick='addKeyword()' id=\"addKeyword\" class=\"btn btn-info btn-block\" style=\"padding:0;\" >Añadir palabra clave</button>"+
+					"<button onclick='addKeyword()' id=\"addKeyword\" class=\"btn btn-info btn-block\" style=\"padding:0;\" >AÃ±adir palabra clave</button>"+
 				"</div>"
 
 			$("#modalLayer .modal-body").html(modalHTML);
@@ -465,7 +465,7 @@ function editWmsList() {
 		"</select>" +
 		"<button onclick='delWmsUrl()' id=\"ButtonDelWms\" class=\"btn btn-info btn-block\" style=\"margin-top:5px;margin-bottom:5px\" >Eliminar Wms</button>" +
 		"<input type=\"text\"  id=\"newWmsUrl\" style=\"width:100%; border-radius: 7px; \"/>" +
-		"<button onclick='addWmsUrl()' id=\"ButtonAddWms\" class=\"btn btn-info btn-block\" style=\"margin-top:5px\" >Añadir Wms</button>";
+		"<button onclick='addWmsUrl()' id=\"ButtonAddWms\" class=\"btn btn-info btn-block\" style=\"margin-top:5px\" >AÃ±adir Wms</button>";
 	$("#modalWmsList .modal-body").empty();
 	$("#modalWmsList .modal-body").append(htmlModal);
 	$("#modalWmsList").modal("show");
@@ -486,7 +486,7 @@ function editWmsList() {
 		},
 		error : function (error) {
 			$("#selectWms").append("<option value='http://ogc.bgs.ac.uk/cgi-bin/BGS_Bedrock_and_Superficial_Geology/wms'>http://ogc.bgs.ac.uk/cgi-bin/BGS_Bedrock_and_Superficial_Geology/wms</option>");
-			console.log("Ocurrió un error. Compruebe su conexión al servidor.");
+			console.log("OcurriÃ³ un error. Compruebe su conexiÃ³n al servidor.");
 			console.log("Error al mostrar la lista de wms: " + error);
 		}
 	});
