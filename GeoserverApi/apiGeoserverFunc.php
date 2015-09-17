@@ -60,8 +60,6 @@
 			$town=$_SESSION['town'];
 			$projection=$_SESSION['projection'];
 			$layerDescription="Capa de Localgis";
-			echo $town."-";
-			echo $projection."-";
 
 			echo createDBView($layerId,$GLOBALS['mapName']."_".$layerName,$projection,$town);
 			if(($result=$GLOBALS['geoserver']->addLayer($GLOBALS['gsConnection']->wsName, $GLOBALS['gsConnection']->dsName, $layerName, $layerDescription, $projection))!="")
@@ -82,7 +80,7 @@
 		$result=0;
 		for($i=0;$i<sizeof($styles);$i++){
 			$styleName=$styles[$i]->name."_".$i;
-			print("Estilo: ".$styleName."\n");
+			//print("Estilo: ".$styleName."\n");
 			if(($res=$GLOBALS['geoserver']->createStyle($GLOBALS['gsConnection']->wsName, $styles[$i]->sld, $styleName))!="")
 				$result=$result."Advice: ".$res."\n";
 			//Toma por defecto el primero
@@ -141,7 +139,7 @@
 			$wmsName=$_POST['wmsName'];
 			$wmsUrl=$_POST['wmsUrl'];
 			$listLayers=$_POST['listLayers'];
-
+			
 			if($result=$GLOBALS['geoserver']->createWmsstore($GLOBALS['gsConnection']->wsName,$wmsName,$wmsUrl))
 				print("Advice".$result."\n");
 			else
@@ -240,7 +238,7 @@
 		if($layerName!=null && $styleName !=null){
 			if($res=$GLOBALS['geoserver']->defaultStyleToLayer($layerName, $styleName, $GLOBALS['mapName'])!="")
 				print("Advice: ".$res."\n");
-			print("Default style: ".$styleName."\n");
+			//print("Default style: ".$styleName."\n");
 		}
 		else
 			echo "Error: Parameters missed.";
@@ -261,16 +259,18 @@
 			//print json_encode($content."hola");
 		}
 		else
-			echo "Error: Parameters missed.";
+			echo json_encode(array("error"=> "Error: Faltan parametros."));
 		if ($valid) {
 			if ($res = $GLOBALS['geoserver']->createStyle($GLOBALS['mapName'], $tempFile, $styleName) != "")
-				print json_encode("Advice: ".$res."\n");
-			//print json_encode("New style: ".$styleName."\n");
+				print json_encode(array("advice"=>"New style: ".$styleName."\n"));
+			else
+				print json_encode(array('error'=>"fallo al crear el estilo, ".$res));
 			if (($res = $GLOBALS['geoserver']->addStyleToLayer($layerName, $styleName, $GLOBALS['mapName'])) != "")
-				$result = "Advice: ".$res."\n";
-			//echo json_encode($result);
-		} else
-			echo "Error, sld mal formado.";
+				print json_encode(array('error'=>"Advice: ".$res."\n"));
+		} 
+		else{
+			echo json_encode(array('error'=>" Error: sld mal formado"));
+		}
 	}
 
 	function reloadCache(){

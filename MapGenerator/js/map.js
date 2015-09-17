@@ -68,7 +68,7 @@ function addLayer(name,wms,style) {
 	layer.name = name;
 	updateLoadingBar(source);
 	map.addLayer(layer);
-	console.log(layer.getSource().getParams());
+	//console.log(layer.getSource().getParams());
 	return layer;
 }
 
@@ -207,39 +207,50 @@ function importWms(wms) {
 			var service = parser.read(response);
 			var capabilities = service.Capability;
 			var title = service.Service.Title;
+			title=title.replace(/ /gi,'_');
+			var modalList="";
+			$("#modalLayersWms .modal-header").empty().append("<h4 class=\"modal-title\">Seleccione capas a importar</h4>");
 			for(var i=0; i<capabilities.Layer.Layer.length; i++){
-				var style="";
-				if (wms=="http://ovc.catastro.meh.es/Cartografia/WMS/ServidorWMS.aspx")
-					catastro(capabilities.Layer.Layer[i].Name,wms);
-				else
-					addLayer(capabilities.Layer.Layer[i].Name,wms,style);
+				modalList+="<label><input type=\"checkbox\" value=\""+capabilities.Layer.Layer[i].Name+"\" class=\"checkboxLayers\"></input>  "+capabilities.Layer.Layer[i].Name+"</label></br>";
 			}
-			drawTree();
-
-			/*$.ajax({
-				type: "POST",
-				url: apiPath+"apiGeoserver.php",
-				data:{
-					tag: 'addWms',
-					mapName: map.name,
-					wmsName: title,
-					wmsUrl: wms,
-					listLayers: listLayers
-				},
-				success: function(response){
-					console.log(response);
-					drawTree();
-				},
-				error: function(error) {
-					console.log("Error al cargar el mapa: ".error);				 
-				}
-			});*/
+			var modalFooter="<button type=\"button\" onclick=\"importLayersWms('"+wms+"','"+title+"')\" class=\"btn btn-success\" data-dismiss=\"modal\">Importar Capas</button>"+
+                "<button type=\"button\" class=\"btn btn-default\" data-dismiss=\"modal\">Cerrar</button>";
+			$("#modalLayersWms .modal-body").empty().append(modalList);
+			$("#modalLayersWms .modal-footer").empty().append(modalFooter);
+			$("#modalLayersWms").modal("show");
 		},
 		error:function(error){
 			alert("Error al importar un wms: "+error);
 		}
 	});
 }
+
+function importLayersWms(wms,title){
+	var listLayers=[];
+	$(".checkboxLayers").each(function(){
+		if($(this).is(':checked'))
+			listLayers.push($(this).val());
+	});
+	$.ajax({
+		type: "POST",
+		url: apiPath+"apiGeoserver.php",
+		data:{
+			tag: 'addWms',
+			mapName: map.name,
+			wmsName: title,
+			wmsUrl: wms,
+			listLayers: listLayers
+		},
+		success: function(response){
+			console.log(response);
+			drawTree();
+		},
+		error: function(error) {
+			console.log("Error al cargar el mapa: ".error);				 
+		}
+	});
+}
+
 
 /**
 * Carga el mapa completo en Geoserver
@@ -409,8 +420,14 @@ function importLayer(layer,mapId){
 		name=layer.name;
 	}
 	else{
+		layersCounter=1;
 		id=$("#selectLayer").val();
 		name=$("#selectLayer").find('option:selected').attr("name");
+		$("#modalCounterLayers .modal-header").empty().append("<h4 class=\"modal-title\">Importando Familia</h4>");
+		var modalList ="<label for=\"layerName1\">"+name+"</label><div id=\"layerName1\" class=\"updatedLayer\"><span class='glyphicon glyphicon-remove-sign' style='color:red;'></span></div></br>";		
+		$("#modalCounterLayers .modal-body").empty();
+		$("#modalCounterLayers .modal-body").append(modalList);
+		$("#modalCounterLayers").modal("show");		
 	}
 	if(id!=null){
 		$.ajax({
@@ -425,10 +442,9 @@ function importLayer(layer,mapId){
 			},
 			success: function(response){
 				console.log(response);
-				console.log("Importando capa: #"+name);
-				$("#layerName"+layersCounter+"").empty().append("<span class='glyphicon glyphicon-ok-sign' style='color:green;'></span>");
+				if(response=="")
+					$("#layerName"+layersCounter+"").empty().append("<span class='glyphicon glyphicon-ok-sign' style='color:green;'></span>");
 				layersCounter++;
-				console.log(response);
 				//update MAP Table
 				updateDatabaseMap();
 				drawTree();
@@ -458,9 +474,10 @@ function clearMap(){
 	});
 }
 
-function catastro(name,wms){
+
+function addLayerWms(name,wms){
 	var format = 'image/png';
-	var untiled = new ol.layer.Image({
+	var layer = new ol.layer.Image({
 		source: new ol.source.ImageWMS({
 		  ratio: 1,
 		  url: wms,
@@ -472,9 +489,9 @@ function catastro(name,wms){
 		  }
 		})
 	});
-	untiled.name=name;
-	map.addLayer(untiled);
-	drawTree();
+	layer.name = name;
+	map.addLayer(layer);
+	return layer;
 }
 
 function setLoadedBaseLayer(){

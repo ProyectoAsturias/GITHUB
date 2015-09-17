@@ -57,7 +57,7 @@ function attributesClickHandler(){
 		        },
 		    	success: function (response) {
 		    		var dbLayers=JSON.parse(response);
-				    //Que aparezcan con el tick solo los que est�n presentes (attributes)
+				    //Que aparezcan con el tick solo los que están presentes (attributes)
 					var modalHTML = "";
 					dbLayers.forEach(function (dbLayer){
 						if(dbLayer[0].id[0]==parent.data("layer").name){
@@ -327,11 +327,11 @@ function appendModalStyles(nameMap,layer){
             var capabilities = service.Capability;
             var layers = [];
 			var styleSrc="";
-                for(var i=0; i<capabilities.Layer.Layer.length; i++){
-                        if (layerName==capabilities.Layer.Layer[i].Name){
-                                var pickLayer= capabilities.Layer.Layer[i];
-                        }
-                }
+            for(var i=0; i<capabilities.Layer.Layer.length; i++){
+                    if (layerName==capabilities.Layer.Layer[i].Name){
+                            var pickLayer= capabilities.Layer.Layer[i];
+                    }
+            }
 			defaultStyle=pickLayer.Style[0].Name;
 			var srcStyle =pickLayer.Style[0].LegendURL[0].OnlineResource;
 			var valueOpacity=globalLayer.getOpacity();
@@ -343,15 +343,15 @@ function appendModalStyles(nameMap,layer){
                                     "<label for=\"styleList\">Estilos disponibles</label>"+
                                     "<select multiple class=\"form-control\" id=\"styleList\" tabindex=\"1\">"
             for(var i=1; i<pickLayer.Style.length; i++){
-            modalHTML +="<option value=\""+pickLayer.Style[i].Name+"\">"+pickLayer.Style[i].Name+"</option>";
-			styleSrc +="<input type=\"hidden\" id=\""+pickLayer.Style[i].Name+"\" value=\""+pickLayer.Style[i].LegendURL[0].OnlineResource+"\" \>";
-		}
+            	modalHTML +="<option ondblclick=\"selectStyle()\" value=\""+pickLayer.Style[i].Name+"\">"+pickLayer.Style[i].Name+"</option>";
+				styleSrc +="<input type=\"hidden\" id=\""+pickLayer.Style[i].Name+"\" value=\""+pickLayer.Style[i].LegendURL[0].OnlineResource+"\" \>";
+			}
                     modalHTML +="</select><div id=\"styleSrc\">"+styleSrc+"</div>"+
                                     "<button onclick='selectStyle()' id=\"selectStyle\" class=\"btn btn-info btn-block\" style=\"padding:0;\" >Seleccionar estilo</button>"+
-				"<label for=\"inputSld\">Carga un archivo SLD</label>"+
-				"<input id=\"inputSld\" name=\"inputSld\" type=\"file\" class=\"file-loading\">"+
-				"<div id=\"buttonStyles\"></div>"+
-                            "</div>"
+									"<label for=\"inputSld\">Carga un archivo SLD</label>"+
+									"<input id=\"inputSld\" name=\"inputSld\" type=\"file\" class=\"file-loading\">"+
+									"<div id=\"buttonStyles\"></div>"+
+					             "</div>"
 		$("#modalStyles .modal-body").html(modalHTML);
 
 		$('#inputSld').fileinput({
@@ -362,15 +362,17 @@ function appendModalStyles(nameMap,layer){
 			    mapName:mapName,
 			    layerName:layerName,
 		    },
-		    allowedFileExtensions: ["sld"],
+		    allowedFileExtensions: ["sld", "xml"],
 		    previewClass:"bg-warning",
 		    dropZoneEnabled: false, 
 		});
 
 		$("#inputSld").on('fileuploaded', function(event,data ) {
+			//console.log(data);
 		    styleName=data.files[0].name.split(".");
-		    $("#modalStyles .modal-body").empty();
-		    appendModalStyles(mapName,layer);
+		    styleSource=getStyleSrc(styleName[0],layerName);
+		    $("#styleList").prepend("<option value=\""+styleName[0]+"\" ondblclick=\"selectStyle()\">"+styleName[0]+"</option>");
+		    $("#styleSrc").append("<input type=\"hidden\" id=\""+styleName[0]+"\" value=\""+styleSource+"\" \>");
 		});
 
         $("#inputSld").on('fileuploaderror', function(event,data ) {
@@ -379,11 +381,32 @@ function appendModalStyles(nameMap,layer){
         });
         $("#modalStyles").modal("show");
 
-	},
-	error: function(error){
-		console.log(error);
-	}
-})
+		},
+		error: function(error){
+			console.log(error);
+		}
+	})
+}
+
+function getStyleSrc(styleName,layerName){
+	var parser = new ol.format.WMSCapabilities();
+	$.ajax({
+        type: "GET",
+        dataType : 'text',
+        url: server+"geoserver/"+mapName+"/wms?request=getCapabilities&service=wms",
+        success: function (response) {
+            var service = parser.read(response);
+            for(var i=0; i<service.Capability.Layer.Layer.length; i++){
+               	if (layerName==service.Capability.Layer.Layer[i].Name)
+                    var pickLayer= service.Capability.Layer.Layer[i];    
+            }
+            for(var i=1; i<pickLayer.Style.length; i++){
+            	if (styleName==pickLayer.Style[i].Name)
+            		console.log(pickLayer.Style[i].LegendURL[0].OnlineResource);
+            		//return pickLayer.Style[i].LegendURL[0].OnlineResource;
+			}        
+       	}
+    })	
 }
 
 function selectStyle(){

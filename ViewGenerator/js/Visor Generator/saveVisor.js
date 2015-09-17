@@ -73,6 +73,7 @@ function extractFunctionsBar(){
 }
 
 function extractLegendFrame(){
+
     if ($(".legendBar") !== undefined){
         var legendBar = {
             "position": {"top": $(".legendBar").css("top"), "left": $(".legendBar").css("left")}
@@ -81,5 +82,5 @@ function extractLegendFrame(){
     }else{
         return "";
     }
-
 }
+

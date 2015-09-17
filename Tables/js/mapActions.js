@@ -93,11 +93,11 @@ function mapModalSaveButtonHandler(){
         var entityId;
         
         if($("#selectConcejo").val()==null){
-            mapName=entityParams[0]+mapName; 
+            mapName=entityParams[0]+"_"+mapName; 
             entityId=entityParams[1];
         }
         else{
-            mapName=$("#selectConcejo option:selected").text()+mapName;
+            mapName=$("#selectConcejo option:selected").text()+"_"+mapName;
             entityId =$("#selectConcejo").val();
         }
         mapName=checkMapName(mapName);

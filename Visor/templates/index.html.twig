@@ -66,62 +66,60 @@
 
 <style>
     table, th, td {
-        border: 1px solid black;
         border-collapse: collapse;
         font-family: "Lucida Grande", "Lucida Sans", Arial, sans-serif;
         font-family: "HelveticaNeue-Light", "Helvetica Neue Light", "Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif;
     }
     th, td {
+    	border: 1px solid black;
         padding: 5px;
         text-align: left;
     }
+    #info{
+        max-width:420px;
+        max-height: 300px;
+	}
+
+    #dataTable{
+        max-width: 100%;
+        max-height: inherit;
+        height: 100%;
+        overflow: auto;
+        background:white;
+        border-bottom:solid 4px #9999CC;
+        border-left:solid 4px #9999CC;
+        border-right:solid 4px #9999CC;
+        border-bottom-right-radius: 5px;
+        border-bottom-left-radius: 5px;
+    }
+
+    .menu5 {padding:0px; margin:0; list-style:none; height:40px; position:relative; background:transparent url(../css/images/pro_five_0c.gif) repeat-x left bottom; font-size:11px; overflow: auto;}
+	.menu5 li {float:left; height:40px; margin-right:1px;}
+	.menu5 li a {display:block; float:left; height:40px; line-height:35px; color:#333; text-decoration:none; font-family:arial, verdana, sans-serif; font-weight:bold; text-align:center; padding:0 0 0 4px; cursor:pointer; background:url(../css/images/pro_five_0a.gif) no-repeat;}
+	.menu5 li a b {float:left; display:block; padding:0 16px 5px 12px; background:url(../css/images/pro_five_0b.gif) no-repeat right top;}
+	.menu5 li.current a {color:#000; background:url(../css/images/pro_five_2a.gif) no-repeat;}
+	.menu5 li.current a b {background:url(../css/images/pro_five_2b.gif) no-repeat right top;}
+	.menu5 li a:hover {color:#000; background: url(../css/images/pro_five_1a.gif) no-repeat;}
+	.menu5 li a:hover b {background:url(../css/images/pro_five_1b.gif) no-repeat right top;}
+	.menu5 li.current a:hover {color:#000; background: url(../css/images/pro_five_2a.gif) no-repeat; cursor:default;}
+	.menu5 li.current a:hover b {background:url(../css/images/pro_five_2b.gif) no-repeat right top;}
+
 </style>
 
-    <table id="dataTable">
-        <tr>
-            <th>Capa</th>
-            <td>Capa 1</td>
-        </tr>
-        <tr>
-            <th>Atributo 1</th>
-            <td>1201</td>
-        </tr>
-        <tr>
-            <th>Atributo 2</th>
-            <td>351315</td>
-        </tr>
-        <tr>
-            <th>Atributo 3</th>
-            <td>351531</td>
-        </tr>
-        <tr>
-            <th>Atributo 4</th>
-            <td>351531</td>
-        </tr><tr>
-            <th>Atributo 5</th>
-            <td>351531</td>
-        </tr>
-        <tr>
-            <th>Atributo 6</th>
-            <td>351531</td>
-        </tr><tr>
-            <th>Atributo 7</th>
-            <td>351531</td>
-        </tr>
+   <!-- <div id="info">
+    </div>-->
+    <body>
 
 
-    </table>
-
-
-
+	
 {% include "printModal_template.html.twig" %}
 
 <div style="clear: both"></div>
 
     {% for functionBar in visorData.functionsBar %}
-        <div class="functionsBar container" style="top: {{ functionBar.position.top - 140}}px; left: {{ functionBar.position.left +300}}px;">
+        <div class="functionsBar container {{functionBar.type}}" id="{{functionBar.id}}" style="top: {{ functionBar.position.top }}; left: {{ functionBar.position.left }} ;">
             {% for function in functionBar.functions %}
-                <div class="functionContainer col-md-1" style="display: block; top: 30%">
+                <div class="functionContainer col-md-1" style="display: block; margin-top:10px;">
                     {% include "functions/"~function|lower~"_template.html.twig" %}
                 </div>
             {% endfor %}
