@@ -33,7 +33,7 @@ function loadWmsTree(wms) {
 			var layers = [];
 			console.log(capabilities);
 			if(capabilities.Layer.Layer!=undefined){
-				var bBox=capabilities.Layer.BoundingBox[0].extent;
+				var bBox=[-3.92232428114503, 43.4093382492787, -3.8687306883611, 43.4789153]; 
 				var extent=ol.extent.applyTransform(bBox, ol.proj.getTransform("EPSG:4326", "EPSG:3857"));
 				map.getView().fitExtent(extent, map.getSize());
 				for(var i=0; i<capabilities.Layer.Layer.length; i++){
@@ -41,11 +41,14 @@ function loadWmsTree(wms) {
 						var style="";
 						if(capabilities.Layer.Layer[i].Style!=null && capabilities.Layer.Layer[i].Style[0].Name)
 							 style=capabilities.Layer.Layer[i].Style[0].Name;
-						var layer = addLayer(capabilities.Layer.Layer[i].Name,wms,style);
-						if(capabilities.Layer.Layer[i].cascaded==1)
+						if(capabilities.Layer.Layer[i].cascaded==1){
+							var layer=addLayerWms(capabilities.Layer.Layer[i].Name,wms);
 							layer.wms=true;
-						else
+						}
+						else{
+							var layer = addLayer(capabilities.Layer.Layer[i].Name,wms,style);
 							layer.wms=false;
+						}
 						layers.push(layer);
 					}
 				}

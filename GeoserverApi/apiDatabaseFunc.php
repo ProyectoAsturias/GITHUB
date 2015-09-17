@@ -159,7 +159,7 @@
 
 		$select_layer=str_replace("?T","'".$projection."'",$select_layer);
 		$select_layer=str_replace("?M","".$town."",$select_layer);
-		echo $select_layer;
+		//echo $select_layer;
 
 		//SELECT id, id_via, numvia, denominacion, fechaalta, fechabaja, id_municipio, transform("GEOMETRY", '23030') as "GEOMETRY", length, valido, fuente FROM TramosVia  
 		//WHERE TramosVia.ID_Municipio in ('39073') and valido = 1

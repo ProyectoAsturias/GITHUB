@@ -125,7 +125,8 @@
 }
 
 .functionsBar .functionContainer{
-    top: -5px !important;
+    /*top: -5px !important;*/
+    padding-bottom: 5px;
 }
 
 .functionsBar .functionContainer:hover{
@@ -330,18 +331,23 @@
     overflow:hidden;
     border-radius:4px;
 }
+span.legend{
+    position: relative;
+    float:right;
+    margin:2px;
+}
 .icons{
     position:relative;
     float:right;
     margin:2px;
 }
-li{
+/*li{
     display: block;
     padding: 5px;
     border: 1px solid #CCC;
     color: orange;
     background: #f5f5f5;
-}
+}*/
 .iconFunctionBar{
     position:absolute;
     left:0.5vw;

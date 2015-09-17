@@ -183,7 +183,7 @@ function showListFamilies(){
 				$("#selectLayer").append("<option value=\""+layerId+"\" name=\""+layerName+"\">"+layerName+"</option>");
 			}
 			$('#selectLayer').prop('selectedIndex', -1);
-			$(".chosen-select").trigger("chosen:updated");	
+			$(".chosen-select").trigger("chosen:updated");
 		},
 		error:function(error){
 			console.log("Error al mostrar la lista de familias: "+error);

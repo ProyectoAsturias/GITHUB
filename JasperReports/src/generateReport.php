@@ -1,5 +1,5 @@
 <?php
-define('JAVA_INC_URL','http://localhost:8093/JavaBridge/java/Java.inc');
+define('JAVA_INC_URL','http://localhost:9090/JavaBridge/java/Java.inc');
 require_once("ReportGenerator.php");
 
 $reportGenerator = null;
@@ -29,8 +29,6 @@ if (isset($_POST["reportName"])){
         session_start();
     }
     $_SESSION["reportGenerator"] = $reportGenerator;
-    //echo previewPdf();
-    //exportToHtml();
 }
 
 function getAvailableReports(){
@@ -70,16 +68,6 @@ function startReport(){
 }
 
 function previewPdf(){
-    if (session_status() == PHP_SESSION_NONE) {
-        session_start();
-    }
-    if (isset($_SESSION["reportGenerator"])){
-        $reportGenerator = $_SESSION["reportGenerator"];
-        return base64_encode(file_get_contents($reportGenerator->outputPath));
-    }
-}
-
-function downloadPdf(){
     session_start();
     if (isset($_SESSION["reportGenerator"])){
         $reportGenerator = $_SESSION["reportGenerator"];
@@ -93,6 +81,28 @@ function downloadPdf(){
         header('Accept-Ranges: bytes');
 
         @readfile($file);
+    }
+}
+
+function downloadPdf(){
+    session_start();
+    if (isset($_SESSION["reportGenerator"])){
+        $reportGenerator = $_SESSION["reportGenerator"];
+        $file = $reportGenerator->outputPath;
+        $filename = basename($reportGenerator->outputPath);
+
+        header('Content-Description: File Transfer');
+        header('Content-Type: application/octet-stream');
+        header("Content-Type: application/force-download");
+        header('Content-Disposition: attachment; filename=' . urlencode($filename));
+        // header('Content-Transfer-Encoding: binary');
+        header('Expires: 0');
+        header('Cache-Control: must-revalidate, post-check=0, pre-check=0');
+        header('Pragma: public');
+        header('Content-Length: ' . filesize($file));
+        ob_clean();
+        flush();
+        readfile($file);
     }
 }
 

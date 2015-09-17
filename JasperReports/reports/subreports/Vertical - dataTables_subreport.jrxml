@@ -155,7 +155,7 @@
 					<subreportParameterExpression><![CDATA[$V{columnNames}]]></subreportParameterExpression>
 				</subreportParameter>
 				<dataSourceExpression><![CDATA[new net.sf.jasperreports.engine.data.JRBeanCollectionDataSource($V{columnNames})]]></dataSourceExpression>
-				<subreportExpression><![CDATA[$P{SUBREPORT_DIR} + "/columNames_subreport.jasper"]]></subreportExpression>
+				<subreportExpression><![CDATA[$P{SUBREPORT_DIR} + "/Vertical - columNames_subreport.jasper"]]></subreportExpression>
 			</subreport>
 		</band>
 	</detail>

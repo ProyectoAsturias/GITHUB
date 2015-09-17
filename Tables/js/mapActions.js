@@ -87,11 +87,11 @@ function mapModalSaveButtonHandler(){
         var entityId;
         
         if($("#selectConcejo").val()==null){
-            mapName="Asturias"+mapName; 
+            mapName="Asturias_"+mapName; 
             entityId=0;
         }
         else{
-            mapName=$("#selectConcejo option:selected").text()+mapName;
+            mapName=$("#selectConcejo option:selected").text()+"_"+mapName;
             entityId =$("#selectConcejo").val();
         }
         mapName=checkMapName(mapName);

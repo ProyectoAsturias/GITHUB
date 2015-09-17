@@ -5,7 +5,7 @@ $(document).ready(function(){
 function attachMapEventHandler(){
     $('.chosen-select').chosen({width:"80%",search_contains:true});
     $.ajax({
-        url: "../../../Tables/php/userContent.php",
+        url: "../../Tables/php/userContent.php",
         data: {
             tag: "userMapNames"
         },

@@ -667,7 +667,7 @@ class ApiRest {
 		$fp = fopen($dir.$file_sld, 'w');
 		fwrite($fp, $SLD);
 		fclose($fp);
-
+		
 		return $this->createStyleFromFile($workspaceName, $dir.$file_sld, $styleName);
 	}
 

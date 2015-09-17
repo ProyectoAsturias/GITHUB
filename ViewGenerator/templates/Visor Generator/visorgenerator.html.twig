@@ -33,6 +33,7 @@
     <script>
         visorName = "{{ visorName }}";
         visorData = JSON.parse(replaceAllSubstring("{{ visorData|json_encode()}}", "&quot;", "\""));
+        console.log(visorData);
     </script>
     <title>Generador de visores</title>
 </head>
@@ -49,6 +50,7 @@
 
                             {% if visorData == "" %}
                                 {% include "Visor Generator/functionBar.html.twig" %}
+                                {% include "Visor Generator/legend.html.twig" %}
                             {% else %}
 
                                 {% for functionBar in visorData.functionsBar %}
@@ -63,7 +65,13 @@
                                     </div>
                                 {% endfor %}
                             {% endif %}
-                            {% include "Visor Generator/legend.html.twig" %}
+                            {% if visorData.legendFrame != "" %}
+                                {% include "Visor Generator/legend.html.twig" %}
+                                <script>
+                                    $(".legendBar").css("top", visorData.legendFrame.position.top);
+                                    $(".legendBar").css("left", visorData.legendFrame.position.left);
+                                </script>
+                            {% endif %}
                             {% include "Visor Generator/visorgeneratormap.html.twig" %}
                         </div>
 

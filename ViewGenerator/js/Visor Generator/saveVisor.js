@@ -18,6 +18,7 @@ function createJson() {
     var visorData = {};
     visorData["mapDetails"] = extractMapDetails();
     visorData["functionsBar"] = extractFunctionsBar();
+    visorData["legendFrame"] = extractLegendFrame();
     return visorData;
 }
 
@@ -67,4 +68,16 @@ function extractFunctionsBar(){
     });
     console.log(functionsStructure);
     return functionsStructure;
+}
+
+function extractLegendFrame(){
+    if ($(".legendBar") != undefined){
+        var legendBar = {
+            "position": {"top": $(".legendBar").css("top"), "left": $(".legendBar").css("left")}
+        }
+        return legendBar;
+    }else{
+        return "";
+    }
+
 }
