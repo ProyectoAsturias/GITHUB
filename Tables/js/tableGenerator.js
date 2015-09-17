@@ -3,34 +3,45 @@ var entityParams=[];//id,nombre,proyección y town de la entidad base del usuari
 
 $(document).ready(function(){
     $("#userName").append(userName);
-
-    $.ajax({
-        type: "POST",
-        url : apiPath+"apiLocalgis.php",
-        data : {
-            tag:"getEntityData"
-        },
-        success: function (response) {
-            //console.log(response);
-            //Si no devuelve nada, es generico
-            entityParams=JSON.parse(response);
-            if(entityParams.length==0){
-                entityParams.push("Asturias");
-                entityParams.push(0);
-                entityParams.push(25830);
-                entityParams.push(33001);
+    console.log(userEntityId);
+    if(userEntityId==0){
+	entityParams.push("PAsturias");
+        entityParams.push("0");
+        entityParams.push("25830");
+	/*mun=[];
+	mun.push(33001);
+        entityParams.push(mun);*/
+	startTables();
+    }
+    else{
+    	$.ajax({
+            type: "POST",
+            url : apiPath+"apiLocalgis.php",
+            data : {
+                tag:"getEntityData",
+                entityId:userEntityId
+            },
+            success: function (response) {
+                //console.log(response);
+                //Si no devuelve nada, es generico
+                entityParams=JSON.parse(response);
+                startTables();
+            },
+            error:function(error){
+            	alert("Error al cargar los parámetros base : "+error);
             }
-            createMapsTable($("#table"));
-            mapsClickEventsHandler();
-            createVisorsTable($("#tableVisors"));
-            //linkToEditVisors();
-            //console.log(entityParams);
-        },
-        error:function(error){
-            alert("Error al cargar los parámetros base : "+error);
-        }
-    });
+	});
+    }
 });
+
+function startTables(){
+	createMapsTable($("#table"));
+        mapsClickEventsHandler();
+        createVisorsTable($("#tableVisors"));
+        //linkToEditVisors();
+        console.log(entityParams);
+}
+
 
 function createTable(target, columns, data){
     target.bootstrapTable({
@@ -204,7 +215,7 @@ function appendImages(){
 function getImageMap(mapName) {
     var html = "";
     var parser = new ol.format.WMSCapabilities();
-    var urlWms = serverGS + 'geoserver/' + mapName + '/wms';
+    var urlWms = server + 'geoserver/' + mapName + '/wms';
     $.ajax({
         type : "GET",
         dataType : 'text',

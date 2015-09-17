@@ -3,7 +3,17 @@ $(document).ready(function(){
 });
 
 function drawTree(){
-	var wms=serverGS+"geoserver/"+map.name+"/wms";
+	/*if (!searchLayerByName("OpenStreet Maps")){
+ 		var source = new ol.source.OSM()
+    		var osmLayer = new ol.layer.Tile({
+    		source: source
+    		});
+	    	osmLayer.name = "OpenStreet Maps";
+    		osmLayer.base = true;
+	    	map.addLayer(osmLayer);
+		updateLoadingBar(source);
+   	};*/
+	var wms=server+"geoserver/"+map.name+"/wms";
 	console.log(wms);
 	loadWmsTree(wms);
 }
