@@ -27,6 +27,9 @@
         formatToggle: function () {
             return 'Alternar';
         },
+        formatPaginationSwitch: function () {
+            return 'Mostrar/Ocultar paginación';
+        },
         formatColumns: function () {
             return 'Columnas';
         },

@@ -131,15 +131,15 @@ function synchronizedFormatter(value, row, index){
 }
 
 function formatterEditVisor(value, row, index){
-    return "<button class='btn btn-success btn-block' onclick=\"editVisor('"+row.name+"')\">Editar Visor</button>";
+    return "<button class='btn btn-success btn-block' title='Editar este visor' onclick=\"editVisor('"+row.name+"')\">Editar Visor</button>";
 }
 
 function FormatterAccessToVisor(value, row, index){
-    return "<button class='btn btn-success btn-block' onclick=\"accessVisor('"+row.name+"')\">Visor</button>";
+    return "<button class='btn btn-success btn-block' title='Acceder a este visor' onclick=\"accessVisor('"+row.name+"')\">Visor</button>";
 }
 
 function downloadVisorLink(value, row, index){
-    return "<a href='../php/downloadVisor.php?visorName="+row.name+"' download=''><span class='glyphicon glyphicon-download'></span></a>";
+    return "<a href='../php/downloadVisor.php?visorName="+row.name+"' title='Descargar este visor en formato Zip' download=''><span class='glyphicon glyphicon-download'></span></a>";
 }
 
 function mapsClickEventsHandler(){

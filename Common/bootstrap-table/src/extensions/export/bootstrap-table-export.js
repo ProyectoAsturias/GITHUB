@@ -41,7 +41,7 @@
 
             if (!$export.length) {
                 $export = $([
-                    '<div class="export btn-group">',
+                    '<div class="export btn-group" title="Exportar tabla">',
                         '<button class="btn btn-default dropdown-toggle" ' +
                             'data-toggle="dropdown" type="button">',
                             '<i class="glyphicon glyphicon-export icon-share"></i> ',

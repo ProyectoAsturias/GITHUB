@@ -1,5 +1,6 @@
 <?php
     require_once "../../Common/php/DBConnection.php";
+    require_once('http://localhost:9090/LocalGIS/java/Java.inc');
 
     //Hacer login con el servicio de localgis
     if (!isset($_POST["method"])){
@@ -15,24 +16,26 @@
 
     function login($userName, $password, $redirect=""){
         $connection=new DBConnection();
+        $encripter = new java("com.avanzit.encriptar.EncriptarPasswordAvanzit");
+        //echo $encripter->desencriptar("PggP3/BOfCFsFDgX6iL9gA==");
         //print("##".$password."##");
-        
         $method = "aes-128-cbc";
         //falta aplicar PBEKeySpec con salt (actualmente no encripta correctamente)
         //$password = openssl_encrypt($password, $method, 'GEOPISTA');
         //print("##".$password."##");
 
-        /*$query="SELECT id,id_entidad FROM iuseruserhdr WHERE name = '".$userName."' AND password='".$password."'";
-        $result=pg_query($query) or die('Error: '.pg_last_error());
-        $row=pg_fetch_row($result);
-        $connection->close();*/
-
-        //Provisional (sin pass)
-        $query="SELECT id,id_entidad FROM iuseruserhdr WHERE name = '".$userName."' AND bloqueado=FALSE AND fecha_proxima_modificacion > NOW()";
+        $query="SELECT id,id_entidad FROM iuseruserhdr WHERE name = '".$userName."' AND password='".$encripter->encriptar($password, 3)."'";
         $result=pg_query($query) or die('Error: '.pg_last_error());
         $row=pg_fetch_row($result);
         $connection->close();
 
+        //Provisional (sin pass)
+        /*
+        $query="SELECT id,id_entidad FROM iuseruserhdr WHERE name = '".$userName."' AND bloqueado=FALSE AND fecha_proxima_modificacion > NOW()";
+        $result=pg_query($query) or die('Error: '.pg_last_error());
+        $row=pg_fetch_row($result);
+        $connection->close();
+        */
         $login=false;
         $userId=0;
         $entityId=0;
