@@ -24,7 +24,8 @@ function loadWmsTree(wms) {
 			var layers = [];
 			console.log(capabilities.Layer.Layer);
 			if(capabilities.Layer.Layer!=undefined){
-				var bBox=[-3.92232428114503, 43.4093382492787, -3.8687306883611, 43.4789153]; 
+				//var bBox=[-3.92232428114503, 43.4093382492787, -3.8687306883611, 43.4789153]; 
+				var bBox=capabilities.Layer.BoundingBox[0].extent;
 				var extent=ol.extent.applyTransform(bBox, ol.proj.getTransform("EPSG:4326", "EPSG:3857"));
 				map.getView().fitExtent(extent, map.getSize());
 				for(var i=0; i<capabilities.Layer.Layer.length; i++){

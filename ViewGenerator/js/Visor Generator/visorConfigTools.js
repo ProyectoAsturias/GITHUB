@@ -54,5 +54,5 @@ function hideToolBar(){
 
 function back(){
 	console.log(server);
-	window.location=serverGS+"Tables/php/tables.php";
+	window.location=server+"Tables/php/tables.php";
 }

@@ -219,7 +219,7 @@ function appendModalLayer(nameMap,layer){
 	$.ajax({
 		type: "GET",
 		dataType : 'text',
-		url: server+"geoserver/"+mapName+"/wms?request=getCapabilities&service=wms",
+		url: serverGS+"geoserver/"+mapName+"/wms?request=getCapabilities&service=wms",
 		success: function (response) {
 			var service = parser.read(response);
 			var capabilities = service.Capability;
@@ -321,7 +321,7 @@ function appendModalStyles(nameMap,layer){
     $.ajax({
         type: "GET",
         dataType : 'text',
-        url: server+"geoserver/"+mapName+"/wms?request=getCapabilities&service=wms",
+        url: serverGS+"geoserver/"+mapName+"/wms?request=getCapabilities&service=wms",
         success: function (response) {
             var service = parser.read(response);
             var capabilities = service.Capability;
@@ -393,7 +393,7 @@ function getStyleSrc(styleName,layerName){
 	$.ajax({
         type: "GET",
         dataType : 'text',
-        url: server+"geoserver/"+mapName+"/wms?request=getCapabilities&service=wms",
+        url: serverGS+"geoserver/"+mapName+"/wms?request=getCapabilities&service=wms",
         success: function (response) {
             var service = parser.read(response);
             for(var i=0; i<service.Capability.Layer.Layer.length; i++){
