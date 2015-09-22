@@ -21,7 +21,6 @@ function collapseMapIconEvent(){
 
 function createNewMapEventsHandler(){
     $("#newMap").click(function(){
-        console.log(userEntityId);
         if(userEntityId==0){
             var html=   "<select id=\"selectConcejo\" class=\"chosen-select\" tabindex=\"1\" ></select>"+
                         "<label for=\"newMapName\" style=\"margin-top:6px\">Nombre del nuevo mapa</label>"+
@@ -126,12 +125,11 @@ function mapModalSaveButtonHandler(){
                     },
                     method: "POST",
                     success: function(response){
-                        if (response == 1){
-                            console.log("Ya existe un mapa con ese nombre");
+                        if (response.indexOf("already exists") != -1){
+                            alert("Ya existe un mapa con ese nombre, por favor introduzca otro.");
                             return;
                         }
                         saveNewMap(mapName, description, userName, entityId).then(function(result){
-                            console.log(result);
                             if (result != ""){
                                 //TODO: Mostrar mensaje de error
                                 console.log(result);
@@ -271,7 +269,6 @@ function publicateMap(mapName){
         },
         method: "POST",
         success: function(response){
-            console.log(response);
             if(response==""){
                 $.ajax({
                     url: "./userContent.php",

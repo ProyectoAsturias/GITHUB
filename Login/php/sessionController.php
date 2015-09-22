@@ -17,7 +17,7 @@
     function login($userName, $password, $redirect=""){
         $connection=new DBConnection();
         $encripter = new java("com.avanzit.encriptar.EncriptarPasswordAvanzit");
-        //echo $encripter->desencriptar("PggP3/BOfCFsFDgX6iL9gA==");
+        //echo $encripter->encriptar($password, 3);
         //print("##".$password."##");
         $method = "aes-128-cbc";
         //falta aplicar PBEKeySpec con salt (actualmente no encripta correctamente)

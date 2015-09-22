@@ -1,4 +1,5 @@
 var mapNames=[];
+var layersPerMap = [];
 var entityParams=[];//id,nombre,proyección y town de la entidad base del usuario
 
 $(document).ready(function(){
@@ -23,6 +24,7 @@ $(document).ready(function(){
             createMapsTable($("#table"));
             mapsClickEventsHandler();
             createVisorsTable($("#tableVisors"));
+            createBubblesForLinks();
             //linkToEditVisors();
             //console.log(entityParams);
         },
@@ -31,6 +33,30 @@ $(document).ready(function(){
         }
     });
 });
+
+function createBubblesForLinks(){
+    $('body').on('mouseenter', ".linkContainer a[title]", function (event) {
+        var linkElement = $(this);
+        if (layersPerMap[linkElement.html()] != undefined){
+            changeTitleForLinkElement(linkElement);
+        }
+        $(this).qtip({
+            overwrite: false,
+            hide: 'unfocus',
+            show: {
+                event: "click"
+            }
+        });
+    });
+}
+
+function changeTitleForLinkElement(linkElement){
+    $("#table").find("tr").each(function (rowIndex, row){
+        if ($(row).find("td .linkContainer a").html() != undefined && $(row).find("td .linkContainer a").html() == linkElement.html()){
+            linkElement.prop("title", "<b>Este mapa contiene las capas:</b><br>" + layersPerMap[linkElement.html()].replace(/,/g, "<br>"));
+        }
+    })
+}
 
 function createTable(target, columns, data){
     target.bootstrapTable({
@@ -49,7 +75,7 @@ function createMapsTable(target){
         var columns = [{checkbox: "true"},
 		{field:"image", title: "Imagen"}, 
 		{field: "id", title: "ID Mapa", sortable: "true"},
-		{field:"name", title:"Nombre", sortable: "true"},
+		{field:"name", title:"Nombre", sortable: "true", formatter:"layersBubbleTooltip"},
         {field:"description", title:"Descripción", titleTooltip:"click para editar descripción"},
 		{field:"date_update", title:"Última modificación", sortable: "true"},
 		{field:"date_creation", title:"Fecha creación", sortable: "true"},
@@ -138,6 +164,28 @@ function FormatterAccessToVisor(value, row, index){
     return "<button class='btn btn-success btn-block' title='Acceder a este visor' onclick=\"accessVisor('"+row.name+"')\">Visor</button>";
 }
 
+function layersBubbleTooltip(value, row, index){
+    var content = "";
+    if (row.layersInfo == null){
+        content = "Este mapa no tiene ninguna capa asignada";
+    }else{
+        var parsedContent = JSON.parse(row.layersInfo);
+        console.log(parsedContent);
+    }
+
+    var htmlObject = $('<div >',{
+        html : "<a title='"+content+"'>"+value+"</a>",
+        class: "linkContainer"
+    });
+
+    var wrapper = document.createElement("div");
+    wrapper.appendChild(htmlObject.get(0));
+    var htmlString = wrapper.innerHTML;
+    delete wrapper;
+
+    return htmlString;
+}
+
 function downloadVisorLink(value, row, index){
     return "<a href='../php/downloadVisor.php?visorName="+row.name+"' title='Descargar este visor en formato Zip' download=''><span class='glyphicon glyphicon-download'></span></a>";
 }
@@ -203,6 +251,7 @@ function appendImages(){
 
 function getImageMap(mapName) {
     var html = "";
+
     var parser = new ol.format.WMSCapabilities();
     var urlWms = serverGS + 'geoserver/' + mapName + '/wms';
     $.ajax({
@@ -218,8 +267,9 @@ function getImageMap(mapName) {
                     layersNames += service.Capability.Layer.Layer[i].Name + ",";
                 }
                 layersNames += service.Capability.Layer.Layer[i].Name;
-                //var bBox = "" + service.Capability.Layer.BoundingBox[0].extent[0] + "," + service.Capability.Layer.BoundingBox[0].extent[1] + "," + service.Capability.Layer.BoundingBox[0].extent[2] + "," + service.Capability.Layer.BoundingBox[0].extent[3] + "";
-                var bBox=[-3.92232428114503, 43.4093382492787, -3.8687306883611, 43.4789153]; 
+                layersPerMap[mapName] = layersNames;
+                var bBox = "" + service.Capability.Layer.BoundingBox[0].extent[0] + "," + service.Capability.Layer.BoundingBox[0].extent[1] + "," + service.Capability.Layer.BoundingBox[0].extent[2] + "," + service.Capability.Layer.BoundingBox[0].extent[3] + "";
+                //var bBox=[-3.92232428114503, 43.4093382492787, -3.8687306883611, 43.4789153];
             }
             html = "<img class=\"imageMap\" onerror=\"if (this.src != 'error.jpg') this.src = '../../Common/images/noPreview.jpg';\" alt=\"Vista previa no disponible\" src='" + urlWms + "?REQUEST=GetMap&service=wms&format=image/jpeg&WIDTH=120&HEIGHT=120&LAYERS=" + layersNames + "&srs=EPSG:4326&bbox=" + bBox + "' />";
             $("#" + mapName + "").empty();
@@ -229,31 +279,6 @@ function getImageMap(mapName) {
             html = "<img class=\"imageMap\" src = '../../Common/images/noPreview.jpg';\" />";
             $("#" + mapName + "").empty();
             $("#" + mapName + "").append(html);
-        }
-    });
-}
-
-function updateDescription(mapName,id){
-    var mapDescription=$('#description').val();
-    $.ajax({
-        url: "../php/userContent.php",
-        data: {
-            tag : "updateDescription",
-            mapName : mapName,
-            mapDescription: mapDescription,
-        },
-        method: "POST",
-        success: function (response) {
-            console.log(response);
-            var row=$("#table").bootstrapTable('getRowByUniqueId',""+id+"");
-            //console.log(row);
-            row.description = mapDescription;
-            $("#table").bootstrapTable('updateRow', {index: getMapRowIndexById(row.id), row: row});
-            appendImages();
-            console.log("Descripción de Mapa actualizada.");
-        },
-        error: function (error){
-            console.log("Error al actualizar descripción del mapa:"+error);
         }
     });
 }
