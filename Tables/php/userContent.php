@@ -116,6 +116,7 @@
         $dbConnection = new DBConnection("UserContent");
         $query = "SELECT content FROM public.\"Visors\" WHERE name='".$visorName."';";
         $result = pg_query($query) or die('Error: '.pg_last_error());
+        $dbConnection->close();
         return pg_fetch_all($result);
     }
 
@@ -129,6 +130,7 @@
         $connection = new DBConnection("UserContent");
         $query = "DELETE FROM public.\"Visors\" WHERE name='".$visorName."'";
         $result = pg_query($query) or die('Error: '.pg_last_error());
+        $connection->close();
         return $result;
     }
 
@@ -182,6 +184,7 @@
         $dbConnection = new DBConnection("UserContent");
         $query = "SELECT baselayer FROM public.\"Maps\" WHERE name='".$mapName."';";
         $result = pg_query($query) or die('Error: '.pg_last_error());
+        $dbConnection->close();
         return pg_fetch_all($result);
     }
 ?>

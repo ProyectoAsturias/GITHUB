@@ -238,6 +238,7 @@
 			$p=[$row['name'],$row['id_entidad']];
 			array_push($params,$p);
 		}
+		$dbConnection->close();
 		return json_encode($params);
 	}
 ?>

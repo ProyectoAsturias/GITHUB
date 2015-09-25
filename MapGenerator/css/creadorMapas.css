@@ -195,6 +195,7 @@ li{
     flex: 1 1 auto;
     overflow-x: hidden;
     text-overflow: ellipsis;
+    white-space: nowrap;
 }
 
 .treeIcons{
