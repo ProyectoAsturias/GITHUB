@@ -324,7 +324,7 @@ function importMap(){
 function importFamily(familyId){	
 	if($("#selectFamily").val()!=null || familyId!=null){
 		var id=$("#selectFamily").val() || familyId;
-		$("#modalCounterLayers .modal-header").empty().append("<h4 class=\"modal-title\">Importando Familia</h4>");
+		$("#modalCounterLayers .modal-header").empty().append(" <button type=\"button\" class=\"close\" data-dismiss=\"modal\">&times;</button><h4 class=\"modal-title\">Importando Familia<div id=\"loadingGif\"></div></h4>");
 		console.log("Importando familia: #"+id);
 		$.ajax({
 			type: "POST",
@@ -345,7 +345,7 @@ function importFamily(familyId){
 				}
 				$("#modalCounterLayers .modal-body").empty();
 				$("#modalCounterLayers .modal-body").append(modalList);
-				$("#modalCounterLayers").modal("show");
+				$("#modalCounterLayers").modal({backdrop: "static"});
 				for(var i=0; i<layerList.length; i++){
 					importLayer(layerList[i]);
 				}
@@ -364,17 +364,22 @@ function importFamily(familyId){
 * Actualiza el mapa de la base de datos propia, extrayendo los campos de cada capa
 **/
 function updateDatabaseMap(){
+	console.log("updateDatabaseMap");
 	var layersInfo=[];
 	var reverseLayers = map.getLayers().getArray().slice(0).reverse();
 	var i=0;
+	console.log(reverseLayers);
 	reverseLayers.forEach(function (layer) {
 		if(layer.base!=true){
 			layersInfo.push(layer.name);
 		}
 	});
+	console.log(layersInfo);
 	reverseLayers.forEach(function (layer) {
 		if(layer.base!=true){
+			console.log("Mete capa en info");
 			getJSONLayer(layer, function(viewAttributes){
+				console.log(viewAttributes);
 				var index = layersInfo.indexOf(viewAttributes.id[0]);
 				layersInfo[index]=[viewAttributes,layer.getOpacity()];
 				updateDatabaseMapInfo(i++,layersInfo);
@@ -410,8 +415,8 @@ function updateDatabaseMapInfo(i,layersInfo){
 * Carga la capa al ws
 **/
 function importLayer(layer,mapId){
-	console.log("AXO AXO");
-	console.log(mapId);
+	//console.log("AXO AXO");
+	//console.log(mapId);
 	mapId || (mapId=-1);
 	var id;
 	var name;
@@ -441,13 +446,13 @@ function importLayer(layer,mapId){
 				mapName: map.name
 			},
 			success: function(response){
-				console.log(response);
+				//console.log(response);
 				if(response=="")
 					$("#layerName"+layersCounter+"").empty().append("<span class='glyphicon glyphicon-ok-sign' style='color:green;'></span>");
 				layersCounter++;
+				drawTree();
 				//update MAP Table
 				updateDatabaseMap();
-				drawTree();
 				if(layersCounter>maxLayers)
 					$("#modalCounterLayers").modal("hide");
 			},

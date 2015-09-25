@@ -1,5 +1,7 @@
 <?php
-define('JAVA_INC_URL','http://localhost:9090/JavaBridge/java/Java.inc');
+//define('JAVA_INC_URL','http://localhost:9090/JavaBridge/java/Java.inc');
+require_once("../../Common/php/TCConfig.php");
+define('JAVA_INC_URL',$loginTomcatJava);
 require_once("ReportGenerator.php");
 
 $reportGenerator = null;

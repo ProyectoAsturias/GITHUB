@@ -17,19 +17,20 @@ function assignEventsHandlers(){
 
 function eyeIconClickHandler(){
 	$(".visibilityLayer").click(function(event){
-		if ($(this).parent().data().layer.getVisible()){
+		console.log($(this));
+		if ($(this).parent().parent().data().layer.getVisible()){
 			$(this).css("color", "lightgray");
-			$(this).parent().data().layer.setVisible(false);
+			$(this).parent().parent().data().layer.setVisible(false);
 		}else{
 			$(this).css("color", "black");
-			$(this).parent().data().layer.setVisible(true);
+			$(this).parent().parent().data().layer.setVisible(true);
 		}
 	});
 }
 
 function deleteIconClickHandler(){
 	$(".removeLayer").click(function(event){
-		var parent = $(this).parent();
+		var parent = $(this).parent().parent();
 		bootbox.confirm("¿Realmente desea eliminar esta capa?", function(result) {
 			if (result){
 				removeLayer(parent.data("layer"),function(response){
@@ -44,7 +45,7 @@ function deleteIconClickHandler(){
 
 function attributesClickHandler(){
 	$(".attributesLayer").click(function(event){
-		var parent = $(this).parent();
+		var parent = $(this).parent().parent();
 		getJSONLayer(parent.data("layer"), function(viewFeatures){
 			//Rescatar atributos de MAP
 			$.ajax({
@@ -89,7 +90,7 @@ function attributesClickHandler(){
 
 function layerInfoClickHandler(){
 	$(".infoLayer").click(function(event){
-		var parent = $(this).parent();
+		var parent = $(this).parent().parent();
 		appendModalLayer(map.name,parent.data("layer"));
 	});
 }
@@ -97,7 +98,7 @@ function layerInfoClickHandler(){
 
 function stylesClickHandler(){
     $(".stylesLayer").click(function(event){
-        var parent = $(this).parent();
+        var parent = $(this).parent().parent();
         appendModalStyles(map.name,parent.data("layer"));
     });
 }

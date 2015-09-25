@@ -4,12 +4,12 @@ $(document).ready(function(){
 
 function drawTree(){
 	var wms=serverGS+"geoserver/"+map.name+"/wms";
-	console.log(wms);
+	//console.log(wms);
 	loadWmsTree(wms);
 }
 
 function loadWmsTree(wms) {
-	console.log(wms);
+	//console.log(wms);
 	var parser = new ol.format.WMSCapabilities();
 	$.ajax({
 		type : "GET",
@@ -22,7 +22,7 @@ function loadWmsTree(wms) {
 			var capabilities = service.Capability;
 			var title = service.Service.Title;
 			var layers = [];
-			console.log(capabilities.Layer.Layer);
+			//console.log(capabilities.Layer.Layer);
 			if(capabilities.Layer.Layer!=undefined){
 				//var bBox=[-3.92232428114503, 43.4093382492787, -3.8687306883611, 43.4789153]; 
 				var bBox=capabilities.Layer.BoundingBox[0].extent;
@@ -113,19 +113,23 @@ function generateLayerListHTML(){
 		if(!layer.base)
 			generateNode(layer);
 	});
-	console.log("sadfsdf");
 	makeNodesSortable();
 }
 
 function generateNode(layer){
-	var node = $("<li><div class='layerName'>"+layer.name +"</div>" +
+	console.log(layer);
+	var node = $("<li class='nodeLine'><div class='layerName'>"+layer.name+"</div><div class='treeIcons'>"+
 	"<span class='glyphicon glyphicon-remove removeLayer' title=\"Borrar capa\"></span>" +
 	"<span class='glyphicon glyphicon-eye-open visibilityLayer' title=\"Visiblidad de capa\"></span>" +
 	"<span class='glyphicon glyphicon-cog attributesLayer' title=\"Seleccionar atributos\"></span>" +
 	"<span class='glyphicon glyphicon-tint stylesLayer' title=\"Seleccionar estilo\"></span>" +
 	"<span class='glyphicon glyphicon-list-alt infoLayer' title=\"Editar datos de la capa\"></span>" +
-	"</li>")
+	"</div></li>")
 		.data("layer", layer)
 		.appendTo($("#layersList ol"));
+	if (!layer.getVisible()){
+		console.log(node.find(".visibilityLayer"));
+		node.find(".visibilityLayer").css("color", "lightgray");
+	}
 }
 

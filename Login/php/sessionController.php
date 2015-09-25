@@ -1,6 +1,7 @@
 <?php
     require_once "../../Common/php/DBConnection.php";
-    require_once('http://localhost:9090/LocalGIS/java/Java.inc');
+    require_once("../../Common/php/TCConfig.php");
+    require_once($loginTomcatJava);
 
     //Hacer login con el servicio de localgis
     if (!isset($_POST["method"])){
@@ -15,27 +16,49 @@
     }
 
     function login($userName, $password, $redirect=""){
-        $connection=new DBConnection();
-        $encripter = new java("com.avanzit.encriptar.EncriptarPasswordAvanzit");
-        //echo $encripter->encriptar($password, 3);
-        //print("##".$password."##");
-        $method = "aes-128-cbc";
-        //falta aplicar PBEKeySpec con salt (actualmente no encripta correctamente)
-        //$password = openssl_encrypt($password, $method, 'GEOPISTA');
-        //print("##".$password."##");
 
-        $query="SELECT id,id_entidad FROM iuseruserhdr WHERE name = '".$userName."' AND password='".$encripter->encriptar($password, 3)."'";
+	$encripter = new java("com.avanzit.encriptar.EncriptarPasswordAvanzit");
+
+        $connection=new DBConnection();        
+	$where=" AND bloqueado=FALSE AND fecha_proxima_modificacion > NOW()";
+	$query="SELECT password FROM iuseruserhdr WHERE name = '".$userName."'".$where;
+	$result=pg_query($query) or die('Error: '.pg_last_error());
+	$row=pg_fetch_row($result);
+	if(!$row){
+            $loginResponse = new stdClass();
+            $loginResponse->logged = false;
+            $loginResponse->errorMessage = "Error en la autenticación, consulte a su administrador.";
+            return $loginResponse;
+	}
+	$type=substr(explode("}",$row[0])[0],1);
+	$encPassword="";
+	switch($type){
+		case "TYPE1":
+			//echo "tipo1";
+			$encPassword = $encripter->encriptar(explode("}",$row[0])[1], 1);	
+			break;
+		case "TYPE2":
+			//echo "tipo2";
+			$encPassword = $encripter->encriptar(explode("}",$row[0])[1], 2);
+			break;
+		default:
+			//echo "tipo3";
+			$encPassword = $encripter->encriptar($row[0], 1);
+			break;
+	}	
+	$encPassword = $encripter->encriptar($password, 3);
+		
+        $query="SELECT id,id_entidad FROM iuseruserhdr WHERE name = '".$userName."' AND password='".$encPassword."'".$where;
         $result=pg_query($query) or die('Error: '.pg_last_error());
         $row=pg_fetch_row($result);
         $connection->close();
 
-        //Provisional (sin pass)
-        /*
-        $query="SELECT id,id_entidad FROM iuseruserhdr WHERE name = '".$userName."' AND bloqueado=FALSE AND fecha_proxima_modificacion > NOW()";
-        $result=pg_query($query) or die('Error: '.pg_last_error());
+
+        //$query="SELECT id,id_entidad FROM iuseruserhdr WHERE name = '".$userName."' AND bloqueado=FALSE AND fecha_proxima_modificacion > NOW()";
+        /*$result=pg_query($query) or die('Error: '.pg_last_error());
         $row=pg_fetch_row($result);
         $connection->close();
-        */
+	*/
         $login=false;
         $userId=0;
         $entityId=0;

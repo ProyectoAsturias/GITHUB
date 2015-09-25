@@ -1,6 +1,7 @@
 <?php
     require_once("../../Common/php/DBConnection.php");
     require_once("../../GeoserverApi/classes/ApiRest.php");
+    require_once("../../Common/php/TCConfig.php");
 
     if(isset($_POST["tag"])){
         session_start();
@@ -11,6 +12,12 @@
                 break;
             case "userVisors":
                 echo json_encode(downloadUserVisors($_SESSION["userName"]));
+                break;
+			case "entityMaps":
+               echo json_encode(downloadEntityMaps($_POST["userEntityId"]));
+               break;
+            case "entityVisors":
+                echo json_encode(downloadEntityVisors($_POST["userEntityId"]));
                 break;
             case "saveMap":
                 echo json_encode(saveMap($_POST["mapName"],$_POST["mapDescription"],$_POST["mapOwner"],$_POST["entityId"]));
@@ -39,8 +46,11 @@
             case "unpublicateMap":
                 echo json_encode(unpublicateMap($_POST["mapName"]));
                 break;
-            case "updateDescription":
-                echo json_encode(updateDescription($_POST["mapName"],$_POST["mapDescription"]));
+            case "updateDescriptionMap":
+                echo json_encode(updateDescriptionMap($_POST["mapName"],$_POST["mapDescription"]));
+                break;
+			case "updateDescriptionView":
+                echo json_encode(updateDescriptionView($_POST["viewName"],$_POST["viewDescription"]));
                 break;
             case "saveMapBaselayer":
                 echo json_encode(saveMapBaselayer($_POST["mapName"], $_POST["baselayerName"]));
@@ -69,6 +79,21 @@
         return pg_fetch_all($result);
     }
 
+	function downloadEntityMaps($entityId){
+	$query="";
+	if($entityId!=0)
+	    $query = "SELECT id, name, description, date_creation, date_update, published, image, \"entityId\"  FROM public.\"Maps\" WHERE \"entityId\"='".$entityId."';";
+	else
+            $query = "SELECT id, name, description, date_creation, date_update, published, image, \"entityId\"  FROM public.\"Maps\" ;";	
+        $result = pg_query($query) or die('Error: '.pg_last_error());
+        return pg_fetch_all($result);
+    }
+
+    function downloadEntityVisors($entityId){
+        /*$query = "SELECT id, name, description, date_creation, date_update FROM public.\"Visors\" WHERE \"entityId\"='".$entityId."';";
+        $result = pg_query($query) or die('Error: '.pg_last_error());
+        return pg_fetch_all($result);*/
+    }
     function saveMap($mapName, $mapDescription, $userName, $entityId){
         $query = "INSERT INTO public.\"Maps\" (name, description, owner, \"entityId\") VALUES ('".$mapName."','".$mapDescription."','".$userName."','".$entityId."');";
         $result = pg_query($query) or die('Error: '.pg_last_error());
@@ -128,10 +153,17 @@
     /**
      *Actualización de la descripción del mapa
      */
-    function updateDescription($mapName, $mapDescription){
+    function updateDescriptionMap($mapName, $mapDescription){
         $query = "UPDATE \"Maps\" SET date_update=now(), description='".$mapDescription."' WHERE name='".$mapName."'";
         $result = pg_query($query) or die('Error: '.pg_last_error());
         return $result;
+    }
+
+	/**
+     *Actualización de la descripción de la vista
+     */
+    function updateDescriptionView($viewName, $viewDescription){
+        $query = "UPDATE \"Visors\" SET date_update=now(), description='".$viewDescription."' WHERE name='".$viewName."'";
     }
 
     function downloadUserMapNames($userName){

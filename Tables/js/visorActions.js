@@ -17,6 +17,11 @@ function collapseVisorIconEvent(){
 
 function createNewVisorEventsHandler(){
     $("#newVisor").click(function(){
+        var html="<label for=\"newVisorName\" style=\"margin-top:6px\">Nombre del nuevo Visor</label>"+
+                "<input type=\"text\" id=\"newVisorName\" style=\"width:100%; border-radius: 7px; margin-bottom:6px; \"/>"+
+                "<label for=\"newVisorName\" style=\"margin-top:6px\">Descripción</label>"+
+                "<input type=\"text\" id=\"newVisorDescription\" style=\"width:100%; border-radius: 7px; margin-bottom:6px; \"/>";
+        $("#modalNewVisor .modal-body").empty().append(html);
         $("#modalNewVisor").modal("show");
     });
     visorModalSaveButtonHandler();
@@ -24,8 +29,9 @@ function createNewVisorEventsHandler(){
 
 function visorModalSaveButtonHandler() {
     $("#createVisorModal").click(function () {
-        var visorName = $("#modalNewVisor .modal-body input").val();
-        saveNewVisor(visorName, "Descripción del visor", userName).then(function (result) {
+        var visorName = $("#newVisorName").val();
+        var description = $("#newVisorDescription").val();
+        saveNewVisor(visorName, description, userName).then(function (result) {
             if (result != "") {
                 console.log("Ha ocurrido un error en la Base de Datos.");
                 return;
@@ -80,4 +86,13 @@ function removeVisor(visor){
             console.log("Borrado ->" + visor.id)
         }
     });
+}
+
+function getViewRowIndexById(viewId){
+    $("#tableVisors").find("tr").each(function (rowIndex, row){
+        console.log($(row).find("td")[1]);
+        if ($(row).find("td")[1] != undefined && $(row).find("td").eq(1).html() == viewId){
+            return ($(row).data("index"));
+        }
+    })
 }
