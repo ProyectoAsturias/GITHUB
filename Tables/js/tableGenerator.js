@@ -66,6 +66,7 @@ function startTables() {
 	mapsClickEventsHandler();
 	createVisorsTable($("#tableVisors"));
 	createBubblesForLinks();
+	focusElement();
 	console.log(entityParams);
 }
 
@@ -240,7 +241,7 @@ function formatterDescriptionMap(value, row, index) {
 }
 
 function formatterDescriptionView(value, row, index) {
-	return "<p>" + value + "</p><span class=' glyphicon glyphicon-pencil' style='color:grey; font-size: 1.2em;' onclick=\"editDescriptionView('" + row.name + "','" + row.description + "','" + row.id + "')\"></span>";
+	return "<div id='"+row.name+"'><p>" + value + "</p><span class=' glyphicon glyphicon-pencil' style='color:grey; font-size: 1.2em;' onclick=\"editDescriptionView('" + row.name + "','" + row.description + "','" + row.id + "')\"></span></div>";
 }
 
 function formatterEditMap(value, row, index) {
@@ -361,7 +362,6 @@ window.location.href = viewPath + "php/generateVisor.php?visorName=" + row.name;
 function appendImages() {
 	if (mapNames) {
 		mapNames.forEach(function (mapName) {
-			console.log($("#"+mapName));
 			getImageMap(mapName);
 		});
 	}
@@ -455,4 +455,25 @@ function updateDescriptionView(viewName, id) {
 			console.log("Error al actualizar descripción del mapa:" + error);
 		}
 	});
+}
+
+function getQueryVariable(variable) {
+	var query = window.location.search.substring(1);
+	var vars = query.split("&");
+	for (var i=0;i<vars.length;i++) {
+		var pair = vars[i].split("=");
+		if (pair[0] == variable) {
+			return pair[1];
+		}
+	}
+}
+
+function focusElement(){
+	$("#table, #tableVisors").on("post-body.bs.table", function(){
+		if ($("#tableVisors #"+getQueryVariable("previous")).length != 0){
+			$("#listVisorsCollapse").trigger("click");
+		}
+		location.href="#";
+		location.href="#"+getQueryVariable("previous");
+	})
 }
