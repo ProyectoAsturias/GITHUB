@@ -87,7 +87,8 @@ function createMapsTable(target) {
 				checkbox : "true"
 			}, {
 				field : "image",
-				title : "Imagen"
+				title : "Imagen",
+				formatter: "loadDefaultGif"
 			}, {
 				field : "id",
 				title : "ID Mapa",
@@ -360,9 +361,14 @@ window.location.href = viewPath + "php/generateVisor.php?visorName=" + row.name;
 function appendImages() {
 	if (mapNames) {
 		mapNames.forEach(function (mapName) {
+			console.log($("#"+mapName));
 			getImageMap(mapName);
 		});
 	}
+}
+
+function loadDefaultGif(value, row, index){
+	return ("<div id='"+row.name+"' class='imageMap'><img src='../../Common/images/loading-120.gif' style='height: 120px; width: 120px' />");
 }
 
 function getImageMap(mapName) {
@@ -387,8 +393,8 @@ function getImageMap(mapName) {
 
 			}
 			html = "<img class=\"imageMap\" onerror=\"if (this.src != 'error.jpg') this.src = '../../Common/images/noPreview.jpg';\" alt=\"Vista previa no disponible\" src='" + urlWms + "?REQUEST=GetMap&service=wms&format=image/jpeg&WIDTH=120&HEIGHT=120&LAYERS=" + layersNames + "&srs=EPSG:4326&bbox=" + bBox + "' />";
-			$("#" + mapName + "").empty();
-			$("#" + mapName + "").append(html);
+			//$("#" + mapName + "").empty();
+			$("#" + mapName + "").html(html);
 		},
 		error : function (error) {
 			html = "<img class=\"imageMap\" src = '../../Common/images/noPreview.jpg';\" />";
