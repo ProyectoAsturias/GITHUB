@@ -14,7 +14,6 @@
 	function createMap(){
 		if(isset($_POST['projection']) && isset($_POST['town'])){
 			$_SESSION["projection"]=$_POST['projection'];
-			$_SESSION["town"]=$_POST['town'];
 			#Creación del WS y el DS
 			if(($result=$GLOBALS['geoserver']->createWorkspace($GLOBALS['gsConnection']->wsName))!="")
 				print("Advice".$result."\n");
@@ -25,8 +24,7 @@
 	            if(($result=$GLOBALS['geoserver']->initWmsInfo($GLOBALS['gsConnection']->wsName))!="")
 	            	print("Advice".$result."\n");
 	    	}
-	    	//La conexión no se utiliza, solo se usan las variables
-	    	$dbConnection = new DBConnection(null,"localgisVistas");
+	    	$dbConnection = new DBConnection(null,"localgisvistas");
 			if(($result=$GLOBALS['geoserver']->createPostGISDatastore($GLOBALS['gsConnection']->wsName, $GLOBALS['gsConnection']->dsName, $dbConnection->schema, $dbConnection->database, $dbConnection->user, $dbConnection->pass, $dbConnection->host))!="")
 				print("Advice".$result."\n");
 			else
@@ -53,16 +51,17 @@
 	 * Añade una capa al workspace
 	 */	
 	function addLayer(){
-		if(isset($_POST['layerId']) && isset($_POST['layerName']) && isset($_POST['mapId'])){
+		if(isset($_POST['layerId']) && isset($_POST['layerName']) && isset($_POST['mapId']) && isset($_POST['town'])){
 			$layerId=$_POST['layerId'];
 			$layerName=$_POST['layerName'];
 			$mapId=$_POST['mapId'];
-			$town=$_SESSION['town'];
+			$town=$_POST['town'];
 			$projection=$_SESSION['projection'];
 			$layerDescription="Capa de Localgis";
-			echo implode(",",$town);
-			echo "-";
-			echo $projection."-";
+
+			//echo implode(",",$town);
+			//echo "-";
+			//echo $projection."-";
 
 			echo createDBView($layerId,$GLOBALS['mapName']."_".$layerName,$projection,$town);
 			if(($result=$GLOBALS['geoserver']->addLayer($GLOBALS['gsConnection']->wsName, $GLOBALS['gsConnection']->dsName, $layerName, $layerDescription, $projection))!="")
@@ -83,7 +82,7 @@
 		$result=0;
 		for($i=0;$i<sizeof($styles);$i++){
 			$styleName=$styles[$i]->name;//."_".$i;
-			print("Estilo: ".$styleName."\n");
+			//print("Estilo: ".$styleName."\n");
 			if(($res=$GLOBALS['geoserver']->createStyle($GLOBALS['gsConnection']->wsName, $styles[$i]->sld, $styleName))!="")
 				$result=$result."Advice: ".$res."\n";
 			//Toma por defecto el primero
@@ -241,7 +240,7 @@
 		if($layerName!=null && $styleName !=null){
 			if($res=$GLOBALS['geoserver']->defaultStyleToLayer($layerName, $styleName, $GLOBALS['mapName'])!="")
 				print("Advice: ".$res."\n");
-			print("Default style: ".$styleName."\n");
+			//print("Default style: ".$styleName."\n");
 		}
 		else
 			echo "Error: Parameters missed.";
@@ -275,6 +274,9 @@
 	}
 
 	function reloadCache(){
-		$GLOBALS['geoserver']->reload();
+		$gsConnection = new GSConnection();
+		$geoserver = new ApiRest($gsConnection->url,$gsConnection->user,$gsConnection->pass);
+
+		$geoserver->reload();
 	}
 ?>

@@ -20,7 +20,7 @@
                 echo json_encode(downloadEntityVisors($_POST["userEntityId"]));
                 break;
             case "saveMap":
-                echo json_encode(saveMap($_POST["mapName"],$_POST["mapDescription"],$_POST["mapOwner"],$_POST["entityId"]));
+                echo json_encode(saveMap($_POST["mapName"],$_POST["mapDescription"],$_POST["mapOwner"],$_POST["entityId"],$_POST["town"]));
                 break;
             case "saveVisor":
                 echo json_encode(saveVisor($_POST["visorName"],$_POST["visorDescription"],$_POST["visorOwner"]));
@@ -61,7 +61,13 @@
             case "userMapNames":
                 echo json_encode(downloadUserMapNames($_SESSION["userName"]));
                 break;
-            efault:
+			case "getTown":
+				echo json_encode(getTown($_POST["mapName"]));
+				break;
+			case "getVersionInfo":
+				echo json_encode(getVersionInfo());
+				break;
+            default:
                 echo "Error userContent: Function ".$_POST["tag"]." don't exists.";
         }
         $dbConnection->close();
@@ -79,7 +85,7 @@
         return pg_fetch_all($result);
     }
 
-	function downloadEntityMaps($entityId){
+    function downloadEntityMaps($entityId){
 	$query="";
 	if($entityId!=0)
 	    $query = "SELECT id, name, description, date_creation, date_update, published, image, \"entityId\"  FROM public.\"Maps\" WHERE \"entityId\"='".$entityId."';";
@@ -94,8 +100,8 @@
         $result = pg_query($query) or die('Error: '.pg_last_error());
         return pg_fetch_all($result);*/
     }
-    function saveMap($mapName, $mapDescription, $userName, $entityId){
-        $query = "INSERT INTO public.\"Maps\" (name, description, owner, \"entityId\") VALUES ('".$mapName."','".$mapDescription."','".$userName."','".$entityId."');";
+    function saveMap($mapName, $mapDescription, $userName, $entityId, $town){
+        $query = "INSERT INTO public.\"Maps\" (name, description, owner, \"entityId\", town) VALUES ('".$mapName."','".$mapDescription."','".$userName."','".$entityId."','".json_encode($town)."');";
         $result = pg_query($query) or die('Error: '.pg_last_error());
         return $result;
     }
@@ -116,8 +122,9 @@
         $dbConnection = new DBConnection("UserContent");
         $query = "SELECT content FROM public.\"Visors\" WHERE name='".$visorName."';";
         $result = pg_query($query) or die('Error: '.pg_last_error());
-        $dbConnection->close();
-        return pg_fetch_all($result);
+        $content=pg_fetch_all($result);
+	$dbConnection->close();
+	return $content;
     }
 
     function deleteMap($mapName){
@@ -127,10 +134,10 @@
     }
 
     function deleteVisor($visorName){
-        $connection = new DBConnection("UserContent");
+        $dbConnection = new DBConnection("UserContent");
         $query = "DELETE FROM public.\"Visors\" WHERE name='".$visorName."'";
         $result = pg_query($query) or die('Error: '.pg_last_error());
-        $connection->close();
+	$dbConnection->close();
         return $result;
     }
 
@@ -184,7 +191,21 @@
         $dbConnection = new DBConnection("UserContent");
         $query = "SELECT baselayer FROM public.\"Maps\" WHERE name='".$mapName."';";
         $result = pg_query($query) or die('Error: '.pg_last_error());
-        $dbConnection->close();
-        return pg_fetch_all($result);
+        $baseLayer=pg_fetch_all($result);
+		$dbConnection->close();
+		return $baseLayer;
     }
+	
+	function getTown($mapName){
+		$query = "SELECT town FROM public.\"Maps\" WHERE name='".$mapName."';";
+        $result = pg_query($query) or die('Error: '.pg_last_error());
+		return json_decode(pg_fetch_row($result)[0]);
+	}
+	
+	function getVersionInfo(){
+		$query = "SELECT * FROM public.\"Versions\" ORDER BY release_date DESC LIMIT 1";
+        $result = pg_query($query) or die('Error: '.pg_last_error());
+		$info=pg_fetch_row($result);
+		return $info;
+	}
 ?>

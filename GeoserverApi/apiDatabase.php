@@ -22,6 +22,9 @@
             case "updateMapInfo":
                 echo updateMapInfo();
                 break;
+	    case "clearMapInfo":
+		echo clearMapInfo();
+		break;
             default:
             	echo "Error apiDatabase: Function ".$_POST["tag"]." don't exists.";
         }

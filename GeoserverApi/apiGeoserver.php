@@ -42,8 +42,8 @@
 	                print(setDefaultStyle());
 	                break;
 	            case "uploadNewStyle":
-					print(uploadNewStyle());
-					break;
+			print(uploadNewStyle());
+			break;
 	            default:
             		echo "Error: Function apiGeoserver".$_POST["tag"]." don't exists.";
 	        }

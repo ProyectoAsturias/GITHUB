@@ -60,10 +60,8 @@
 				$this->schema="public";
 			else
 				$this->schema=$schema;
-			$this->user="postgres";
+			$this->user="visores";
 			$this->pass="1234";
-			//$this->user = "visores";
-			//$this->pass = "1234";
 			$this->conn = pg_connect("host=".$this->host." port=".$this->port." dbname=".$this->database." password=".$this->pass." user=".$this->user." password=".$this->pass)  or die('Error: '.pg_last_error());
 		}
 		

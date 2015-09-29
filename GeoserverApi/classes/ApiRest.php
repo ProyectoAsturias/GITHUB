@@ -242,6 +242,9 @@ class ApiRest {
 				<entry key="Estimated extends">true</entry>
 				<entry key="user">'.htmlentities($databaseUser, ENT_COMPAT).'</entry>
 				<entry key="min connections">1</entry>
+				<entry key="Evictor run periodicity">10</entry>
+				<entry key="Max connection idle time">30</entry>
+				<entry key="Test while idle">true</entry>
 			</connectionParameters>
 			</dataStore>');
 	}
@@ -628,8 +631,7 @@ class ApiRest {
 	 * @param $workspaceName
      */
 	public function uploadSldStyle($workspaceName, $url_file, $styleName) {
-		//$curl='curl -u admin:geoserver -XPUT -H "Content-type: application/vnd.ogc.sld +xml" -d @'.$url_file.' http://localhost:8090/geoserver/rest/workspaces/'.$workspaceName.'/styles/'.$styleName;
-		$curl='curl -u admin:geoserver -XPUT -H "Content-type: application/vnd.ogc.sld +xml" -d @'.$url_file.' http://asturiasmodelo.dyndns.org:8090/geoserver/rest/workspaces/'.$workspaceName.'/styles/'.$styleName;
+		$curl='curl -u admin:geoserver -XPUT -H "Content-type: application/vnd.ogc.sld +xml" -d @'.$url_file.' http://localhost:8090/geoserver/rest/workspaces/'.$workspaceName.'/styles/'.$styleName;
 		$rslt = shell_exec($curl);
 		return $rslt;
 		//return $this->runApi('workspaces/'.urlencode($workspaceName).'/styles'.urlencode($styleName), 'PUT', htmlentities('@'.$url_file, ENT_COMPAT),"application/vnd.ogc.sld +xml");
@@ -660,7 +662,7 @@ class ApiRest {
      */
 	public function createStyle($workspaceName, $SLD, $styleName) {
 		//curl -v -u admin:geoserver -XPOST -H 'Content-type: application/xml' -d '<style><name>tmp</name><filename>sld.prueba</filename></style>' http://localhost:8090/geoserver/rest/workspaces/Arbolado/styles
-		$dir='styles/';
+		$dir='styles/';	
 		$file_sld = $styleName.'.sld';
 		if (!file_exists($dir) || !is_dir($dir))
 			mkdir($dir,0777);

@@ -42,7 +42,7 @@ function createNewMapEventsHandler() {
 				},
 				method : "POST",
 				success : function (response) {
-					//console.log(response);
+					console.log(response);
 					var concejos = JSON.parse(response);
 
 					//console.log(concejos)
@@ -144,12 +144,12 @@ function mapModalSaveButtonHandler() {
 			mapName = entityParams[0] + "_" + mapName;
 			entityId = entityParams[1];
 
-			mun = entityParams[3];
-			createMap(mapName, entityId, mun, projection);
+			town = entityParams[3];
+			createMap(mapName, entityId, town, projection);
 		} else {
 			console.log($("#selectConcejo option:selected").text());
 			if ($("#selectConcejo option:selected").text() == "") {
-				alert("Debe escoger un municipio");
+				alert("Debe escoger un townicipio");
 				return;
 			}
 			mapName = $("#selectConcejo option:selected").text() + "_" + mapName;
@@ -165,8 +165,8 @@ function mapModalSaveButtonHandler() {
 				success : function (response) {
 					result = JSON.parse(response);
 					//console.log(entityParams[3]);//entityParams);
-					mun = result[3];
-					createMap(mapName, entityId, mun, projection);
+					town = result[3];
+					createMap(mapName, entityId, town, projection);
 				},
 				error : function (error) {
 					alert("Error al cargar los parámetros base : " + error);
@@ -177,14 +177,14 @@ function mapModalSaveButtonHandler() {
 	})
 }
 
-function createMap(mapName, entityId, mun, projection) {
-	console.log(mapName + "," + entityId + "," + mun + "," + projection);
+function createMap(mapName, entityId, town, projection) {
+	console.log(mapName + "," + entityId + "," + town + "," + projection);
 	$.ajax({
 		url : apiPath + "apiGeoserver.php",
 		data : {
 			mapName : mapName,
 			projection : projection,
-			town : mun,
+			town : town,
 			tag : "createMap"
 		},
 		method : "POST",
@@ -195,7 +195,7 @@ function createMap(mapName, entityId, mun, projection) {
 				return;
 			}
 			var description = $("#newMapDescription").val();
-			saveNewMap(mapName, description, userName, entityId).then(function (result) {
+			saveNewMap(mapName, description, userName, entityId, town).then(function (result) {
 				console.log(result);
 				if (result != "") {
 					//TODO: Mostrar mensaje de error
@@ -222,7 +222,7 @@ function checkMapName(text) {
 	return text;
 }
 
-function saveNewMap(mapName, mapDescription, mapOwner, entityId) {
+function saveNewMap(mapName, mapDescription, mapOwner, entityId, town) {
 	return $.ajax({
 		url : "./userContent.php",
 		data : {
@@ -230,7 +230,8 @@ function saveNewMap(mapName, mapDescription, mapOwner, entityId) {
 			mapName : mapName,
 			mapDescription : mapDescription,
 			mapOwner : mapOwner,
-			entityId : entityId
+			entityId : entityId,
+			town : town
 		},
 		method : "POST",
 		success : function (response) {
