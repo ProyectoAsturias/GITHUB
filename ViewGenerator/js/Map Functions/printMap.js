@@ -84,7 +84,6 @@ function populatePrintReportsAvailable(){
         },
         type: "GET",
         success: function(response){
-            console.log(response);
             JSON.parse(response).forEach(function(reportName){
                 $(".reportsAvailable").append($('<option>', {
                     value: reportName,
@@ -157,7 +156,6 @@ function generateLegendForReport(){
                 layersImage.push(convertImgToBase64URL($(elem).find("img").get(0)));
             }
         });
-        console.log(layersImage);
         return (JSON.stringify({layersTitle: layersTitle, layersImage: layersImage}))
     }else{
         return "";
@@ -182,6 +180,5 @@ function convertImgToBase64URL(imgElement){
     canvas.height = imgElement.height;
     canvas.width = imgElement.width;
     ctx.drawImage(imgElement, 0,0);
-    console.log(canvas.toDataURL("image/png"));
     return (canvas.toDataURL("image/png"));
 }

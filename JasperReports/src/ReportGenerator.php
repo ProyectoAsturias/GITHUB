@@ -62,10 +62,13 @@ class ReportGenerator {
 
     private function generateTableArrayList($tableObject){
         $tableArray = new Java("java.util.ArrayList");
-        $tableArray->add($tableObject->tableContent[0]);
-        $tableArray->add($this->generateTableColumnsArrayList(array_slice($tableObject->tableHeaders,1)));
-        $tableArray->add($this->generateTableValuesArrayList(array_slice($tableObject->tableContent,1)));
-        return $tableArray;
+        if (isset($tableObject->tableContent[0])){
+            $tableArray->add($tableObject->tableContent[0]);
+            $tableArray->add($this->generateTableColumnsArrayList(array_slice($tableObject->tableHeaders,1)));
+            $tableArray->add($this->generateTableValuesArrayList(array_slice($tableObject->tableContent,1)));
+            return $tableArray;
+        }
+        return null;
     }
 
     private function generateTableColumnsArrayList($tableHeaders){
