@@ -64,7 +64,7 @@ function loadWmsTree(wms) {
 			updateTreeLayer();
 		},
 		error : function (error) {
-			alert("Error: " + error);
+			alert("Error: " + error.message);
 		}
 	});
 }

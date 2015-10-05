@@ -34,7 +34,7 @@ function createLegendMap(){
 			assignLegendEventsHandlers();
 		},
 		error:function(error){
-			alert("Error: "+error);
+			alert("Ha fallado la petición GetCapabilities al mapa introducido, por favor, compruebe la integridad del mismo.");
 		}
 	});
 }

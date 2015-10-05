@@ -54,9 +54,9 @@ function createMap() {
         try {
             addLayersAndGroupsFromWMS(mapDetails["WMSUrl"]);
             map.mapURL = mapDetails["WMSUrl"];
-
+            setMapName(map.mapURL);
         }catch (error){
-            console.log("WOP");
+
         }
     }
     map.addControl(new ol.control.ScaleLine());
@@ -69,6 +69,12 @@ function createMap() {
 
 function destroyMap(){
     map.setTarget(null);
+}
+
+function setMapName(wmsUrl){
+    var pattern = /^(.+)(geoserver\/)(.+)(\/wms)$/;
+    var match = wmsUrl.match(pattern)
+    map.name = match[3];
 }
 
 function addBaseOSMLayer(){

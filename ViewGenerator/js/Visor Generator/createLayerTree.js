@@ -9,6 +9,7 @@ function updateTreeLayer(){
 
     }else{
         $(document).ajaxStop(function(){
+            console.log(map.mapURL);
             var treeData = generateTreeData();
             createLayerTree(treeData);
         });
@@ -26,7 +27,9 @@ function generateNode(layer){
 }
 
 function generateTreeData(){
-    var treeData = [{text: "Mapa", nodes: [], state: {checked: true}}];
+    if (map.name == undefined)
+        map.name = "No hay mapa incrustado";
+    var treeData = [{text: map.name, nodes: [], state: {checked: true}}];
     map.getLayers().forEach(function(layer, index){
         if(!layer.base)
             treeData[0].nodes.push(generateNode(layer));
