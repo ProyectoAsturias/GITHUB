@@ -27,7 +27,7 @@ function createLegendMap(){
 								"<span class='glyphicon glyphicon-minus hideLegend legend'></span></div>"+
 							"<div id=\"legendContent\"></div>";
 			$('.legendBar').empty();
-			console.log(legendHtml);				
+			//console.log(legendHtml);				
 			$('.legendBar').append(legendHtml);
 			$('#legendContent').append(contentHtml);
 			showLegend=true;

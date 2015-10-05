@@ -341,30 +341,18 @@ span.legend{
     float:right;
     margin:2px;
 }
-/*li{
-    display: block;
-    padding: 5px;
-    border: 1px solid #CCC;
-    color: orange;
-    background: #f5f5f5;
-}*/
-.iconFunctionBar{
-    position:absolute;
-    left:0.5vw;
-}
-.fixedIcon{
-    position:fixed;
+
+.horizontaliconFunctionBar{
+    float:left;
+    padding-top:0;
+    margin-left: -5px;
 }
 
-.iconVerticalFunctionBar{
-    position:absolute;
-    top:0px;
-    left:0.5vw;
+.verticaliconFunctionBar{
+    margin-top: -21px;
+    float:left;
+    padding-top:0;
 }
-.fixedVerticalIcon{
-    position:fixed;
-}
-
 
 .vertical{
     /* Permalink - use to edit and share this gradient: http://colorzilla.com/gradient-editor/#bdf3fd+0,a2daf5+45,a2daf5+68,90bcea+76,90bae4+100,a9d2f3+100,b8e1fc+100 */
@@ -385,19 +373,19 @@ span.legend{
     height:45vh;
     background-color:beige;
     padding-left: 0;
-    padding-top: 15px;
+    padding-top: 26px;
     position: absolute;
     top: 250px;
     left: 250px;
     z-index: 1
 }
-
 #hideInterface{
-    position: absolute;
-    top: 0.5em;
-    right: 0.5em;
-    height: 31px;
-    width: 32px;
-    z-index: 15;
-    background-image: url("../../Common/images/hideInterface-left.png");
+	position: absolute;
+	top: 0.5em;
+	right: 0.5em;
+	height: 31px;
+	width: 32px;
+	z-index: 15;
+	background-image: url("../../Common/images/hideInterface-left.png");
 }
+

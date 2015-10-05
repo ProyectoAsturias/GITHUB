@@ -63,7 +63,7 @@ function createMap() {
     if (typeof (toolsDraggable) == "function"){
         toolsDraggable();
     }
-    console.log(mapDetails["baseLayer"]);
+    //console.log(mapDetails["baseLayer"]);
     baseLayer(mapDetails["baseLayer"]);
 }
 
@@ -105,12 +105,12 @@ function addLayersAndGroupsFromWMS(WMSUrl){
     })
     .then(function(response) {
         var capabilitiesParser = parser.read(response);
-        console.log(capabilitiesParser);
+        //console.log(capabilitiesParser);
         var bBox =capabilitiesParser.Capability.Layer.BoundingBox[0].extent;
         var extent = ol.extent.applyTransform(bBox, ol.proj.getTransform("EPSG:4326", "EPSG:3857"));
         map.getView().fitExtent(extent, map.getSize());
         for(var i = 0; i < capabilitiesParser.Capability.Layer.Layer.length; i ++){
-            console.log(capabilitiesParser.Capability.Layer.Layer[i]);
+            //console.log(capabilitiesParser.Capability.Layer.Layer[i]);
             layersNames.push(capabilitiesParser.Capability.Layer.Layer[i].Name);
             //aqui debemos sacar el campo abstract, ya que nos dice si la capa es un grupo o no
             grupos.push(capabilitiesParser.Capability.Layer.Layer[i].Abstract)

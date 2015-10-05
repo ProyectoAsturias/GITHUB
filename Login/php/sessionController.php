@@ -1,6 +1,8 @@
 <?php
     require_once "../../Common/php/DBConnection.php";
-    require_once('http://localhost:8093/LocalGIS/java/Java.inc');
+    require_once "../../Common/php/TCConfig.php";
+    //require_once('http://localhost:8093/LocalGIS/java/Java.inc');
+    require_once($loginTomcatJava);
 
     //Hacer login con el servicio de localgis
     if (!isset($_POST["method"])){

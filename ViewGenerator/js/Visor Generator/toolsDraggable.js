@@ -20,16 +20,20 @@ function makeFunctionsBarDraggable() {
 }
 
 function makeToolsSortable(){
-    $(".functionsBar").sortable({
+    $("#toolBar0, #toolBar1, #toolBar2").sortable({
         connectWith: ".functionsBar",
+        opacity: "0.7",
         cursor: "move",
         placeholder: "ui-state-highlight",
-        opacity: "0.5",
-        helper: "clone",
         revert: false,
         tolerance: "pointer",
+        helper: "clone",
         over: function () {
             removeIntention = false;
+        },
+        sort: function(e, ui) {
+            $(ui.placeholder).html($(ui.item).html());
+            $(ui.placeholder).addClass($(ui.item).attr('class'));
         },
         out: function () {
             removeIntention = true;
@@ -39,34 +43,34 @@ function makeToolsSortable(){
                 ui.item.remove();
             }
         },
-        receive: function(event, ui){
-            console.log(event);
-            var index = $(this).children().index($(ui.item[0]));
-            if (index == -1) return;
-            var element = $(ui.item[0]).clone(true).removeClass('box ui-draggable ui-draggable-dragging').addClass('box-clone');
-            $(this).children(':eq('+index+')').after(element);
-        }
-    });
+    }).disableSelection();
 
     $("#allTools").sortable({
         connectWith: ".functionsBar",
         cursor: "move",
         placeholder: "ui-state-highlight",
-        opacity: "0.5",
+        opacity: "0.7",
         revert: false,
         tolerance: "pointer",
         helper: "clone",
+        start: function(event, ui) {
+            $('#allTools').find('div:hidden').show();
+            clone = $(ui.item).clone();
+            before = $(ui.item).prev();
+        },
         sort: function(e, ui) {
             $(ui.placeholder).html($(ui.item).html());
             $(ui.placeholder).addClass($(ui.item).attr('class'));
         },
-        out: function(e, ui){
-            $("#allTools").find('div:hidden').show();
+        beforeStop: function(event, ui){
+            if (ui.item[0].parentElement.id=="allTools")
+                 $(ui.item).remove();
         },
         stop: function(event, ui) {
-            $(this).sortable('cancel');
+            before.after(clone);
+            //$(this).sortable('cancel');
         }
-    });
+    }).disableSelection();
 }
 
 function makeLegendBarDraggable() {

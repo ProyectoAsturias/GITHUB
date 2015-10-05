@@ -22,7 +22,6 @@
     <script src="../../Common/pdfjs/build/pdf.js" type="text/javascript"></script>
     <script src="../../Common/Jsonix/Jsonix-all.js"></script>
     <script src="../../Common/js/configuration.js"></script>
-    <script src="../js/draggableItems.js"></script>
 
     <script src="../../Common/html2canvas/html2canvas.js" type="text/javascript"></script>
     <script src="../../Common/canvas2Image/canvas2image.js" type="text/javascript"></script>
@@ -40,6 +39,7 @@
     <script src="../../ViewGenerator/js/Map%20Functions/printMap.js" type="text/javascript"></script>
     <script src="../../ViewGenerator/js/Map%20Functions/toggleFullScreen.js" type="text/javascript"></script>
     <script src="../../ViewGenerator/js/Map%20Functions/retrieveData.js" type="text/javascript"></script>
+    <script src="../../ViewGenerator/js/Map%20Functions/lastview.js" type="text/javascript"></script>
 
     <script src="../../ViewGenerator/js/Map%20Functions/export.js" type="text/javascript"></script>
 
@@ -52,7 +52,7 @@
         visorData = JSON.parse(replaceAllSubstring("{{ visorData|json_encode()}}", "&quot;", "\""));
     </script>
 
-    <title>Visor</title>
+    <title>Dynamic HTML creation</title>
 
 </head>
 <body>
