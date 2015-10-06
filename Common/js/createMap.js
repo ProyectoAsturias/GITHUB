@@ -170,14 +170,6 @@ function addLayerToMap(layerIndex, WMSUrl){
     return newlayer;
 }
 
-function searchLayerByName(layerName){
-    for (var i=0; i<map.getLayers().getLength(); i++){
-        if (map.getLayers().getArray()[i].name == layerName){
-            return map.getLayers().getArray()[i];
-        }
-    }
-    return false;
-}
 
 function searchAndRemoveLayer(layerToRemove){
     if (searchLayerByName(layerToRemove.name) != false){

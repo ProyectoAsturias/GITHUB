@@ -1,3 +1,13 @@
+.titleLayer label{
+    overflow-x: hidden;
+    text-overflow: ellipsis;
+}
+
+.visibilityLayer{
+    float: left;
+    padding-right: 15px;
+}
+
 .empty{
     background-image: none; !important;
 }
