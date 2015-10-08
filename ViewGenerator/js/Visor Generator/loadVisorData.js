@@ -1,6 +1,7 @@
 $(document).ready(function(){
     if (visorData != undefined){
         setMapDetails(visorData.mapDetails);
+        //console.log(visorData);
     }
     createMap();
     createLegendMap();

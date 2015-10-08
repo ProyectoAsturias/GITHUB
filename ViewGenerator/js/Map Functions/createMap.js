@@ -12,6 +12,7 @@ var layersGroupedNames = [];
  */
 function setMapDetails(sentMapDetails){
     setMapURL(sentMapDetails["WMSUrl"]);
+    setMapEntity(sentMapDetails["entityId"]);
     //mapDetails["WMSUrl"] = 'http://192.168.127.128:8080/geoserver/Prueba1/wms';
     //setMapURL("http://ovc.catastro.meh.es/Cartografia/WMS/ServidorWMS.aspx");
     //mapDetails["WMSUrl"] = "http://ogc.bgs.ac.uk/cgi-bin/BGS_Bedrock_and_Superficial_Geology/wms";
@@ -22,6 +23,10 @@ function setMapDetails(sentMapDetails){
 
 function setMapURL(WMSUrl){
     mapDetails["WMSUrl"] = WMSUrl;
+}
+
+function setMapEntity(entityId){
+    mapDetails["entityId"] = entityId;
 }
 
 function setMapCenter(center){
@@ -44,7 +49,7 @@ function createMap() {
         controls: ol.control.defaults({attribution: false}),
         renderer: 'canvas',
         view: new ol.View({
-            projection: ('EPSG:4230', 'EPSG:900913'),
+            //projection: ('EPSG:4230', 'EPSG:900913'),
             center: mapDetails.center,
             zoom: mapDetails.zoomLevel
         })
@@ -54,10 +59,13 @@ function createMap() {
         try {
             addLayersAndGroupsFromWMS(mapDetails["WMSUrl"]);
             map.mapURL = mapDetails["WMSUrl"];
-            setMapName(map.mapURL);
-        }catch (error){
 
+        }catch (error){
+            console.log("WOP");
         }
+    }
+    if(mapDetails["entityId"]){
+        setBbox(mapDetails["entityId"]);
     }
     map.addControl(new ol.control.ScaleLine());
     if (typeof (toolsDraggable) == "function"){
@@ -71,12 +79,6 @@ function destroyMap(){
     map.setTarget(null);
 }
 
-function setMapName(wmsUrl){
-    var pattern = /^(.+)(geoserver\/)(.+)(\/wms)$/;
-    var match = wmsUrl.match(pattern)
-    map.name = match[3];
-}
-
 function addBaseOSMLayer(){
     var osmLayer = new ol.layer.Tile({
         source: new ol.source.OSM()
@@ -84,6 +86,29 @@ function addBaseOSMLayer(){
     osmLayer.name = "OpenStreet Maps";
     osmLayer.base = true;
     map.addLayer(osmLayer);
+}
+
+function setBbox(entityId){
+    $.ajax({
+        type: "POST",
+        url : apiPath+"apiLocalgis.php",
+        data : {
+            tag:"getBbox",
+            entityId:entityId,
+        },
+        success: function (response) {
+            //console.log(response);
+            var bBox=[];
+            var split1 = response.split(",")[0].split("(")[1].split(" ");
+            var split2 = response.split(",")[1].split(")")[0].split(" ");
+            bBox.push(parseFloat(split1[0]),parseFloat(split1[1]),parseFloat(split2[0]),parseFloat(split2[1]));
+            var extent=ol.extent.applyTransform(bBox, ol.proj.getTransform("EPSG:4326", "EPSG:3857"));
+            map.getView().fitExtent(extent, map.getSize());
+        },
+        error: function (response){
+            console.log(response);
+        }
+    })
 }
 
 function updateMap(){
@@ -112,21 +137,14 @@ function addLayersAndGroupsFromWMS(WMSUrl){
     .then(function(response) {
         var capabilitiesParser = parser.read(response);
         //console.log(capabilitiesParser);
-        var bBox =capabilitiesParser.Capability.Layer.BoundingBox[0].extent;
-        var extent = ol.extent.applyTransform(bBox, ol.proj.getTransform("EPSG:4326", "EPSG:3857"));
-        map.getView().fitExtent(extent, map.getSize());
         for(var i = 0; i < capabilitiesParser.Capability.Layer.Layer.length; i ++){
-            //console.log(capabilitiesParser.Capability.Layer.Layer[i]);
-            layersNames.push(capabilitiesParser.Capability.Layer.Layer[i].Name);
-            //aqui debemos sacar el campo abstract, ya que nos dice si la capa es un grupo o no
-            grupos.push(capabilitiesParser.Capability.Layer.Layer[i].Abstract)
-        }
-        for(var j = 0; j < layersNames.length; j ++) {
-            if(grupos[j] && grupos[j].includes("Layer-Group")){
-                addGroupToMap(j, WMSUrl);
-                continue;
+            if(capabilitiesParser.Capability.Layer.Layer[i].cascaded==1){
+                console.log("pasa");
+                addLayerWmsToMap(capabilitiesParser.Capability.Layer.Layer[i].Name,WMSUrl);
             }
-            addLayerToMap(j, WMSUrl);
+            else{
+                var layer=addLayerToMap(capabilitiesParser.Capability.Layer.Layer[i].Name,WMSUrl);
+            }
         }
     });
 }
@@ -179,11 +197,27 @@ function requestLayersForGroup(groupName, WMSUrl, callback){
     });
 }
 
-function addLayerToMap(layerIndex, WMSUrl){
-    var nombre = layersNames[layerIndex];
-    if (layersGroupedNames.indexOf(nombre) != -1){
-        return;
-    }
+function addLayerWmsToMap(name, wmsUrl){
+    console.log("entra");
+    var format = 'image/png';
+    var layer = new ol.layer.Image({
+        source: new ol.source.ImageWMS({
+          ratio: 1,
+          url: wmsUrl,
+          params: {
+            'FORMAT': format,
+            'VERSION': '1.1.1',
+            STYLES: '',
+            LAYERS:  name,
+          }
+        })
+    });
+    layer.name = name;
+    map.addLayer(layer);
+    return layer;
+}
+
+function addLayerToMap(name, WMSUrl){
     var newlayer = new ol.layer.Tile({
         source: new ol.source.TileWMS({
             crossOrigin:'anonymous',
@@ -191,11 +225,11 @@ function addLayerToMap(layerIndex, WMSUrl){
             url: WMSUrl,
             serverType:'geoserver',
             params:{
-                'LAYERS':""+nombre+"", 'TILED':true
+                'LAYERS':""+name+"", 'TILED':true
             }
         })
     });
-    newlayer.name = layersNames[layerIndex];
+    newlayer.name = name;
     map.addLayer(newlayer);
     return newlayer;
 }

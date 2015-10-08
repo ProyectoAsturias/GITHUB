@@ -50,7 +50,6 @@ function changePreview(){
         },
         type: "POST",
         success: function (response) {
-            console.log(response);
             $("#previewCanvas iframe").attr("src", printingPath + "src/generateReport.php?tag=getPreview");
         }
     });
@@ -106,6 +105,7 @@ function generateReportTitle(){
         return "";
     }
 }
+
 
 function generateDataTables(){
     if ($("#modalDatatables :checkbox").is(":checked")){

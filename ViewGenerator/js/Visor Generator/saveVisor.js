@@ -19,6 +19,7 @@ function createJsonVisorData() {
     addDataAttributes();
     var visorData = {};
     visorData["mapDetails"] = extractMapDetails();
+    console.log(visorData);
     visorData["functionsBar"] = extractFunctionsBar();
     visorData["legendFrame"] = extractLegendFrame();
     return visorData;

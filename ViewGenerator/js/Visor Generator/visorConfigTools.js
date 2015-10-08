@@ -47,11 +47,11 @@ function addVerticalToolBar(){
 
 function hideToolBar(){
 	$(".removeFunctionBar").click(function(event){
-		console.log(event.target.parentNode.parentNode.parentNode.id);
-		$("#"+event.target.parentNode.parentNode.parentNode.id+"").remove();
+		console.log(event);
+		$("#"+event.target.parentNode.parentNode.id+"").remove();
 	});
 }
 
 function back(){
-	window.location=server+"Tables/php/tables.php"+"?previous="+visorName;
+	window.location=server+"ServerDevelop/Tables/php/tables.php"+"?previous="+visorName;
 }

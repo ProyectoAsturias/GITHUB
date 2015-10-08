@@ -45,6 +45,7 @@
     width: 100%;
 }
 
+
 .rightSidePrintModal{
     overflow-x: auto;
 }
@@ -88,6 +89,7 @@
     overflow-y: auto;
     text-align: center;
 }
+
 
 .invisibleFullScreenButton{
     display: none;

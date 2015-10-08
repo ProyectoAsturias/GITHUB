@@ -1,5 +1,6 @@
 var showLegend;
 
+
 function resizeByCreateEvent(){
 	$.widget("ui.resizable", $.ui.resizable, {
 		resizeBy: function(newSize) {
@@ -62,7 +63,7 @@ function createLegendMap(){
 			assignLegendEventsHandlers();
 		},
 		error:function(error){
-			alert("Ha fallado la petición GetCapabilities al mapa introducido, por favor, compruebe la integridad del mismo.");
+			alert("Error: "+error);
 		}
 	});
 }

@@ -20,6 +20,7 @@ function addDataAttributes(){
     mailAssign();
     selectionAssign();
     updateAssign();
+    wmsimportAssign();
 }
 
 function exportDataAssign(){
@@ -81,4 +82,7 @@ function selectionAssign(){
 }
 function updateAssign(){
     $(".update").data("function", "update");
+}
+function wmsimportAssign(){
+    $(".wmsimport").data("function", "wmsimport");
 }
