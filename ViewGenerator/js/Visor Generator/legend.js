@@ -1,5 +1,33 @@
 var showLegend;
 
+function resizeByCreateEvent(){
+	$.widget("ui.resizable", $.ui.resizable, {
+		resizeBy: function(newSize) {
+			this._mouseStart($.Event("mousedown", { pageX: 0, pageY: 0 }));
+			this.axis = 'se';
+			var end = $.Event("mouseup", {
+				pageX: newSize.width,
+				pageY: newSize.height
+			});
+			this._mouseDrag(end);
+			this._mouseStop(end);
+		}
+	});
+}
+
+function makeLegendResizable(){
+	$(".legendBar").resizable({
+		resize: function(event, ui) {
+			$(".legendBar").css("max-height", parseInt($(window).height()) - 5 - parseInt($(".legendBar").css("top")));
+			$("#legendContent").css("max-height", parseInt($(".legendBar").css("height"))-25);
+			console.log();
+		}
+	});
+	$(".legendBar").resizable("resizeBy", {
+		height: 4
+	});
+}
+
 function createLegendMap(){
 	//var urlWms= server+"geoserver/"+map.name+"/wms";
 	//var legendImg ="<img class=\"legendIcon\" src='"+urlWms+"?REQUEST=GetLegendGraphic&VERSION=1.0.0&FORMAT=image/png&WIDTH=20&HEIGHT=20&LAYER="+layerName+"' />";
@@ -42,6 +70,8 @@ function createLegendMap(){
 function assignLegendEventsHandlers(){
 	hideLegend();
 	closeLegend();
+	resizeByCreateEvent();
+	makeLegendResizable();
 }
 
 function hideLegend(){

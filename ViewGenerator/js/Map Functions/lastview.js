@@ -9,7 +9,6 @@ $(document).ready(function(){
 function getPositionEvent(){
     map.on('moveend', function(){
         if(savePosition){
-            console.log("entra al cambiar la vista");
             var view = map.getView();
             var center =view.getCenter();
             centersArray.push(center);
