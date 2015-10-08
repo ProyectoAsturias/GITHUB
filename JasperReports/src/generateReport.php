@@ -120,9 +120,9 @@ function addReportsField(){
         $reportGenerator->addReportLegend(json_decode($_POST["legendData"]));
     }
 
-    var_dump($_POST["dataTables"]);
     $dataTables = json_decode($_POST["dataTables"]);
     if ($dataTables != ""){
+        var_dump($dataTables);
         foreach($dataTables as $table){
             $reportGenerator->addReportTable($table);
         }

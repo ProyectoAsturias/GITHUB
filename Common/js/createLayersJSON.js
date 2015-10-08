@@ -17,7 +17,7 @@ function generateJSONLayers(){
         });
     }
     $(document).ajaxStop(function(){
-        sendLayersJSON(layers);
+        //sendLayersJSON(layers);
     });
 }
 

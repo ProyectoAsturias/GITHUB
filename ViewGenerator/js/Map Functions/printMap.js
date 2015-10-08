@@ -50,6 +50,7 @@ function changePreview(){
         },
         type: "POST",
         success: function (response) {
+            console.log(response);
             $("#previewCanvas iframe").attr("src", printingPath + "src/generateReport.php?tag=getPreview");
         }
     });
@@ -108,17 +109,31 @@ function generateReportTitle(){
 
 function generateDataTables(){
     if ($("#modalDatatables :checkbox").is(":checked")){
+        var layersNames = [];
+        var layerContent = [];
+        var layerHeaders = [];
         var tableHeaders = [];
         var tableContent = [];
-        $('#dataTable tr').map(function() {
+        $('#info .menu5 li a').map(function() {
+            layersNames.push($(this).text());
+        }).get();
+        $('#dataTable table').map(function() {
+            layerHeaders = [];
+            layerContent = [];
             $(this).find('th').map(function() {
-                tableHeaders.push($(this).html())
+                layerHeaders.push($(this).text());
             }).get();
             $(this).find('td').map(function() {
-                tableContent.push($(this).html())
+                layerContent.push($(this).text());
             }).get();
+            tableHeaders.push(layerHeaders);
+            tableContent.push(layerContent);
         }).get();
-        return (JSON.stringify([{tableHeaders : tableHeaders, tableContent: tableContent}, {tableHeaders : tableHeaders, tableContent: tableContent}]));
+        var allTables = [];
+        for (var i=0; i<layersNames.length; i++){
+            allTables.push({layerName: layersNames[i], tableHeaders: tableHeaders[i], tableContent: tableContent[i]});
+        }
+        return JSON.stringify(allTables);
     }else{
         return "";
     }
@@ -151,7 +166,7 @@ function generateLegendForReport(){
         var layersImage = [];
         $(".legendBar #legendContent").children().each(function (i, elem) {
             if ($(elem).hasClass("titleLayer")) {
-                layersTitle.push($(elem).find("label").html());
+                layersTitle.push($(elem).find("label").html().split("<span")[0]);
             } else if ($(elem).hasClass("imgLayer")) {
                 layersImage.push(convertImgToBase64URL($(elem).find("img").get(0)));
             }

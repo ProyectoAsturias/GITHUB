@@ -142,12 +142,12 @@
 			<textField>
 				<reportElement x="0" y="0" width="594" height="26" uuid="cca6378a-d9da-4fd2-a654-5d5a059fd1d4"/>
 				<textElement textAlignment="Center">
-					<font size="14"/>
+					<font size="14" isBold="true"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$V{layerName}]]></textFieldExpression>
 			</textField>
 			<subreport>
-				<reportElement stretchType="RelativeToBandHeight" x="0" y="26" width="594" height="60" isRemoveLineWhenBlank="true" uuid="9b8a30ab-b76b-419b-8b12-4e0828c2a31d"/>
+				<reportElement stretchType="RelativeToTallestObject" x="0" y="26" width="594" height="60" isRemoveLineWhenBlank="true" uuid="9b8a30ab-b76b-419b-8b12-4e0828c2a31d"/>
 				<subreportParameter name="columnValues">
 					<subreportParameterExpression><![CDATA[$V{columnValues}]]></subreportParameterExpression>
 				</subreportParameter>

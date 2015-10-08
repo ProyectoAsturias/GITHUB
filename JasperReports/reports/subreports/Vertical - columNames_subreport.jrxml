@@ -18,9 +18,9 @@
 		<variableExpression><![CDATA[$P{columnValues}.get($P{columnNames}.indexOf($F{_THIS}))]]></variableExpression>
 	</variable>
 	<summary>
-		<band height="50">
-			<crosstab ignoreWidth="true">
-				<reportElement positionType="Float" x="0" y="0" width="555" height="50" uuid="bb101193-4b04-4340-b800-4b4e8b57d413"/>
+		<band height="43">
+			<crosstab ignoreWidth="false">
+				<reportElement positionType="Float" stretchType="RelativeToTallestObject" x="0" y="0" width="555" height="43" uuid="bb101193-4b04-4340-b800-4b4e8b57d413"/>
 				<rowGroup name="index" width="0" headerPosition="Middle">
 					<bucket class="java.lang.String">
 						<bucketExpression><![CDATA[]]></bucketExpression>
@@ -36,7 +36,7 @@
 						<cellContents/>
 					</crosstabTotalRowHeader>
 				</rowGroup>
-				<columnGroup name="thisColumn" height="30" headerPosition="Center">
+				<columnGroup name="thisColumn" height="23" headerPosition="Center">
 					<bucket class="java.lang.String">
 						<bucketExpression><![CDATA[$V{thisColumn}]]></bucketExpression>
 					</bucket>
@@ -46,8 +46,15 @@
 								<pen lineWidth="0.5" lineStyle="Solid" lineColor="#FFFFFF"/>
 							</box>
 							<textField isStretchWithOverflow="true">
-								<reportElement style="Crosstab Data Text" positionType="Float" stretchType="RelativeToTallestObject" x="0" y="0" width="50" height="30" isPrintWhenDetailOverflows="true" uuid="ab632b7f-bae9-4315-833b-4f7f208800ca"/>
-								<textElement verticalAlignment="Middle"/>
+								<reportElement positionType="Float" stretchType="RelativeToTallestObject" x="0" y="0" width="90" height="23" isPrintWhenDetailOverflows="true" uuid="ab632b7f-bae9-4315-833b-4f7f208800ca"/>
+								<box>
+									<pen lineWidth="1.0"/>
+									<topPen lineWidth="1.0"/>
+									<leftPen lineWidth="1.0"/>
+									<bottomPen lineWidth="1.0"/>
+									<rightPen lineWidth="1.0"/>
+								</box>
+								<textElement textAlignment="Center" verticalAlignment="Middle"/>
 								<textFieldExpression><![CDATA[$V{thisColumn}]]></textFieldExpression>
 							</textField>
 						</cellContents>
@@ -59,13 +66,21 @@
 				<measure name="thisValueMeasure" class="java.lang.String" calculation="Count">
 					<measureExpression><![CDATA[$V{thisValue}]]></measureExpression>
 				</measure>
-				<crosstabCell width="50" height="25">
+				<crosstabCell width="90" height="25">
 					<cellContents>
 						<box>
 							<pen lineWidth="0.5" lineStyle="Solid" lineColor="#FFFFFF"/>
 						</box>
 						<textField isStretchWithOverflow="true">
-							<reportElement style="Crosstab Data Text" positionType="Float" stretchType="RelativeToTallestObject" x="0" y="0" width="50" height="25" isPrintWhenDetailOverflows="true" uuid="3a400405-e2d8-4a0e-8eb1-6b98a0ab6218"/>
+							<reportElement style="Crosstab Data Text" positionType="Float" stretchType="RelativeToTallestObject" x="0" y="0" width="90" height="25" isPrintWhenDetailOverflows="true" uuid="3a400405-e2d8-4a0e-8eb1-6b98a0ab6218"/>
+							<box>
+								<pen lineWidth="1.0"/>
+								<topPen lineWidth="1.0"/>
+								<leftPen lineWidth="1.0"/>
+								<bottomPen lineWidth="1.0"/>
+								<rightPen lineWidth="1.0"/>
+							</box>
+							<textElement verticalAlignment="Middle"/>
 							<textFieldExpression><![CDATA[$V{thisValueMeasure}]]></textFieldExpression>
 						</textField>
 					</cellContents>

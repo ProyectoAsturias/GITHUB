@@ -108,19 +108,18 @@ function getDataFromURL(url) {
 function addDataToBeShown(features){
     if (!features) return;
     features.forEach(function (feature){
-        //console.log(feature);
+        console.log(feature);
         var layerName=feature.id.split(".")[0];
         layerName=layerName.replace(/ /g,"_");
         if(layersNames.indexOf(layerName)==-1){
-            //console.log("hola");
             layersNames.push(layerName);
             if(layersNames.length==1){
-                $("#layersHeader").append("<li class=\"active\" id=\"layer"+layerName+"\"><a data-toggle=\"pill\" onclick=\"changePills('"+layerName+"')\"  href=\"#"+layerName+"\"><b>"+layerName+"</b></a>");
+                $("#layersHeader").append("<li class=\"active\" id=\"layer"+layerName+"\"><a data-toggle=\"pill\" onclick=\"changePills('"+layerName+"')\" ><b>"+layerName+"</b></a>");
                 activeFeature=layerName;
                 var headTable="<table id=\""+layerName+"\" class=\"tab-pane fade in active\"><tr>";
             }
             else {
-                $("#layersHeader").append("<li id=\"layer"+layerName+"\"><a data-toggle=\"pill\" href=\"#"+layerName+"\" onclick=\"changePills('"+layerName+"')\"><b>"+layerName+"</b></a>");
+                $("#layersHeader").append("<li id=\"layer"+layerName+"\"><a data-toggle=\"pill\" onclick=\"changePills('"+layerName+"')\"><b>"+layerName+"</b></a>");
                 var headTable="<table id=\""+layerName+"\" class=\"tab-pane fade\"><tr>";
             }
             $.each(feature.properties, function(key, value) {
