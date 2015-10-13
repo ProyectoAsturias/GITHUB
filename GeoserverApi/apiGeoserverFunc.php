@@ -66,8 +66,8 @@
 			echo createDBView($layerId,$GLOBALS['mapName']."_".$layerName,$projection,$town);
 			if(($result=$GLOBALS['geoserver']->addLayer($GLOBALS['gsConnection']->wsName, $GLOBALS['gsConnection']->dsName, $layerName, $layerDescription, $projection))!="")
 				print("Advice: ".$result."\n");
-			//else
-				//addStyles($layerId,$layerName,$mapId);
+			else
+				addStyles($layerId,$layerName,$mapId);
 		}
 		else
 			echo "Error: Parameters missed.";
@@ -91,7 +91,7 @@
 			if(($res=$GLOBALS['geoserver']->addStyleToLayer($layerName, $styleName, $GLOBALS['mapName']))!="")
 				$result=$result."Advice: ".$res."\n";
 		}
-		print($GLOBALS['geoserver']->addStyleToLayer($layerName, "point", $GLOBALS['mapName']));
+		$GLOBALS['geoserver']->addStyleToLayer($layerName, "point", $GLOBALS['mapName']);
 		$GLOBALS['geoserver']->addStyleToLayer($layerName, "line", $GLOBALS['mapName']);
 		$GLOBALS['geoserver']->addStyleToLayer($layerName, "polygon", $GLOBALS['mapName']);
 		return $result;

@@ -24,7 +24,7 @@ function makeLegendResizable(){
         }
     });
     $(".legendBar").resizable("resizeBy", {
-        height: 4
+
     });
 }
 
@@ -72,8 +72,10 @@ function createLegendMap(){
 
 function appendLayersObjectToLegend(){
     for(var i=0; i<legendLayersNames.length; i++){
-        $(".titleLayer #"+ legendLayersNames[i]).append("<span class='glyphicon glyphicon-eye-open visibilityLayer' title=\"Visiblidad de capa\"></span>")
-        $(".titleLayer #"+ legendLayersNames[i]).data("layer", searchLayerByName(legendLayersNames[i]));
+        console.log(legendLayersNames[i]);
+        $(".titleLayer [id='"+ legendLayersNames[i]+"']").append("<span class='glyphicon glyphicon-eye-open visibilityLayer' title=\"Visiblidad de capa\"></span>")
+        $(".titleLayer [id='"+ legendLayersNames[i]+"']").data("layer", searchLayerByName(legendLayersNames[i]));
+        console.log($(".titleLayer [id='"+ legendLayersNames[i]+"']").data());
     }
 }
 
@@ -123,6 +125,7 @@ function createEmptyLegend(){
         "<div id=\"legendContent\"></div>";
     $('.legendBar').empty();
     $('.legendBar').append(legendHtml);
+    assignLegendEventsHandlers();
 }
 
 function searchLayerByName(layerName){

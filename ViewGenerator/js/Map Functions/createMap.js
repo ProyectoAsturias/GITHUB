@@ -41,6 +41,11 @@ function setBaseLayer(layerName){
     mapDetails["baseLayer"] = layerName;
 }
 
+function setMapName(wmsUrl){
+    var pattern = /^(.+)(geoserver\/)(.+)(\/wms)$/;
+    var match = wmsUrl.match(pattern)
+    map.name = match[3];
+}
 
 function createMap() {
     map = new ol.Map({
@@ -59,13 +64,13 @@ function createMap() {
         try {
             addLayersAndGroupsFromWMS(mapDetails["WMSUrl"]);
             map.mapURL = mapDetails["WMSUrl"];
-
+            setMapName(map.mapURL);
         }catch (error){
             console.log("WOP");
         }
     }
     if(mapDetails["entityId"]){
-        setBbox(mapDetails["entityId"]);
+        //setBbox(mapDetails["entityId"]);
     }
     map.addControl(new ol.control.ScaleLine());
     if (typeof (toolsDraggable) == "function"){
@@ -94,10 +99,10 @@ function setBbox(entityId){
         url : apiPath+"apiLocalgis.php",
         data : {
             tag:"getBbox",
-            entityId:entityId,
+            entityId:entityId
         },
         success: function (response) {
-            //console.log(response);
+            console.log(response);
             var bBox=[];
             var split1 = response.split(",")[0].split("(")[1].split(" ");
             var split2 = response.split(",")[1].split(")")[0].split(" ");

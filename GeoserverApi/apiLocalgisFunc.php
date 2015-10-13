@@ -176,6 +176,8 @@
 		if ($numRows > 0) {
 			while ($row = pg_fetch_array($result, null, PGSQL_ASSOC)) {
 				$SLD = $row["xml"];
+				$SLD = str_replace(array("file:textures","file:/C:/LocalGIS/Datos/textures"),"file:/usr/local/LocalGIS.MODELO/mapserver/htdocs/textures",$SLD);
+				$SLD = str_replace("file:iconlib","file:/usr/local/LocalGIS.MODELO/mapserver/htdocs/iconlib",$SLD);
 				$numSld = substr_count($SLD, "<UserStyle>");
 				$exp = explode("<UserStyle>", $SLD);
 				$header = $exp[0];
@@ -186,12 +188,13 @@
 						$sld_xml = $sld_xml.$end;
 					$styleName = explode("</Name>", explode("<Name>", $sld_xml)[2])[0];
 					//var_dump($styleName);
-					$styleName = explode(":_:", $styleName)[1];
+					//$styleName = explode(":_:", $styleName)[1];
+					$styleName = str_replace(" ","_",$styleName);
 					//var_dump($styleName);
 					$style = new LocalgisStyle($styleName, $sld_xml);
 					array_push($styles, $style);
 				}
-				//$style= new LocalgisStyle($styleName,$SLD);
+				//$style= new LocalgisStyle("prueba",$SLD);
 				//array_push($styles, $style);
 			}
 		}

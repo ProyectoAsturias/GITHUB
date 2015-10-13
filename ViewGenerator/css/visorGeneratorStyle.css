@@ -397,13 +397,13 @@ span.legend{
     z-index: 1
 }
 #hideInterface{
-	position: absolute;
-	top: 0.5em;
-	right: 0.5em;
-	height: 31px;
-	width: 32px;
-	z-index: 15;
-	background-image: url("../../Common/images/hideInterface-left.png");
+    position: absolute;
+    top: 4.25em;
+    left: 0.6em;
+    height: 30px;
+    width: 24px;
+    z-index: 1;
+    background-image: url("../../Common/images/hideInterface-left.png");
 }
 
 #wmsImportWindow{

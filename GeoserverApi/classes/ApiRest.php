@@ -952,9 +952,13 @@ class ApiRest {
 	 * Limpia la cache de geoserver y restaura los links a los datasource.
 	 *
 	 * @return mixed|string
-     */
+	 */
 	public function reload(){
 		//curl -u admin:password -v -XPOST http://localhost:8090/geoserver/rest/reload
 		return $this->runApi('reload', 'POST');
 	}
+
+	/**
+	 * Privatiza o (despublica) un mapa
+	 */
 }

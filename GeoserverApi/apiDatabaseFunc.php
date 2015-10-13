@@ -227,7 +227,10 @@
 			$from_string=$from_string."public.".$from[$i];
 		print($select_string." FROM ".$from_string." WHERE ".$where_string);*/
 		//return $select_layer;
-		pg_query('CREATE OR REPLACE VIEW "localgisvistas"."'.$layerName.'" AS '.$select_layer)or die('Error: '.pg_last_error());
+		
+		$result = pg_query($select_layer) or die('Error: '.pg_last_error());
+		if(pg_num_rows($result)>0)
+			pg_query('CREATE OR REPLACE VIEW "localgisvistas"."'.$layerName.'" AS '.$select_layer)or die('Error: '.pg_last_error());
 
 		//Comprobamos que la tabla está vacia: Si lo está hay que incluir el srs, ya que geoserver no puede extraerlo al no haber datos geoespaciales.
 		/*$q_select=pg_query($dbConnection->dbConn, $select_layer);

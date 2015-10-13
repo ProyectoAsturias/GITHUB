@@ -53,5 +53,5 @@ function hideToolBar(){
 }
 
 function back(){
-	window.location=server+"ServerDevelop/Tables/php/tables.php"+"?previous="+visorName;
+	window.location=server+"Tables/php/tables.php"+"?previous="+visorName;
 }

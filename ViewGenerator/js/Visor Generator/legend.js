@@ -21,11 +21,10 @@ function makeLegendResizable(){
 		resize: function(event, ui) {
 			$(".legendBar").css("max-height", parseInt($(window).height()) - 5 - parseInt($(".legendBar").css("top")));
 			$("#legendContent").css("max-height", parseInt($(".legendBar").css("height"))-25);
-			console.log();
 		}
 	});
 	$(".legendBar").resizable("resizeBy", {
-		height: 4
+
 	});
 }
 
@@ -63,7 +62,7 @@ function createLegendMap(){
 			assignLegendEventsHandlers();
 		},
 		error:function(error){
-			alert("Error: "+error);
+			alert("Ha fallado la petición GetCapabilities al mapa introducido, por favor, compruebe la integridad del mismo.");
 		}
 	});
 }
@@ -101,4 +100,5 @@ function createEmptyLegend(){
 		"<div id=\"legendContent\"></div>";
 	$('.legendBar').empty();
 	$('.legendBar').append(legendHtml);
+	assignLegendEventsHandlers();
 }

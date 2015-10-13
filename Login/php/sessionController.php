@@ -1,8 +1,6 @@
 <?php
     require_once "../../Common/php/DBConnection.php";
-    require_once "../../Common/php/TCConfig.php";
-    //require_once('http://localhost:8093/LocalGIS/java/Java.inc');
-    require_once($loginTomcatJava);
+    require_once('http://localhost:8093/LocalGIS/java/Java.inc');
 
     //Hacer login con el servicio de localgis
     if (!isset($_POST["method"])){
@@ -18,48 +16,40 @@
 
     function login($userName, $password, $redirect=""){
 
-	$encripter = new java("com.avanzit.encriptar.EncriptarPasswordAvanzit");
+		$encripter = new java("com.avanzit.encriptar.EncriptarPasswordAvanzit");
 
-        $connection=new DBConnection();        
-	$where=" AND bloqueado=FALSE AND fecha_proxima_modificacion > NOW()";
-	$query="SELECT password FROM iuseruserhdr WHERE name = '".$userName."'".$where;
-	$result=pg_query($query) or die('Error: '.pg_last_error());
-	$row=pg_fetch_row($result);
-	if(!$row){
-            $loginResponse = new stdClass();
-            $loginResponse->logged = false;
-            $loginResponse->errorMessage = "Error en la autenticación, consulte a su administrador.";
-            return $loginResponse;
-	}
-	$type=substr(explode("}",$row[0])[0],1);
-	$encPassword="";
-	switch($type){
-		case "TYPE1":
-			//echo "tipo1";
-			$encPassword = $encripter->encriptar(explode("}",$row[0])[1], 1);	
-			break;
-		case "TYPE2":
-			//echo "tipo2";
-			$encPassword = $encripter->encriptar(explode("}",$row[0])[1], 2);
-			break;
-		default:
-			//echo "tipo3";
-			$encPassword = $encripter->encriptar($row[0], 1);
-			break;
-	}	
-	$encPassword = $encripter->encriptar($password, 3);
-		
+			$connection=new DBConnection();        
+		$where=" AND bloqueado=FALSE AND fecha_proxima_modificacion > NOW()";
+		$query="SELECT password FROM iuseruserhdr WHERE name = '".$userName."'".$where;
+		$result=pg_query($query) or die('Error: '.pg_last_error());
+		$row=pg_fetch_row($result);
+		if(!$row){
+				$loginResponse = new stdClass();
+				$loginResponse->logged = false;
+				$loginResponse->errorMessage = "Error en la autenticación, consulte a su administrador.";
+				return $loginResponse;
+		}
+		$type=substr(explode("}",$row[0])[0],1);
+		$encPassword="";
+		switch($type){
+			case "TYPE1":
+				//$encPassword = $encripter->encriptar(explode("}",$row[0])[1], 1);
+				$encPassword = $encripter->encriptar($password, 1);
+				break;
+			case "TYPE2":
+				//$encPassword = $encripter->encriptar(explode("}",$row[0])[1], 2);
+				$encPassword = $encripter->encriptar($password, 2);
+				break;
+			default:
+				//$encPassword = $encripter->encriptar($row[0], 1);
+				$encPassword = $encripter->encriptar($password, 3);
+				break;
+	}			
         $query="SELECT id,id_entidad FROM iuseruserhdr WHERE name = '".$userName."' AND password='".$encPassword."'".$where;
         $result=pg_query($query) or die('Error: '.pg_last_error());
         $row=pg_fetch_row($result);
         $connection->close();
 
-
-        //$query="SELECT id,id_entidad FROM iuseruserhdr WHERE name = '".$userName."' AND bloqueado=FALSE AND fecha_proxima_modificacion > NOW()";
-        /*$result=pg_query($query) or die('Error: '.pg_last_error());
-        $row=pg_fetch_row($result);
-        $connection->close();
-	*/
         $login=false;
         $userId=0;
         $entityId=0;

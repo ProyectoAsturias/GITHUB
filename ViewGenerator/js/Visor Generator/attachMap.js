@@ -14,6 +14,7 @@ function attachMapEventHandler(){
             var mapList=JSON.parse(response);
             console.log(mapList);
             $("#selectMap").empty();
+            $("#selectMap").append("<option style='color: orange' value=\""+"Empty"+"\">"+"Eliminar mapa actual"+"</option>");
             var hiddenList="";
             for(var i=0; i<mapList.length; i++){
                 $("#selectMap").append("<option value=\""+mapList[i].name+"\">"+mapList[i].name+"</option>");
@@ -25,22 +26,34 @@ function attachMapEventHandler(){
         }
     });
     $("#attachMapButton").click(function(){
-        var mapName=$("#selectMap").val();
-        var entityId=$("#"+mapName).val();
-        var urlMap=serverGS+"geoserver/"+mapName+"/wms";
-        attachMap(urlMap,entityId);
+        if ($("#selectMap").val() == "Empty"){
+            attachMap("Empty");
+        }else{
+            var mapName=$("#selectMap").val();
+            var entityId=$("#"+mapName).val();
+            var urlMap=serverGS+"geoserver/"+mapName+"/wms";
+            attachMap(urlMap,entityId);
+        }
     });
 }
 
 function attachMap(wmsURL,entityId){
-    console.log(wmsURL);
     if (wmsURL != ""){
-        setMapURL(wmsURL);
-        setMapEntity(entityId);
-        updateMap();
-        map.mapEntity= entityId;
-        map.mapURL = wmsURL;
-        updateTreeLayer();
-        createLegendMap();
+        if (wmsURL != "Empty") {
+            setMapURL(wmsURL);
+            setMapEntity(entityId);
+            updateMap();
+            map.mapEntity = entityId;
+            map.mapURL = wmsURL;
+            var treeData = generateTreeData();
+            createLayerTree(treeData);
+            createLegendMap();
+        }else{
+            setMapURL(undefined);
+            updateMap();
+            var treeData = generateTreeData();
+            createLayerTree(treeData);
+            createEmptyLegend();
+        }
     }
 }
