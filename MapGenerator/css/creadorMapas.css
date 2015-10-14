@@ -67,7 +67,26 @@ h2{
 
 #mapContainer{
     min-height: 740px;
-    height: 86vh;
+    height: 99.5vh;
+}
+
+#menucapas {
+    float: left;
+    width: 320px;
+    margin-right: 10px;
+    max-width: 500px;
+    min-width: 170px;
+}
+
+#contenido {
+    overflow: hidden;
+    width: auto;
+    padding-left: 10px;
+}
+
+#wrapper {
+    float: left;
+    width: 100%;
 }
 
 #allTools{

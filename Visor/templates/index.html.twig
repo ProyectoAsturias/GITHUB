@@ -134,8 +134,10 @@
     {% if visorData.legendFrame != "" %}
         {% include "legend.html.twig" %}
         <script>
-            $(".legendBar").css("top", (parseInt(visorData.legendFrame.position.top, 10)-140)+"px");
-            $(".legendBar").css("left", (parseInt(visorData.legendFrame.position.left, 10)+300)+"px");
+            $(".legendBar").css("top", (parseInt(visorData.legendFrame.position.top, 10)-100)+"px");
+            $(".legendBar").css("left", (parseInt(visorData.legendFrame.position.left, 10))+"px");
+            $(".legendBar").css("height", visorData.legendFrame.position.height);
+            $(".legendBar").css("width", visorData.legendFrame.position.width);
         </script>
     {% endif %}
     {#{% include "SLD Editor/sldEditorModal_template.html.twig" %}#}

@@ -9,6 +9,9 @@
     <link href="../../Common/images/favicon-96x96.png" rel="icon" sizes="96x96">
     <link href="../../Common/bootstrap-3.3.4/css/bootstrap.css" rel="stylesheet" media="screen">
     <link href="../../Common/css/fileinput.min.css" rel="stylesheet" media="screen">
+    <link rel="stylesheet" href="../../Common/css/jquery-ui.min.css">
+    <link rel="stylesheet" href="../../Common/css/jquery-ui.structure.css">
+    <link rel="stylesheet" href="../../Common/css/jquery-ui.theme.css">
 
     <link href="../css/creadorMapas.css" rel="stylesheet" media="screen">
     <link rel='stylesheet' href='../../Common/css/ol.css'>
@@ -17,12 +20,16 @@
 
     {% include "scriptsImport.html.twig" %}
 
+
 </head>
 <body>
 
+<div id="wrapper">
     {% include "leftBar.html.twig" %}
 
     {% include "mapSection.html.twig" %}
+</div>
+
 
     {% include "modal.twig" %}
     

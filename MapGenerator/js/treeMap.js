@@ -1,6 +1,17 @@
+
 $(document).ready(function () {
+	leftBarResizable();
 	assignEventsHandlers();
 });
+
+function leftBarResizable() {
+	$("#menucapas").resizable({
+		handles: "e",
+		resize: function (event, ui) {
+			map.updateSize();
+		}
+	});
+}
 
 function drawTree() {
 	var wms = serverGS + "geoserver/" + map.name + "/wms";
@@ -140,7 +151,7 @@ function generateLayerListHTML() {
 
 function generateNode(layer) {
 	//console.log(layer);
-	var node = $("<li class='nodeLine'><div class='layerName'>" + layer.name + "</div><div class='treeIcons'>" +
+	var node = $("<li class='nodeLine' title='"+layer.name+"'><div class='layerName'>" + layer.name + "</div><div class='treeIcons'>" +
 			"<span class='glyphicon glyphicon-remove removeLayer' title=\"Borrar capa\"></span>" +
 			"<span class='glyphicon glyphicon-eye-open visibilityLayer' title=\"Visiblidad de capa\"></span>" +
 			"<span class='glyphicon glyphicon-cog attributesLayer' title=\"Seleccionar atributos\"></span>" +
