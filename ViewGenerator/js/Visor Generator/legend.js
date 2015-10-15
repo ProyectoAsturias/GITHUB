@@ -1,5 +1,5 @@
 var showLegend;
-
+var previousHeight;
 
 function resizeByCreateEvent(){
 	$.widget("ui.resizable", $.ui.resizable, {
@@ -79,10 +79,13 @@ function hideLegend(){
 		if(showLegend){
 			$("#legendContent").hide();
 			showLegend=false;
+			previousHeight = $(".legendBar").css("height");
+			$(".legendBar").css("height", 25)
 		}
 		else{
 			$("#legendContent").show();
 			showLegend=true;
+			$(".legendBar").css("height", previousHeight)
 		}
 	});	
 }

@@ -52,11 +52,15 @@ function removeOldBaseLayer(){
   	if(layersArray[i].base==true)
   		map.removeLayer(layersArray[i])
   }
-  /*if (gmap != undefined){
-    gmap = undefined;
-    $('#gmap').hide();
-  }*/
-  //$('#gmap').hide();
+  if (gmap != undefined){
+    console.log(gmap.getZoom());
+    console.log(map.getTarget());
+    $("#map").append($("#olmap").css("position", "relative"));
+    //$("#map").append('<div class="fill" id="olmap">'+$("#olmap").html()+"</div>");
+    $("#gmap").remove();
+    $("#map").append('<div id="gmap"></div>');
+    googleLayer = true;
+  }
 }
 
 function googleMapLayer(map){
@@ -83,15 +87,6 @@ function googleMapLayer(map){
     });
 
     var olMapDiv = document.getElementById('olmap');
-    var map = new ol.Map({
-      interactions: ol.interaction.defaults({
-        altShiftDragRotate: false,
-        dragPan: false,
-        rotate: false
-      }).extend([new ol.interaction.DragPan({kinetic: null})]),
-      target: olMapDiv,
-      view: view
-    });
 
     view.setCenter(center);
     view.setZoom(zoom);

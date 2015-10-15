@@ -49,7 +49,7 @@ function setMapName(wmsUrl){
 
 function createMap() {
     map = new ol.Map({
-        target: 'map',  // The DOM element that will contains the map
+        target: 'olmap',  // The DOM element that will contains the map
         interactions: ol.interaction.defaults({ doubleClickZoom: false }),
         controls: ol.control.defaults({attribution: false}),
         renderer: 'canvas',
