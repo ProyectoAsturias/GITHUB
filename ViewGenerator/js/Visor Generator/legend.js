@@ -24,7 +24,7 @@ function makeLegendResizable(){
 		}
 	});
 	$(".legendBar").resizable("resizeBy", {
-
+		height: "1"
 	});
 }
 
@@ -44,6 +44,9 @@ function createLegendMap(){
 		url : urlWms+'?request=getCapabilities&service=wms',
 		crossDomain : true,
 		success: function (response){
+			if ($(".legendBar").hasClass("ui-resizable")){
+				$(".legendBar").resizable("destroy");
+			}
 			var service = parser.read(response);
 			var capabilities = service.Capability;
 			var contentHtml="";
@@ -97,6 +100,9 @@ function closeLegend(){
 }
 
 function createEmptyLegend(){
+	if ($(".legendBar").hasClass("ui-resizable")){
+		$(".legendBar").resizable("destroy");
+	}
 	var legendHtml="<div id=\"titleMap\"><label for=\"legendContent\">Leyenda</label>"+
 		"<span class='glyphicon glyphicon-remove removeLegend legend'></span>"+
 		"<span class='glyphicon glyphicon-minus hideLegend legend'></span></div>"+

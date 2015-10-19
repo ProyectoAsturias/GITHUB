@@ -1,6 +1,16 @@
 $(document).ready(function(){
+    makeLeftBarResizable();
     updateTreeLayer();
 });
+
+function makeLeftBarResizable(){
+    $("#leftBarParent").resizable({
+        handles: "e",
+        resize: function (event, ui) {
+            map.updateSize();
+        }
+    });
+}
 
 function updateTreeLayer(){
     if (map!= undefined && map.mapURL == ""){

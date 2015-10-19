@@ -79,10 +79,10 @@ h2{
 }
 
 #contenido {
-    overflow: hidden;
-    width: auto;
-    padding-left: 10px;
-}
+     overflow: hidden;
+     width: auto;
+     padding-left: 10px;
+ }
 
 #wrapper {
     float: left;
