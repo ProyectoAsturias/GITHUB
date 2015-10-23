@@ -120,7 +120,6 @@
     background-color:beige;
     position: absolute;
     top: 250px;
-    left: 250px;
     z-index: 1;
 }
 
@@ -306,9 +305,7 @@
 }
 
 .legendBar{
-    position: absolute;
-    top: 650px;
-    left: 600px;
+    left: 800px;
     z-index: 1;
     border: solid 1px black;
     border-radius:5px;
@@ -405,24 +402,6 @@ span.legend{
     width: 24px;
     z-index: 1;
     background-image: url("../../Common/images/hideInterface-left.png");
-}
-
-#wmsImportWindow{
-	width:350px;
-	position: absolute;
-    top: 250px;
-    left: 50px;
-    opacity: 0.8;
-    filter: alpha(opacity=80); /* For IE8 and earlier */
-}
-
-#drawModalWindow{
-    width:350px;
-    position: absolute;
-    top: 250px;
-    left: 50px;
-    opacity: 0.8;
-    filter: alpha(opacity=80); /* For IE8 and earlier */
 }
 
 div.fill {

@@ -14,9 +14,7 @@ function hideInterfaceHandler(){
 }
 
 function showInterface(){
-    $("#mapContainer").css("height", "85vh");
-    $("#toolBarMax").removeClass("col-md-12");
-    $("#toolBarMax").addClass("col-md-10");
+    $("#mapContainer").css("height", "100vh");
     map.updateSize();
     $("#allTools").animate({height: "toggle"}, 0);
     $("#leftBarParent").animate({width: "toggle"}, 0);
@@ -29,10 +27,10 @@ function showInterface(){
 function hideInterface(){
     $("#allTools").animate({height: "toggle"}, 0, function(){
         $("#mapContainer").css("height", "99vh");
-        $("#toolBarMax").removeClass("col-md-10");
-        $("#toolBarMax").addClass("col-md-12");
+        $("#mapContainer").css("width", "101vw");
         $(".functionsBar").hide();
         $(".legendBar").hide();
+        $(".wrapper").removeClass("col-md-12");
         map.updateSize();
     });
     $("#leftBarParent").animate({width: "toggle"}, 0);

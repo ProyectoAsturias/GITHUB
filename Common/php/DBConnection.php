@@ -55,7 +55,7 @@
 				//$this->database="Localgis";
 				$this->database="geopista";
 			else
-				$this->database=$database;
+				$this->database="visores";
 			if ($schema==null)
 				$this->schema="public";
 			else

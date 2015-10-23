@@ -3,6 +3,10 @@ var layersPerMap = [];
 var entityParams = []; //id,nombre,proyección y town de la entidad base del usuario
 
 $(document).ready(function () {
+
+	geoLogin();
+	//setInterval(function(){geoLogout()},3000);
+
 	$("#userName").append(userName);
 	version();
 	console.log(userEntityId);
@@ -406,14 +410,13 @@ function getImageBbox(mapName, entity) {
 			var split1 = response.split(",")[0].split("(")[1].split(" ");
 			var split2 = response.split(",")[1].split(")")[0].split(" ");
 			bBox.push(parseFloat(split1[0]), parseFloat(split1[1]), parseFloat(split2[0]), parseFloat(split2[1]));
-			getImageMap(mapName, bBox);
 		},
 		error : function (response) {
 			console.log(response);
 		}
 	})
-
 }
+
 
 function loadDefaultGif(value, row, index){
 	return ("<div id='"+row.name+"' class='imageMap'><img src='../../Common/images/loading-120.gif' style='height: 120px; width: 120px' />");
@@ -425,7 +428,6 @@ function getImageMap(mapName, bBox) {
 	var urlWms = serverGS + 'geoserver/' + mapName + '/wms';
 	$.ajax({
 		type : "GET",
-		dataType : 'text',
 		url : urlWms + '?request=getCapabilities&service=wms',
 		crossDomain : true,
 		success : function (response) {
@@ -440,7 +442,7 @@ function getImageMap(mapName, bBox) {
 				//var bBox = "" + service.Capability.Layer.BoundingBox[0].extent[0] + "," + service.Capability.Layer.BoundingBox[0].extent[1] + "," + service.Capability.Layer.BoundingBox[0].extent[2] + "," + service.Capability.Layer.BoundingBox[0].extent[3] + "";
 
 			}
-			html = "<img class=\"imageMap\" onerror=\"if (this.src != 'error.jpg') this.src = '../../Common/images/noPreview.jpg';\" alt=\"Vista previa no disponible\" src='" + urlWms + "?REQUEST=GetMap&service=wms&format=image/jpeg&WIDTH=120&HEIGHT=120&LAYERS=" + layersNames + "&srs=EPSG:4326&bbox=" + bBox + "' />";
+			//html = "<img class=\"imageMap\" onerror=\"if (this.src != 'error.jpg') this.src = '../../Common/images/noPreview.jpg';\" alt=\"Vista previa no disponible\" src='" + urlWms + "?REQUEST=GetMap&service=wms&format=image/jpeg&WIDTH=120&HEIGHT=120&LAYERS=" + layersNames + "&srs=EPSG:4326&bbox=" + bBox + "' />";
 			//$("#" mapName + "").empty();
 			$("#" + mapName + "").html(html);
 		},
@@ -517,13 +519,68 @@ function getQueryVariable(variable) {
 }
 
 function focusElement(){
- $("#table, #tableVisors").on("post-body.bs.table", function(){
-  if (getQueryVariable("previous") != undefined){
-   if ($("#tableVisors #"+getQueryVariable("previous")).length != 0){
-    $("#listVisorsCollapse").trigger("click");
-   }
-   location.href="#";
-   location.href="#"+getQueryVariable("previous");
-  }
- })
+	focusVisorElement(getQueryVariable("previous"));
+	focusMapElement(getQueryVariable("previous"));
+}
+
+function focusVisorElement(previousElement){
+	$("#tableVisors").on("post-body.bs.table", function(){
+		if (previousElement != undefined){
+			if ($("#tableVisors #"+previousElement).length != 0){
+				$("#listVisorsCollapse").trigger("click");
+			}
+			location.href="#"+previousElement;
+			history.pushState({previous: previousElement}, "", location.pathname);
+			$("#tableVisors").off("post-body.bs.table");
+		}
+	})
+}
+
+function focusMapElement(previousElement){
+	$("#table").on("post-body.bs.table", function(){
+		if (previousElement != undefined){
+			location.href="#"+previousElement;
+			history.pushState({previous: previousElement}, "", location.pathname);
+			$("#table").off("post-body.bs.table");
+		}
+	})
+}
+
+window.onload = function(e){
+	try{
+		focusVisorElement(history.state.previous);
+		focusMapElement(history.state.previous);
+	} catch (e){
+		return;
+	}
+}
+
+
+function geoLogin () {
+	var username = "admin";
+	var password = "geoserver";
+	var url = serverGS + "geoserver/j_spring_security_check";
+
+	var ajax = $.ajax({
+		data: "username=" + username + "&password=" + password,
+		type: "POST",
+		xhrFields: {
+			withCredentials: true
+		},
+		contentType: "application/x-www-form-urlencoded",
+		url: url
+	});
+}
+
+
+function geoLogout () {
+	var url = serverGS + "geoserver/j_spring_security_logout";
+
+	var ajax = $.ajax({
+		type: "GET",
+		xhrFields: {
+			withCredentials: true
+		},
+		url: url
+	});
 }

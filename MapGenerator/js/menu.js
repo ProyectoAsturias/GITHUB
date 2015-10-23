@@ -27,7 +27,8 @@ function menuDatosLayersLocalgis(){
 }
 
 function back(){
-	window.location=server+"Tables/php/tables.php"+"?previous="+mapName;
+	//window.location=server+"Tables/php/tables.php"+"?previous="+mapName;
+	window.location="http://localhost:8090/Asturias/"+"Tables/php/tables.php"+"?previous="+mapName;
 }
 
 function confirmSaveMap(){

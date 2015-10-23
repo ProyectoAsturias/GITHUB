@@ -4,9 +4,24 @@ $(document).ready(function(){
 });
 
 function makeLeftBarResizable(){
+    var difSize;
+    var previousSize;
+    console.log($("#leftBarParent").css("min-width"))
     $("#leftBarParent").resizable({
         handles: "e",
+        minWidth: $("#leftBarParent").css("min-width").split("px")[0],
+        maxWidth: $("#leftBarParent").css("max-width").split("px")[0],
+        start: function(event, ui){
+            difSize = 0;
+            previousSize = ui.size.width;
+        },
         resize: function (event, ui) {
+            difSize = (ui.size.width - previousSize);
+            previousSize = ui.size.width;
+            $(".legendBar").css("left", (parseInt($(".legendBar").css("left")) + difSize) + "px");
+            $(".functionsBar").each(function(index, functionBar){
+                $(functionBar).css("left", (parseInt($(functionBar).css("left")) + difSize) + "px");
+            })
             map.updateSize();
         }
     });

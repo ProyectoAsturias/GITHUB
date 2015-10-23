@@ -361,3 +361,30 @@
     z-index: 1;
     background-image: url("../../Common/images/hideInterface-left.png");
 }
+
+
+#areaOverlay, #coordinatesOverlay{
+    background-color: white;
+    border-radius: 10px;
+    border: 1px solid black;
+    padding: 5px 10px;
+}
+
+
+#wmsImportWindow{
+    width:350px;
+    position: absolute;
+    top: 250px;
+    left: 50px;
+    opacity: 0.8;
+    filter: alpha(opacity=80); /* For IE8 and earlier */
+}
+
+#drawModalWindow{
+    width:350px;
+    position: absolute;
+    top: 250px;
+    left: 50px;
+    opacity: 0.8;
+    filter: alpha(opacity=80); /* For IE8 and earlier */
+}
