@@ -40,6 +40,9 @@ function getDescribeFeatureType(url, layers, callback){
             "Version": "1.1.0",
             "typeName": layers
         },
+	/*headers: {
+        	"Authorization": "Basic "+auth
+        },*/
         method: "GET",
         disableCaching: false,
         success: function (response) {

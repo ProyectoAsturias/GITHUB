@@ -118,7 +118,10 @@ function appendModalWms() {
 	$.ajax({
 		type : "GET",
 		dataType : 'text',
-		url : serverGS + "geoserver/" + mapName + "/wms?request=getCapabilities&service=wms",
+		url : serverGS + "geoserver/" + mapName + requestCapabilities,
+		/*headers: {
+                        "Authorization": "Basic "+auth
+                },*/
 		success : function (response) {
 			var service = parser.read(response);
 			console.log(service);
@@ -130,45 +133,49 @@ function appendModalWms() {
 				"<select multiple class=\"form-control\" id=\"keywordList\" tabindex=\"1\">"
 				for (var i = 0; i < service.Service.KeywordList.length; i++)
 					modalHTML += "<option value=\"" + service.Service.KeywordList[i] + "\">" + service.Service.KeywordList[i] + "</option>"
-					modalHTML += "</select>" +
-					"<button onclick='delKeyword()' id=\"delKeyword\" class=\"btn btn-info btn-block\" style=\"padding:0;\" >Eliminar palabra clave</button>" +
-					"<input type=\"text\"  id=\"keyword\" style=\"width:100%; border-radius: 7px; \"/>" +
-					"<button onclick='addKeyword()' id=\"addKeyword\" class=\"btn btn-info btn-block\" style=\"padding:0;\" >Añadir palabra clave</button>" +
-					"</div>" +
-					"<h3 style=\"textalign:center;\">Información de contacto</h3>" +
-					"<div class=\"col-xs-12\" id=\"ContactInfo\">" +
-					"<div class=\"col-xs-6\">" +
-					"<label for=\"contactPerson\">Persona de contacto</label>" +
-					"<input type=\"text\" class=\"form-control\" id=\"contactPerson\" value=\"" + service.Service.ContactInformation.ContactPersonPrimary.ContactPerson + " \">" +
-					"<label for=\"contactPosition\">Puesto en la organización</label>" +
-					"<input type=\"text\" class=\"form-control\" id=\"contactPosition\" value=\"" + service.Service.ContactInformation.ContactPosition + " \">" +
-					"<label for=\"address\">Dirección</label>" +
-					"<input type=\"text\" class=\"form-control\" id=\"address\" value=\"" + service.Service.ContactInformation.ContactAddress.Address + " \">" +
-					"<label for=\"stateOrProvince\">Provincia/Estado</label>" +
-					"<input type=\"text\" class=\"form-control\" id=\"stateOrProvince\" value=\"" + service.Service.ContactInformation.ContactAddress.StateOrProvince + " \">" +
-					"<label for=\"postCode\">Cod.Postal</label>" +
-					"<input type=\"text\" class=\"form-control\" id=\"postCode\" value=\"" + service.Service.ContactInformation.ContactAddress.PostCode + " \">" +
-					"<label for=\"fax\">Fax</label>" +
-					"<input type=\"text\" class=\"form-control\" id=\"fax\" value=\"" + service.Service.ContactInformation.ContactFacsimileTelephone + " \">" +
-					"</div><div class=\"col-xs-6\">" +
-					"<label for=\"contactOrganization\">Organización</label>" +
-					"<input type=\"text\"  class=\"form-control\" id=\"contactOrganization\"  value=\"" + service.Service.ContactInformation.ContactPersonPrimary.ContactOrganization + " \">" +
-					"<label for=\"addressType\">Tipo de dirección</label>" +
-					"<input type=\"text\" class=\"form-control\" id=\"addressType\" value=\"" + service.Service.ContactInformation.ContactAddress.AddressType + " \">" +
-					"<label for=\"city\">Ciudad</label>" +
-					"<input type=\"text\" class=\"form-control\" id=\"city\" value=\"" + service.Service.ContactInformation.ContactAddress.City + " \">" +
-					"<label for=\"country\">Pais</label>" +
-					"<input type=\"text\" class=\"form-control\" id=\"country\" value=\"" + service.Service.ContactInformation.ContactAddress.Country + " \">" +
-					"<label for=\"contactPhone\">Teléfono</label>" +
-					"<input type=\"text\" class=\"form-control\" id=\"contactPhone\" value=\"" + service.Service.ContactInformation.ContactVoiceTelephone + " \">" +
-					"<label for=\"email\">E-mail</label>" +
-					"<input type=\"text\" class=\"form-control\" id=\"email\" value=\"" + service.Service.ContactInformation.ContactElectronicMailAddress + " \">" +
-					"</div>"
+				modalHTML += "</select>" +
+				"<button onclick='delKeyword()' id=\"delKeyword\" class=\"btn btn-info btn-block\" style=\"padding:0;\" >Eliminar palabra clave</button>" +
+				"<input type=\"text\"  id=\"keyword\" style=\"width:100%; border-radius: 7px; \"/>" +
+				"<button onclick='addKeyword()' id=\"addKeyword\" class=\"btn btn-info btn-block\" style=\"padding:0;\" >Añadir palabra clave</button>" +
+				"</div>" +
+				"<h3 style=\"textalign:center;\">Información de contacto</h3>" +
+				"<div class=\"col-xs-12\" id=\"ContactInfo\">" +
+				"<div class=\"col-xs-6\">" +
+				"<label for=\"contactPerson\">Persona de contacto</label>" +
+				"<input type=\"text\" class=\"form-control\" id=\"contactPerson\" value=\"" + service.Service.ContactInformation.ContactPersonPrimary.ContactPerson + " \">" +
+				"<label for=\"contactPosition\">Puesto en la organización</label>" +
+				"<input type=\"text\" class=\"form-control\" id=\"contactPosition\" value=\"" + service.Service.ContactInformation.ContactPosition + " \">" +
+				"<label for=\"address\">Dirección</label>" +
+				"<input type=\"text\" class=\"form-control\" id=\"address\" value=\"" + service.Service.ContactInformation.ContactAddress.Address + " \">" +
+				"<label for=\"stateOrProvince\">Provincia/Estado</label>" +
+				"<input type=\"text\" class=\"form-control\" id=\"stateOrProvince\" value=\"" + service.Service.ContactInformation.ContactAddress.StateOrProvince + " \">" +
+				"<label for=\"postCode\">Cod.Postal</label>" +
+				"<input type=\"text\" class=\"form-control\" id=\"postCode\" value=\"" + service.Service.ContactInformation.ContactAddress.PostCode + " \">" +
+				"<label for=\"fax\">Fax</label>" +
+				"<input type=\"text\" class=\"form-control\" id=\"fax\" value=\"" + service.Service.ContactInformation.ContactFacsimileTelephone + " \">" +
+				"</div><div class=\"col-xs-6\">" +
+				"<label for=\"contactOrganization\">Organización</label>" +
+				"<input type=\"text\"  class=\"form-control\" id=\"contactOrganization\"  value=\"" + service.Service.ContactInformation.ContactPersonPrimary.ContactOrganization + " \">" +
+				"<label for=\"addressType\">Tipo de dirección</label>" +
+				"<input type=\"text\" class=\"form-control\" id=\"addressType\" value=\"" + service.Service.ContactInformation.ContactAddress.AddressType + " \">" +
+				"<label for=\"city\">Ciudad</label>" +
+				"<input type=\"text\" class=\"form-control\" id=\"city\" value=\"" + service.Service.ContactInformation.ContactAddress.City + " \">" +
+				"<label for=\"country\">Pais</label>" +
+				"<input type=\"text\" class=\"form-control\" id=\"country\" value=\"" + service.Service.ContactInformation.ContactAddress.Country + " \">" +
+				"<label for=\"contactPhone\">Teléfono</label>" +
+				"<input type=\"text\" class=\"form-control\" id=\"contactPhone\" value=\"" + service.Service.ContactInformation.ContactVoiceTelephone + " \">" +
+				"<label for=\"email\">E-mail</label>" +
+				"<input type=\"text\" class=\"form-control\" id=\"email\" value=\"" + service.Service.ContactInformation.ContactElectronicMailAddress + " \">" +
+				"</div>"
+				
+				//saca la ventana modal
 
-					//saca la ventana modal
-
-					$("#modalWms .modal-body").html(modalHTML);
+				$("#modalWms .modal-body").html(modalHTML);
 				$("#modalWms").modal("show");
+			    $('#modalWms').keypress(function(e){
+				    if(e.keyCode==13)
+				    	$('#enterWmsModal').click();
+			    });
 			$('.modal .modal-body').css('overflow-y', 'auto');
 			$('.modal .modal-body').css('max-height', $(window).height() * 0.8);
 		}
@@ -224,7 +231,10 @@ function appendModalLayer(nameMap, layer) {
 	$.ajax({
 		type : "GET",
 		dataType : 'text',
-		url : serverGS + "geoserver/" + mapName + "/wms?request=getCapabilities&service=wms",
+		url : serverGS + "geoserver/" + mapName + requestCapabilities,
+		/*headers: {
+                        "Authorization": "Basic "+auth
+                },*/
 		success : function (response) {
 			var service = parser.read(response);
 			var capabilities = service.Capability;
@@ -245,13 +255,18 @@ function appendModalLayer(nameMap, layer) {
 				"<select multiple class=\"form-control\" id=\"keywordLayerList\" tabindex=\"1\">"
 				for (var i = 0; i < pickLayer.KeywordList.length; i++)
 					modalHTML += "<option value=\"" + pickLayer.KeywordList[i] + "\">" + pickLayer.KeywordList[i] + "</option>"
-					modalHTML += "</select>" +
-					"<button onclick='delKeyword()' id=\"delKeyword\" class=\"btn btn-info btn-block\" style=\"padding:0;\" >Eliminar palabra clave</button>" +
-					"<input type=\"text\"  id=\"keywordLayer\" style=\"width:100%; border-radius: 7px; \"/>" +
-					"<button onclick='addKeyword()' id=\"addKeyword\" class=\"btn btn-info btn-block\" style=\"padding:0;\" >Añadir palabra clave</button>" +
-					"</div>"
+				modalHTML += "</select>" +
+				"<button onclick='delKeyword()' id=\"delKeyword\" class=\"btn btn-info btn-block\" style=\"padding:0;\" >Eliminar palabra clave</button>" +
+				"<input type=\"text\"  id=\"keywordLayer\" style=\"width:100%; border-radius: 7px; \"/>" +
+				"<button onclick='addKeyword()' id=\"addKeyword\" class=\"btn btn-info btn-block\" style=\"padding:0;\" >Añadir palabra clave</button>" +
+				"</div>"
 
-					$("#modalLayer .modal-body").html(modalHTML);
+				$("#modalLayer .modal-body").html(modalHTML);
+				$("#modalLayer").modal("show");
+			    $('#modalLayer').keypress(function(e){
+				    if(e.keyCode==13)
+				    	$('#enterLayerModal').click();
+			    });
 				$("#modalLayer").modal("show");
 			$('.modal .modal-body').css('overflow-y', 'auto');
 			$('.modal .modal-body').css('max-height', $(window).height() * 0.8);
@@ -326,7 +341,10 @@ function appendModalStyles(nameMap, layer) {
 	$.ajax({
 		type : "GET",
 		dataType : 'text',
-		url : serverGS + "geoserver/" + mapName + "/wms?request=getCapabilities&service=wms",
+		url : serverGS + "geoserver/" + mapName + requestCapabilities,
+		/*headers: {
+                        "Authorization": "Basic "+auth
+                },*/
 		success : function (response) {
 			var service = parser.read(response);
 			var capabilities = service.Capability;
@@ -338,10 +356,11 @@ function appendModalStyles(nameMap, layer) {
 				}
 			}
 			defaultStyle = pickLayer.Style[0].Name;
+			var urlWms = serverGS + "geoserver/" + mapName + "/wms";
 			var srcStyle = pickLayer.Style[0].LegendURL[0].OnlineResource;
 			var valueOpacity = globalLayer.getOpacity();
 			var modalHTML = "<label for=\"defaultStyle\">Estilo por defecto </label>" +
-				"<div><img id='legendStyle' src=\"" + srcStyle + "\" /></div>" +
+				"<div><img id='legendStyle' src='" + urlWms + "?REQUEST=GetLegendGraphic&VERSION=1.0.0&FORMAT=image/png&WIDTH=20&HEIGHT=20&LAYER=" + pickLayer.Name + "&LEGEND_OPTIONS=forceLabels:on'  /></div>" +
 				"<input type=\"text\" readonly  class=\"form-control\" id=\"defaultStyle\" value=\"" + pickLayer.Style[0].Name + "\">" +
 				"<label for=\"opacityBar\">Transparencia</label>" +
 				"<input class='opacity' id=\"opacityBar\" value=\"" + valueOpacity + "\" type='range' min='0' max='1' step='0.01'/>" +
@@ -352,7 +371,7 @@ function appendModalStyles(nameMap, layer) {
 					styleSrc += "<input type=\"hidden\" id=\"" + pickLayer.Style[i].Name + "\" value=\"" + pickLayer.Style[i].LegendURL[0].OnlineResource + "\" \>";
 				}
 				modalHTML += "</select><div id=\"styleSrc\">" + styleSrc + "</div>" +
-				"<button onclick='selectStyle()' id=\"selectStyle\" class=\"btn btn-info btn-block\" style=\"padding:0;\" >Seleccionar estilo</button>" +
+				"<button onclick='selectStyle()' id=\"selectStyle\" class=\"btn btn-success\" style=\"padding:5px; width:50%;\" >Seleccionar estilo</button><button onclick=\"removeStyle('"+layerName+"')\" id=\"removeStyle\" class=\"btn btn-danger\" style=\"padding:5px; width: 50%;\" >Eliminar estilo</button>" +
 				"<label for=\"inputSld\">Carga un archivo SLD</label>" +
 				"<input id=\"inputSld\" name=\"inputSld\" type=\"file\" class=\"file-loading\">" +
 				"<div id=\"buttonStyles\"></div>" +
@@ -398,7 +417,10 @@ function getStyleSrc(styleName, layerName) {
 	$.ajax({
 		type : "GET",
 		dataType : 'text',
-		url : serverGS + "geoserver/" + mapName + "/wms?request=getCapabilities&service=wms",
+		url : serverGS + "geoserver/" + mapName + requestCapabilities,
+		/*headers: {
+                        "Authorization": "Basic "+auth
+                },*/
 		success : function (response) {
 			var service = parser.read(response);
 			for (var i = 0; i < service.Capability.Layer.Layer.length; i++) {
@@ -412,6 +434,39 @@ function getStyleSrc(styleName, layerName) {
 			}
 		}
 	})
+}
+
+function removeStyle(layerName){
+	var removeStyle = $("#styleList option:selected").val();
+	var defaultStyle= $("#defaultStyle").val();
+	if(removeStyle=="line" || removeStyle=="point" || removeStyle=="polygon" || removeStyle==defaultStyle)
+		alert("No se pueden borrar los estilos por defecto");
+	else{
+		var r = confirm("Esta seguro que quiere borrar el estilo: "+removeStyle+".");
+		if (r == true) {
+			$.ajax({
+				type : "POST",
+				url : apiPath + 'apiGeoserver.php',
+				data : {
+					tag : "removeStyle",
+					styleName: removeStyle,
+					layerName: layerName,
+					mapName : map.name
+				},
+				success : function (response) {
+					if(response==""){
+						console.log("se ha borrado correctamente");
+						$("#styleList option:selected").remove();
+					}
+					else
+						console.log(response);
+				},
+				error : function (error) {
+					alert("Error al borrar estilo : " + error);
+				}
+			});
+		}
+	}
 }
 
 function selectStyle() {
@@ -431,7 +486,6 @@ function setOpacity() {
 function updateStyle() {
 	var newDefaultStyle = document.getElementById("defaultStyle").value;
 	setOpacity();
-
 	if (defaultStyle != newDefaultStyle) {
 		$.ajax({
 			type : "POST",
@@ -443,6 +497,9 @@ function updateStyle() {
 				styleName : newDefaultStyle,
 			},
 			success : function (response) {
+				if (response != "")
+					alert(response);
+
 				globalLayer.getSource().updateParams({
 					'LAYERS' : map.name + ":" + globalLayer.name,
 					'TILED' : true,
@@ -497,6 +554,10 @@ function editWmsList() {
 	$("#modalWmsList .modal-body").empty();
 	$("#modalWmsList .modal-body").append(htmlModal);
 	$("#modalWmsList").modal("show");
+    $('#modalWmsList').keypress(function(e){
+	    if(e.keyCode==13)
+	    	$('#enterWMsListModal').click();
+    });
 	$.ajax({
 		type : "POST",
 		url : apiPath + "apiDatabase.php",

@@ -9,17 +9,17 @@ class ApiRest {
 	/**
 	 * @var string
 	 * Url que apunta a Geoserver
-     */
+         */
 	var $serverUrl = '';
 	/**
 	 * @var string
 	 * Usuario de Geoserver con el que se ejecutarán las acciones.
-     */
+         */
 	var $username = '';
 	/**
 	 * @var string
 	 * Contraseña del usuario.
-     */
+         */
 	var $password = '';
 
 // Internal stuff
@@ -28,7 +28,7 @@ class ApiRest {
 	 * @param $serverUrl
 	 * @param string $username
 	 * @param string $password
-     */
+         */
 	public function __construct($serverUrl, $username = '', $password = '') {
 		if (substr($serverUrl, -1) !== '/') $serverUrl .= '/';
 		$this->serverUrl = $serverUrl;
@@ -121,7 +121,8 @@ class ApiRest {
 	 * @return mixed|string	Devuelve una String con el resultado de la petición
      */
 	public function createWorkspace($workspaceName) {
-		return $this->runApi('workspaces', 'POST', '<workspace><name>'.htmlentities($workspaceName, ENT_COMPAT).'</name></workspace>');
+		//return $this->runApi('workspaces', 'POST', '<workspace><name>'.htmlentities($workspaceName, ENT_COMPAT).'</name></workspace>');
+		return $this->runApi('workspaces', 'POST', '<workspace><name>'.$workspaceName.'</name></workspace>');
 	}
 
 	/**
@@ -148,7 +149,7 @@ class ApiRest {
 		//Eliminar datastore/wmsstore
 		//$this->delDatastore($workspaceName, $datastoreName, $layerName);
 		//$this->delWmsstore($workspaceName, $wmsstoreName);
-		return $this->runApi('workspaces/'.urlencode($workspaceName), 'DELETE');
+		return $this->runApi('workspaces/'.urlencode($workspaceName).'.xml', 'DELETE');
 	}
 
 	/**
@@ -264,7 +265,7 @@ class ApiRest {
 				$this->delLayer($workspaceName, $datastoreName, $layer->name);
 		}
 		//Borrado del datastore
-		return $this->runApi('workspaces/'.urlencode($workspaceName).'/datastores/'.urlencode($datastoreName), 'DELETE');
+		return $this->runApi('workspaces/'.urlencode($workspaceName).'/datastores/'.urlencode($datastoreName).'.xml', 'DELETE');
 	}
 
 	/**
@@ -327,7 +328,7 @@ class ApiRest {
 				$this->delWmsLayer($workspaceName, $wmsstoreName, $layer->name);
 		}
 		//Borrado del wmsdatastore
-		return $this->runApi('workspaces/'.urlencode($workspaceName).'/wmsstores/'.urlencode($wmsstoreName), 'DELETE');
+		return $this->runApi('workspaces/'.urlencode($workspaceName).'/wmsstores/'.urlencode($wmsstoreName).'.xml', 'DELETE');
 	}
 
 	/**
@@ -381,6 +382,7 @@ class ApiRest {
 		$srs="";
 		if($proj!=null)
 			$srs='<srs>EPSG:'.$proj.'</srs>';
+		//return $srs;
 		//else
 			//$srs='<srs>EPSG:23030</srs>';
 		//name es el nombre de la capa para geoserver
@@ -404,14 +406,14 @@ class ApiRest {
 	 * @param $datastoreName
 	 * @param $layerName
 	 * @return mixed|string
-     */
+	 */
 	public function delLayer($workspaceName, $datastoreName, $layerName) {
 		$result='';
 		//Lista de estilos
 		$styleList=$this->listStyles($workspaceName,$layerName);
 		//Borrado de la capa en Geoserver
-		$result=$this->runApi('layers/'.urlencode($layerName), 'DELETE');
-		$result=$result.$this->runApi('workspaces/'.urlencode($workspaceName).'/datastores/'.urlencode($datastoreName).'/featuretypes/'.urlencode($layerName), 'DELETE');
+		$result=$this->runApi('layers/'.urlencode($layerName).'.xml', 'DELETE');
+		$result=$result.$this->runApi('workspaces/'.urlencode($workspaceName).'/datastores/'.urlencode($datastoreName).'/featuretypes/'.urlencode($layerName).'.xml', 'DELETE');
 
 		//Borrado de los estilos asociados
 		if($styleList->styles!=null){
@@ -550,7 +552,7 @@ class ApiRest {
 	 * @return mixed
      */
 	public function delLayerGroup($workspaceName, $groupName){
-		return json_decode($this->runApi('workspaces/'.urlencode($workspaceName).'/layergroups/'.urlencode($groupName), 'DELETE'));
+		return json_decode($this->runApi('workspaces/'.urlencode($workspaceName).'/layergroups/'.urlencode($groupName).'.xml', 'DELETE'));
 	}
 
 	/**
@@ -571,15 +573,15 @@ class ApiRest {
 				foreach ($published as $ft){
 					array_push($aux,$ft->name);
 					$layersXml=$layersXml.'<layer>'.htmlentities($workspaceName.':'.$ft->name, ENT_COMPAT).'</layer>';
-	    			$stylesXml=$stylesXml.'<style></style>';
+		    			$stylesXml=$stylesXml.'<style></style>';
 				};
 			}
 		}
 
 		if(!in_array($layerName, $aux, true)){
-    		$layersXml=$layersXml.'<layer>'.htmlentities($workspaceName.':'.$layerName, ENT_COMPAT).'</layer>';
-    		$stylesXml=$stylesXml.'<style></style>';
-    	}
+	    		$layersXml=$layersXml.'<layer>'.htmlentities($workspaceName.':'.$layerName, ENT_COMPAT).'</layer>';
+    			$stylesXml=$stylesXml.'<style></style>';
+    		}
 
 		return $this->runApi('workspaces/'.urlencode($workspaceName).'/layergroups/'.urlencode($groupName), 'PUT',
 			  '<layerGroup>
@@ -683,7 +685,7 @@ class ApiRest {
      */
 	public function addStyleToLayer($layerName, $styleName, $workspaceName) {
 		$xml="";
-		if($styleName=="point"||$styleName=="line"||$styleName=="polygon")
+		if($styleName=="point"||$styleName=="line"||$styleName=="polygon"||$styleName=="generic")
 			$xml='<style><name>'.htmlentities($styleName, ENT_COMPAT).'</name></style>';
 		else
 			$xml='<style><name>'.htmlentities($workspaceName, ENT_COMPAT).':'.htmlentities($styleName, ENT_COMPAT).'</name></style>';
@@ -699,11 +701,11 @@ class ApiRest {
      */
 	public function defaultStyleToLayer($layerName, $styleName, $workspaceName) {
 		$xml="";
-		if($styleName=="point"||$styleName=="line"||$styleName=="polygon")
+		if($styleName=="point"||$styleName=="line"||$styleName=="polygon"||$styleName=="generic")
 			$xml='<layer><defaultStyle><name>'.htmlentities($styleName, ENT_COMPAT).'</name></defaultStyle></layer>';
 		else
 			$xml='<layer><defaultStyle><name>'.htmlentities($workspaceName, ENT_COMPAT).':'.htmlentities($styleName, ENT_COMPAT).'</name></defaultStyle></layer>';
-		return $this->runApi('layers/'.urlencode($workspaceName).':'.urlencode($layerName), 'PUT', $xml);
+		return $this->runApi('layers/'.urlencode($workspaceName).':'.urlencode($layerName).'.xml', 'PUT', $xml);
 	}
 
 	/**
@@ -713,6 +715,8 @@ class ApiRest {
 	 * @return mixed|string
      */
 	public function delStyle($styleName,$workspaceName) {
+		if($styleName=="point"||$styleName=="line"||$styleName=="polygon"||$styleName=="generic")
+			return "";
 		return $this->runApi('styles/'.urlencode($workspaceName).':'.htmlentities($styleName, ENT_COMPAT).'/styles', 'DELETE');
 	}
 
@@ -959,6 +963,13 @@ class ApiRest {
 	}
 
 	/**
-	 * Privatiza o (despublica) un mapa
-	 */
+	 * Elimina un estilo asignado a una capa.
+	 * @param $styleXml
+	 * @param $layerName	 
+	 * @param $workspaceName
+	 * @return mixed|string
+     */
+	public function unasignStyle($stylesXml,$layerName,$workspaceName) {
+		return $this->runApi('layers/'.urlencode($workspaceName).':'.urlencode($layerName), 'PUT', $stylesXml);
+	}
 }

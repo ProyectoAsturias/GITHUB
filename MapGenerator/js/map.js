@@ -11,10 +11,8 @@ function initMap() {
 	var center = getCenter();
 	var zoom = 7;
 
-	//console.log(mapName);
-	$("#editWmsButton").append("<h2>" + mapName + "</h2>");
-	//console.log(userName);
-	$("#userName").append(userName);
+	$("#mapNameStyle").append("<h2>" + mapName + "</h2>");
+	$("#mapNameStyle").prop('title', ""+mapName+"");
 
 	map = new ol.Map({
 			target : 'olmap',
@@ -34,20 +32,20 @@ function initMap() {
 /**
  * Obtiene los municipios del mapa y dibuja el arbol de capas.
  **/
-function getTown(){
+function getTown() {
 	$.ajax({
-		type: "POST",
+		type : "POST",
 		url : "../../Tables/php/userContent.php",
 		data : {
-			tag:"getTown",
+			tag : "getTown",
 			mapName : map.name
 		},
-		success: function (response) {
-			town=response;
+		success : function (response) {
+			town = response;
 			drawTree();
 		},
-		error:function(error){
-			alert("Error al tomar el punto central de la entidad : "+error);
+		error : function (error) {
+			alert("Error al tomar el punto central de la entidad : " + error);
 		}
 	});
 }
@@ -76,9 +74,20 @@ function getCenter() {
 /**
  * Añade una capa sobre el objeto map
  **/
-function addLayer(name, wms, style) {
-	//console.log(map.name+":"+name);
-	//console.log(wms);
+function addLayer(name, wms, style, bBox) {
+	var extent = ol.extent.applyTransform(bBox, ol.proj.getTransform("EPSG:4326", "EPSG:3857"));
+	var projExtent = ol.proj.get('EPSG:3857').getExtent();
+	var startResolution = ol.extent.getWidth(projExtent) / 1024;
+	var resolutions = new Array(22);
+	for (var i = 0, ii = resolutions.length; i < ii; ++i) {
+		resolutions[i] = startResolution / Math.pow(2, i);
+	}
+	var tileGrid = new ol.tilegrid.TileGrid({
+			extent : extent,
+			resolutions : resolutions,
+			tileSize : [1024, 1024]
+		});
+
 	var source = new ol.source.TileWMS({
 			preload : Infinity,
 			url : wms,
@@ -86,7 +95,9 @@ function addLayer(name, wms, style) {
 				'LAYERS' : name,
 				'TILED' : true,
 				'STYLES' : style,
-			}
+			},
+			serverType : 'geoserver',
+			tileGrid : tileGrid
 		})
 		var layer = new ol.layer.Tile({
 			source : source
@@ -224,8 +235,11 @@ function importWms(wms) {
 		type : "GET",
 		jsonp : "callback",
 		dataType : 'text',
-		url : wms + '?request=getCapabilities&service=wms',
+		url : wms + requestCapabilities,
 		crossDomain : true,
+		/*headers: {
+                        "Authorization": "Basic "+auth
+                },*/
 		success : function (response) {
 			//console.log(response)
 			var parser = new ol.format.WMSCapabilities();
@@ -235,6 +249,7 @@ function importWms(wms) {
 			title = title.replace(/ /gi, '_');
 			var modalList = "";
 			$("#modalLayersWms .modal-header").empty().append("<h4 class=\"modal-title\">Seleccione capas a importar</h4>");
+			modalList += "<label><input type=\"checkbox\" value=0 class=\"checkboxLayers\" onClick=\"selectAll(this)\"></input>Todas</label></br>";
 			for (var i = 0; i < capabilities.Layer.Layer.length; i++) {
 				modalList += "<label><input type=\"checkbox\" value=\"" + capabilities.Layer.Layer[i].Name + "\" class=\"checkboxLayers\"></input>  " + capabilities.Layer.Layer[i].Name + "</label></br>";
 			}
@@ -253,7 +268,7 @@ function importWms(wms) {
 function importLayersWms(wms, title) {
 	var listLayers = [];
 	$(".checkboxLayers").each(function () {
-		if ($(this).is(':checked'))
+		if ($(this).is(':checked') && $(this).val() != "0")
 			listLayers.push($(this).val());
 	});
 	$.ajax({
@@ -283,8 +298,9 @@ function importMap() {
 	$("#modalLayersWms .modal-body").empty();
 	if ($("#selectMap").val() != null) {
 		var id = $("#selectMap").val();
+		var name = $("#selectMap option:selected").text();
 		$("#modalCounterLayers .modal-header").empty().append(" <button type=\"button\" class=\"close\" data-dismiss=\"modal\">&times;</button><h4 class=\"modal-title\">Importando Mapa<div id=\"loadingGif\"></div></h4>");
-		console.log("Importando map: #" + id);
+		console.log("Importando map: " + name + " #" + id);
 		$.ajax({
 			type : "POST",
 			url : apiPath + "apiLocalgis.php",
@@ -299,13 +315,14 @@ function importMap() {
 				var idList = "";
 				var layerList = JSON.parse(response);
 				maxLayers = layerList.length;
+				if (maxLayers > 1)
+					modalList += "<label><input type=\"checkbox\" value=0 class=\"checkboxLayers\" onClick=\"selectAll(this)\"></input>Todas</label></br>";
 				for (var i = 0; i < layerList.length; i++) {
-
 					modalList += "<label><input type=\"checkbox\" value=\"" + layerList[i].name + "\" class=\"checkboxLayers\"></input>  " + layerList[i].name + "</label></br>";
 					var name = layerList[i].name.split(" ").join("_");
 					idList += "<input type=\"hidden\" id=\"id" + name + "\" value=\"" + layerList[i].id + "\" />";
 				}
-				var modalFooter = "<button type=\"button\" onclick=\"importLayersMap('" + id + "')\" class=\"btn btn-success\" data-dismiss=\"modal\">Importar Capas</button>" +
+				var modalFooter = "<button type=\"button\" onclick=\"importLayersMap('" + id + "','" + name + "')\" class=\"btn btn-success\" data-dismiss=\"modal\">Importar Capas</button>" +
 					"<button type=\"button\" class=\"btn btn-default\" data-dismiss=\"modal\">Cerrar</button>";
 				$("#modalLayersWms .modal-body").append(modalList);
 				$("#modalLayersWms .modal-body").append(idList);
@@ -341,19 +358,18 @@ function importMap() {
 				})
 			}
 		})
-	}
-	else
-		console.log("Selector de m vacío.");
+	} else
+		console.log("Selector de mapas vacío.");
 }
 
-function importLayersMap(id) {
+function importLayersMap(id, name) {
 	var listLayers = [];
 	var j = 0;
-	$("#modalCounterLayers .modal-header").empty().append(" <button type=\"button\" class=\"close\" data-dismiss=\"modal\">&times;</button><h4 class=\"modal-title\">Importando Mapa<div id=\"loadingGif\"></div></h4>");
+	$("#modalCounterLayers .modal-header").empty().append(" <button type=\"button\" class=\"close\" data-dismiss=\"modal\">&times;</button><h4 class=\"modal-title\">Importando Mapa " + name + "<div id=\"loadingGif\"></div></h4>");
 	layersCounter = 1;
 	var modalList = "";
 	$(".checkboxLayers").each(function () {
-		if ($(this).is(':checked')) {
+		if ($(this).is(':checked') && $(this).val() != "0") {
 			listLayers.push($(this).val());
 			j++;
 			//console.log(j)
@@ -400,10 +416,10 @@ function importOrtofoto(name, wms) {
 			if (response == "")
 				$("#layerName" + layersCounter + "").empty().append("<span class='glyphicon glyphicon-ok-sign' style='color:green;'></span>");
 			else
-				alert("La capa "+name+" no ha podido cargarse. \n ERROR:"+response);
+				alert("La capa " + name + " no ha podido cargarse. \n ERROR:" + response);
 			layersCounter++;
 			if (layersCounter > maxLayers)
-					$("#modalCounterLayers").modal("hide");
+				$("#modalCounterLayers").modal("hide");
 		},
 		error : function (error) {
 			console.log("Error al cargar el mapa: ".error);
@@ -414,11 +430,13 @@ function importOrtofoto(name, wms) {
 /**
  * Carga la familia completa en OpenLayers
  **/
-function importFamily(familyId) {
-	if ($("#selectFamily").val() != null || familyId != null) {
-		var id = $("#selectFamily").val() || familyId;
-		$("#modalCounterLayers .modal-header").empty().append(" <button type=\"button\" class=\"close\" data-dismiss=\"modal\">&times;</button><h4 class=\"modal-title\">Importando Familia<div id=\"loadingGif\"></div></h4>");
-		console.log("Importando familia: #" + id);
+function importFamily() {
+	$("#modalLayersWms .modal-body").empty();
+	if ($("#selectFamily").val() != null) {
+		var id = $("#selectFamily").val(); ;
+		var nameFamily = $("#selectFamily option:selected").text();
+		$("#modalCounterLayers .modal-header").empty().append(" <button type=\"button\" class=\"close\" data-dismiss=\"modal\">&times;</button><h4 class=\"modal-title\">Importando Familia" + name + "<div id=\"loadingGif\"></div></h4>");
+		//console.log("Importando familia: " + name + " #" + id);
 		$.ajax({
 			type : "POST",
 			url : apiPath + "apiLocalgis.php",
@@ -428,22 +446,24 @@ function importFamily(familyId) {
 			},
 			success : function (response) {
 				//console.log(response);
-				layersCounter = 1;
-				var modalList = "";
+				$("#modalLayersWms .modal-header").empty().append("<h4 class=\"modal-title\">Seleccione capas a importar</h4>");
+				var modalList = "<h4>Capas</h4>";
+				var idList = "";
 				var layerList = JSON.parse(response);
 				maxLayers = layerList.length;
+				if (maxLayers > 1)
+					modalList += "<label><input type=\"checkbox\" value=0 class=\"checkboxLayers\" onClick=\"selectAll(this)\"></input>Todas</label></br>";
 				for (var i = 0; i < layerList.length; i++) {
-					j = i + 1;
-					modalList += "<label for=\"layerName" + j + "\">" + layerList[i].name + "</label><div id=\"layerName" + j + "\" class=\"updatedLayer\"><span class='glyphicon glyphicon-remove-sign' style='color:red;'></span></div></br>";
+					modalList += "<label><input type=\"checkbox\" value=\"" + layerList[i].name + "\" class=\"checkboxLayers\"></input>  " + layerList[i].name + "</label></br>";
+					var name = layerList[i].name.split(" ").join("_");
+					idList += "<input type=\"hidden\" id=\"id" + name + "\" value=\"" + layerList[i].id + "\" />";
 				}
-				$("#modalCounterLayers .modal-body").empty();
-				$("#modalCounterLayers .modal-body").append(modalList);
-				$("#modalCounterLayers").modal({
-					backdrop : "static"
-				});
-				for (var i = 0; i < layerList.length; i++) {
-					importLayer(layerList[i]);
-				}
+				var modalFooter = "<button type=\"button\" onclick=\"importLayersFamily('" + id + "','" + nameFamily + "')\" class=\"btn btn-success\" data-dismiss=\"modal\">Importar Capas</button>" +
+					"<button type=\"button\" class=\"btn btn-default\" data-dismiss=\"modal\">Cerrar</button>";
+				$("#modalLayersWms .modal-body").append(modalList);
+				$("#modalLayersWms .modal-body").append(idList);
+				$("#modalLayersWms .modal-footer").empty().append(modalFooter);
+				$("#modalLayersWms").modal("show");
 			},
 			error : function (error) {
 				console.log("Error al cargar la familia de capas: ".error);
@@ -451,6 +471,35 @@ function importFamily(familyId) {
 		});
 	} else {
 		console.log("Selector de familias vacío.");
+	}
+}
+
+function importLayersFamily(id, name) {
+	var listLayers = [];
+	var j = 0;
+	$("#modalCounterLayers .modal-header").empty().append(" <button type=\"button\" class=\"close\" data-dismiss=\"modal\">&times;</button><h4 class=\"modal-title\">Importando Familia " + name + "<div id=\"loadingGif\"></div></h4>");
+	layersCounter = 1;
+	var modalList = "";
+	$(".checkboxLayers").each(function () {
+		if ($(this).is(':checked') && $(this).val() != "0") {
+			listLayers.push($(this).val());
+			j++;
+			//console.log(j)
+			modalList += "<label for=\"layerName" + j + "\">" + $(this).val() + "</label><div id=\"layerName" + j + "\" class=\"updatedLayer\"><span class='glyphicon glyphicon-remove-sign' style='color:red;'></span></div></br>";
+		}
+	});
+	$("#modalCounterLayers .modal-body").empty();
+	$("#modalCounterLayers .modal-body").append(modalList);
+	$("#modalCounterLayers").modal({
+		backdrop : "static"
+	});
+	for (var i = 0; i < listLayers.length; i++) {
+		var name = listLayers[i].split(" ").join("_")
+			var layerImport = {
+			name : listLayers[i],
+			id : $("#id" + name).val()
+		}
+		importLayer(layerImport);
 	}
 }
 
@@ -520,7 +569,7 @@ function clearLayersInfo() {
 			mapName : map.name
 		},
 		success : function (response) {
-			console.log(response);
+			//console.log(response);
 		},
 		error : function (error) {
 			console.log("Error al guardar la información en MAPS: ".error);
@@ -533,8 +582,7 @@ function clearLayersInfo() {
  * Carga la capa al ws
  **/
 function importLayer(layer, mapId) {
-	//console.log("AXO AXO");
-	//console.log(mapId);
+	console.log(mapId);
 	mapId || (mapId = -1);
 	var id;
 	var name;
@@ -542,14 +590,20 @@ function importLayer(layer, mapId) {
 		id = layer.id;
 		name = layer.name;
 	} else {
-		layersCounter = 1;
-		id = $("#selectLayer").val();
-		name = $("#selectLayer").find('option:selected').attr("name");
-		$("#modalCounterLayers .modal-header").empty().append("<h4 class=\"modal-title\">Importando Familia</h4>");
-		var modalList = "<label for=\"layerName1\">" + name + "</label><div id=\"layerName1\" class=\"updatedLayer\"><span class='glyphicon glyphicon-remove-sign' style='color:red;'></span></div></br>";
-		$("#modalCounterLayers .modal-body").empty();
-		$("#modalCounterLayers .modal-body").append(modalList);
-		$("#modalCounterLayers").modal({backdrop: "static"});
+		if ($("#selectLayer").val() != null) {
+			layersCounter = 1;
+			id = $("#selectLayer").val();
+			name = $("#selectLayer").find('option:selected').attr("name");
+			$("#modalCounterLayers .modal-header").empty().append("<button type=\"button\" class=\"close\" data-dismiss=\"modal\">&times;</button><h4 class=\"modal-title\">Importando Capa<div id=\"loadingGif\"></div></h4>");
+			var modalList = "<label for=\"layerName1\">" + name + "</label><div id=\"layerName1\" class=\"updatedLayer\"></div></br>";
+			$("#modalCounterLayers .modal-body").empty();
+			$("#modalCounterLayers .modal-body").append(modalList);
+			$("#modalCounterLayers").modal({
+				backdrop : "static"
+			});
+		} else {
+			console.log("Selector de capas vacío.");
+		}
 	}
 	if (id != null) {
 		$.ajax({
@@ -564,14 +618,27 @@ function importLayer(layer, mapId) {
 				town : town
 			},
 			success : function (response) {
-				console.log(response);
+				//console.log(response);
 				if (response == "")
 					$("#layerName" + layersCounter + "").empty().append("<span class='glyphicon glyphicon-ok-sign' style='color:green;'></span>");
-				else
-					alert("La capa "+name+" no ha podido cargarse. \n ERROR:"+response);
+				else{
+					//console.log(response);
+					$("#layerName" + layersCounter + "").empty().append("<a id='link"+layer.id+"'>Informe de errores </a><span class='glyphicon glyphicon-remove-sign' style='color:red;'></span>");
+					$("#link"+layer.id).on('click', function() {
+						var modalErrorInfo = "<div id='errorInfo'><h3>Infome de error "+layer.name+":</h3></br><textbox>"+response+"</textbox></div>";
+	                                        $("#modalCounterLayers .modal-errors").empty().append(modalErrorInfo);
+					});
+					//TRATAMIENTO DE RESPUESTAS
+					//+="<bold>"+layer.name+": </bold>"+response+"</br>";
+					//alert("La capa " + name + " no ha podido cargarse. \n ERROR:" + response);
+				}
 				layersCounter++;
-				if (layersCounter > maxLayers)
-						$("#modalCounterLayers").modal("hide");
+				if (layersCounter > maxLayers){
+					//$("#modalCounterLayers").modal("hide");
+					$("#loadingGif").hide();
+		                        var modalFooter = "<button type=\"button\" class=\"btn btn-default\" data-dismiss=\"modal\">Cerrar</button>";
+		                        $("#modalCounterLayers .modal-footer").empty().append(modalFooter);
+				}
 				drawTree();
 			},
 			error : function (error) {
@@ -584,11 +651,18 @@ function importLayer(layer, mapId) {
 }
 
 function clearMap() {
-	console.log("ClearMap");
+	$("#modalLayerClear .modal-header").empty().append(" <button type=\"button\" class=\"close\" data-dismiss=\"modal\">&times;</button><h4 class=\"modal-title\">Eliminando capas<div id=\"loadingGif\"></div></h4>");
+	$("#modalLayerClear").modal({
+		backdrop : "static"
+	});
+	//$("#modalLayerClear").modal("show");
+
 	var listLayers = map.getLayers();
 	listLayers.forEach(function (layer) {
 		removeLayer(layer, function (response) {
-			if (map.getLayers().getArray().length == 1) {
+			console.log(map.getLayers().getArray().length);
+			if (map.getLayers().getArray().length == 0) {
+				$("#modalLayerClear").modal("hide");
 				success("El contenido del mapa ha sido eliminado.");
 				drawTree();
 			}
@@ -618,5 +692,12 @@ function addLayerWms(name, wms) {
 function setLoadedBaseLayer() {
 	if (loadedBaselayer != undefined) {
 		baseLayer(loadedBaselayer);
+	}
+}
+
+function selectAll(source) {
+	checkboxes = document.getElementsByClassName('checkboxLayers');
+	for (var i = 0, n = checkboxes.length; i < n; i++) {
+		checkboxes[i].checked = source.checked;
 	}
 }

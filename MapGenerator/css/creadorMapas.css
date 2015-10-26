@@ -35,13 +35,26 @@
     text-align: center;
 }
 
-#editWmsButton{
+#mapNameStyle{
     height: 6vh;
     width:95%;
     margin-left:2.5%;
     margin-right:2.5%;
     min-height: 7ex;
     background-color:#4E7AB1;
+    border-radius:7px;
+    overflow:hidden;
+    text-align:center;
+    border:solid 2px black;
+    padding: 1ex;
+}
+
+#editWmsButton{
+    height: 3.2vh;
+    width:95%;
+    margin-left:2.5%;
+    margin-right:2.5%;
+    min-height: 4.2ex;
     border-radius:7px;
     overflow:hidden;
     text-align:center;
@@ -60,7 +73,7 @@ h2{
 }
 
 #layersList{
-    height: 58vh;
+    height: 55vh;
     min-height:484px;
     overflow:auto;
 }
@@ -79,10 +92,10 @@ h2{
 }
 
 #contenido {
-     overflow: hidden;
-     width: auto;
-     padding-left: 10px;
- }
+    overflow: hidden;
+    width: auto;
+    padding-left: 10px;
+}
 
 #wrapper {
     float: left;

@@ -178,6 +178,32 @@
     z-index: 1;
 }
 
+.vertical{
+    /* Permalink - use to edit and share this gradient: http://colorzilla.com/gradient-editor/#bdf3fd+0,a2daf5+45,a2daf5+68,90bcea+76,90bae4+100,a9d2f3+100,b8e1fc+100 */
+    background: #bdf3fd; /* Old browsers */
+    background: -moz-linear-gradient(top,  #bdf3fd 0%, #a2daf5 45%, #a2daf5 68%, #90bcea 76%, #90bae4 100%, #a9d2f3 100%, #b8e1fc 100%); /* FF3.6+ */
+    background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#bdf3fd), color-stop(45%,#a2daf5), color-stop(68%,#a2daf5), color-stop(76%,#90bcea), color-stop(100%,#90bae4), color-stop(100%,#a9d2f3), color-stop(100%,#b8e1fc)); /* Chrome,Safari4+ */
+    background: -webkit-linear-gradient(top,  #bdf3fd 0%,#a2daf5 45%,#a2daf5 68%,#90bcea 76%,#90bae4 100%,#a9d2f3 100%,#b8e1fc 100%); /* Chrome10+,Safari5.1+ */
+    background: -o-linear-gradient(top,  #bdf3fd 0%,#a2daf5 45%,#a2daf5 68%,#90bcea 76%,#90bae4 100%,#a9d2f3 100%,#b8e1fc 100%); /* Opera 11.10+ */
+    background: -ms-linear-gradient(top,  #bdf3fd 0%,#a2daf5 45%,#a2daf5 68%,#90bcea 76%,#90bae4 100%,#a9d2f3 100%,#b8e1fc 100%); /* IE10+ */
+    background: linear-gradient(to bottom,  #bdf3fd 0%,#a2daf5 45%,#a2daf5 68%,#90bcea 76%,#90bae4 100%,#a9d2f3 100%,#b8e1fc 100%); /* W3C */
+    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#bdf3fd', endColorstr='#b8e1fc',GradientType=0 ); /* IE6-9 */
+
+
+    -webkit-border-radius: 15px;
+    -moz-border-radius: 15px;
+    border-radius: 15px;
+    width:70px;
+    height:46vh;
+    background-color:beige;
+    padding-left: 0;
+    padding-top: 26px;
+    position: absolute;
+    top: 250px;
+    left: 250px;
+    z-index: 1
+}
+
 .functionsBar .functionContainer{
     /*top: -5px !important;*/
     padding-bottom: 5px;
@@ -362,29 +388,28 @@
     background-image: url("../../Common/images/hideInterface-left.png");
 }
 
-
 #areaOverlay, #coordinatesOverlay{
-    background-color: white;
-    border-radius: 10px;
-    border: 1px solid black;
-    padding: 5px 10px;
+	background-color: white;
+	border-radius: 10px;
+	border: 1px solid black;
+	padding: 5px 10px;
 }
 
 
 #wmsImportWindow{
-    width:350px;
-    position: absolute;
-    top: 250px;
-    left: 50px;
-    opacity: 0.8;
-    filter: alpha(opacity=80); /* For IE8 and earlier */
+	width:350px;
+	position: absolute;
+	top: 250px;
+	left: 50px;
+	opacity: 0.8;
+	filter: alpha(opacity=80); /* For IE8 and earlier */
 }
 
 #drawModalWindow{
-    width:350px;
-    position: absolute;
-    top: 250px;
-    left: 50px;
-    opacity: 0.8;
-    filter: alpha(opacity=80); /* For IE8 and earlier */
+	width:350px;
+	position: absolute;
+	top: 250px;
+	left: 50px;
+	opacity: 0.8;
+	filter: alpha(opacity=80); /* For IE8 and earlier */
 }

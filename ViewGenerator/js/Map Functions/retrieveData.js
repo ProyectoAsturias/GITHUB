@@ -1,6 +1,8 @@
 var enabled = false;
 var layersNames=[];
 var activeFeature;
+var layersLength;
+var layersCounter;
 
 $(document).ready(function(){
     RetrieveEventHandler();
@@ -69,9 +71,16 @@ function retrieveData(evt) {
     map.addOverlay(overlay);
     overlay.setPosition(coord);
     $("#info").empty();
-    $("#info").append("<ul class=\"menu5 nav nav-pills\"  id=\"layersHeader\"></ul><div id=\"dataTable\" class=\"tab-content\"></div>");
+    $("#info").append("<ul class=\"menu5 nav nav-pills\"  id=\"layersHeader\" ><div><button type=\"button\" onclick='closeInfoWindow()' class=\"close\">&times;</button></div></ul><div id=\"dataTable\" class=\"tab-content\"></div>");
 
     var mapLayers = map.getLayers();
+    console.log(mapLayers.getArray());
+    if(mapLayers.getArray()[0].base)
+        layersCounter=1;
+    else
+        layersCounter=0;
+    layersLength=mapLayers.getLength();
+    
     for (var i = 0; i<mapLayers.getLength(); i++){
         if (!mapLayers.item(i).get("visible")) continue;
 
@@ -106,7 +115,12 @@ function getDataFromURL(url) {
  */
 
 function addDataToBeShown(features){
-    if (!features) return;
+    if (features==""){
+        layersCounter++;
+        if(layersCounter==layersLength)
+            $("#info").empty();
+        return;
+    }
     features.forEach(function (feature){
         //console.log(feature);
         var layerName=feature.id.split(".")[0];
@@ -117,11 +131,11 @@ function addDataToBeShown(features){
             if(layersNames.length==1){
                 $("#layersHeader").append("<li class=\"active\" id=\"layer"+layerName+"\"><a data-toggle=\"pill\" onclick=\"changePills('"+layerName+"')\" ><b>"+layerName+"</b></a>");
                 activeFeature=layerName;
-                var headTable="<table id=\""+layerName+"\" class=\"tab-pane fade in active\"><tr>";
+                var headTable="<table id=\"tableLayer"+layerName+"\" class=\"tab-pane fade in active\"><tr>";
             }
             else {
                 $("#layersHeader").append("<li id=\"layer"+layerName+"\"><a data-toggle=\"pill\" onclick=\"changePills('"+layerName+"')\"><b>"+layerName+"</b></a>");
-                var headTable="<table id=\""+layerName+"\" class=\"tab-pane fade\"><tr>";
+                var headTable="<table id=\"tableLayer"+layerName+"\" class=\"tab-pane fade\"><tr>";
             }
             $.each(feature.properties, function(key, value) {
                 headTable +="<th>"+key+"</th>";
@@ -134,7 +148,7 @@ function addDataToBeShown(features){
             bodyTable +="<td>"+value+"</td>";
         });
         bodyTable+="</tr>";
-        $("#"+layerName+"").append(bodyTable);
+        $("#tableLayer"+layerName+"").append(bodyTable);
     });
 }
 
@@ -144,4 +158,8 @@ function changePills(layerName){
     $("#"+activeFeature).removeClass("active in");
     $("#"+layerName).addClass("active in");
     activeFeature=layerName;
+}
+
+function closeInfoWindow(){
+    $("#info").empty();
 }

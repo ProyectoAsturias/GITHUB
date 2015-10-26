@@ -4,13 +4,13 @@
         <!-- Modal content-->
         <div class="modal-content">
             <div class="modal-header">
-                
+
             </div>
             <div class="modal-body">
 
             </div>
             <div class="modal-footer">
-                <button type="button" onclick="updateLayerInfo()" class="btn btn-success" data-dismiss="modal">Guardar</button>
+                <button type="button" id="enterLayerModal" onclick="updateLayerInfo()" class="btn btn-success" data-dismiss="modal">Guardar</button>
                 <button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button>
             </div>
         </div>
@@ -30,7 +30,7 @@
 
             </div>
             <div class="modal-footer">
-                <button type="button" onclick="updateWmsInfo()" class="btn btn-success" data-dismiss="modal">Guardar</button>
+                <button type="button" id="enterWmsModal" onclick="updateWmsInfo()" class="btn btn-success" data-dismiss="modal">Guardar</button>
                 <button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button>
             </div>
         </div>
@@ -47,10 +47,10 @@
                 <h4 class="modal-title">Seleccionar atributos</h4>
             </div>
             <div class="modal-body">
-                
+
             </div>
             <div class="modal-footer">
-                <button type="button" onclick="saveAttributes()" class="btn btn-success" data-dismiss="modal">Guardar</button>
+                <button type="button" id="enterAttributesModal" onclick="saveAttributes()" class="btn btn-success" data-dismiss="modal">Guardar</button>
                 <button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button>
             </div>
         </div>
@@ -63,13 +63,13 @@
         <!-- Modal content-->
         <div class="modal-content">
             <div class="modal-header">
-            
+
             </div>
             <div class="modal-body">
 
             </div>
             <div class="modal-footer">
-                <button type="button" onclick="updateStyle()" class="btn btn-success" data-dismiss="modal">Guardar</button>
+                <button type="button" id="enterStylesModal" onclick="updateStyle()" class="btn btn-success" data-dismiss="modal">Guardar</button>
                 <button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button>
             </div>
         </div>
@@ -89,12 +89,25 @@
 
             </div>
             <div class="modal-footer">
-                <button type="button" onclick="updateWmsList()" class="btn btn-success" data-dismiss="modal">Guardar</button>
+                <button type="button" id="enterWMsListModal" onclick="updateWmsList()" class="btn btn-success" data-dismiss="modal">Guardar</button>
                 <button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button>
             </div>
         </div>
     </div>
 </div>
+
+<!-- Modal eliminar capas-->
+<div id="modalLayerClear" class="modal fade" role="dialog">
+    <div class="modal-dialog">
+        <!-- Modal content-->
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">Eliminando capas</h4>
+            </div>
+        </div>
+    </div>
+</div>
+
 <!-- Modal  Contador de capas-->
 <div id="modalCounterLayers" class="modal fade" role="dialog">
     <div class="modal-dialog">
@@ -106,9 +119,17 @@
             <div class="modal-body">
 
             </div>
+	    <div class="modal-errors">
+
+            </div>
+      	    <div class="modal-footer">
+
+            </div>
+
         </div>
     </div>
 </div>
+
 <!-- Modal  selector capas Wms-->
 <div id="modalLayersWms" class="modal fade" role="dialog">
     <div class="modal-dialog">
@@ -121,7 +142,7 @@
 
             </div>
             <div class="modal-footer">
- 
+
             </div>
         </div>
     </div>

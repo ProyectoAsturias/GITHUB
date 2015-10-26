@@ -67,6 +67,17 @@ function makeToolsSortable(){
                  $(ui.item).remove();
         },
         stop: function(event, ui) {
+            if(ui.item[0].parentElement){
+                var funciones=ui.item[0].parentElement.children;
+                if(ui.item[0].parentElement.classList[2]=="horizontal"){
+                    if (funciones.length>13)
+                        funciones[13].remove();
+                }
+                else if(ui.item[0].parentElement.classList[2]=="vertical"){
+                        if (funciones.length>9)
+                            funciones[9].remove();         
+                }
+            }
             before.after(clone);
             //$(this).sortable('cancel');
         }

@@ -5,7 +5,7 @@
 
     if(isset($_POST["tag"])){
         session_start();
-        $dbConnection = new DBConnection("UserContent");
+        $dbConnection = new DBConnection(true);
         switch ($_POST["tag"]) {
             case "userMaps":
                 echo json_encode(downloadUserMaps($_SESSION["userName"]));
@@ -63,10 +63,14 @@
                 break;
 			case "getTown":
 				echo json_encode(getTown($_POST["mapName"]));
+				//echo json_encode(getTown($_POST["mapName"]));
 				break;
 			case "getVersionInfo":
 				echo json_encode(getVersionInfo());
 				break;
+			case "userActiveMaps":
+                echo json_encode(downloadUserActiveMaps($_SESSION["userName"]));
+               	break;
             default:
                 echo "Error userContent: Function ".$_POST["tag"]." don't exists.";
         }
@@ -119,7 +123,7 @@
     }
 
     function loadVisorContent($visorName){
-        $dbConnection = new DBConnection("UserContent");
+        $dbConnection = new DBConnection(true);
         $query = "SELECT content FROM public.\"Visors\" WHERE name='".$visorName."';";
         $result = pg_query($query) or die('Error: '.pg_last_error());
         $content=pg_fetch_all($result);
@@ -134,7 +138,7 @@
     }
 
     function deleteVisor($visorName){
-        $dbConnection = new DBConnection("UserContent");
+        $dbConnection = new DBConnection(true);
         $query = "DELETE FROM public.\"Visors\" WHERE name='".$visorName."'";
         $result = pg_query($query) or die('Error: '.pg_last_error());
 	$dbConnection->close();
@@ -188,7 +192,7 @@
     }
 
     function loadMapBaseLayer($mapName){
-        $dbConnection = new DBConnection("UserContent");
+        $dbConnection = new DBConnection(true);
         $query = "SELECT baselayer FROM public.\"Maps\" WHERE name='".$mapName."';";
         $result = pg_query($query) or die('Error: '.pg_last_error());
         $baseLayer=pg_fetch_all($result);
@@ -198,7 +202,7 @@
 	
 	function getTown($mapName){
 		$query = "SELECT town FROM public.\"Maps\" WHERE name='".$mapName."';";
-        $result = pg_query($query) or die('Error: '.pg_last_error());
+        	$result = pg_query($query) or die('Error: '.pg_last_error());
 		return json_decode(pg_fetch_row($result)[0]);
 	}
 	
@@ -207,5 +211,11 @@
         $result = pg_query($query) or die('Error: '.pg_last_error());
 		$info=pg_fetch_row($result);
 		return $info;
+	}
+	
+	function downloadUserActiveMaps($userName){
+		$query = "SELECT id, name, description, date_creation, \"layersInfo\", date_update, published, image, \"entityId\"  FROM public.\"Maps\" WHERE owner='".$userName."' AND published=true";
+		$result = pg_query($query) or die('Error: '.pg_last_error());
+		return pg_fetch_all($result);
 	}
 ?>

@@ -83,7 +83,7 @@ function addLayersAndGroupsFromWMS(WMSUrl){
         type: "GET",
         jsonp: "callback",
         dataType: 'text',
-        url: WMSUrl + '?request=getcapabilities&service=wms',
+        url: WMSUrl + requestCapabilities,
         crossDomain : true
     })
         .then(function(response) {
@@ -155,6 +155,22 @@ function addLayerToMap(layerIndex, WMSUrl){
     if (layersGroupedNames.indexOf(nombre) != -1){
         return;
     }
+
+
+    /*var projExtent = ol.proj.get('EPSG:25830').getExtent();
+    var startResolution = ol.extent.getWidth(projExtent) / 512;
+    var resolutions = new Array(22);
+    for (var i = 0, ii = resolutions.length; i < ii; ++i) {
+	resolutions[i] = startResolution / Math.pow(2, i);
+    }
+    var tileGrid = new ol.tilegrid.TileGrid({
+	//extent: [-13884991, 2870341, -7455066, 6338219],
+	resolutions: resolutions,
+	tileSize: [512, 512]
+    });*/
+
+
+
     var newlayer = new ol.layer.Tile({
         source: new ol.source.TileWMS({
             preload: Infinity,
@@ -162,7 +178,8 @@ function addLayerToMap(layerIndex, WMSUrl){
             serverType:'geoserver',
             params:{
                 'LAYERS':""+nombre+"", 'TILED':true
-            }
+            }/*,
+	    tileGrid: tileGrid*/
         })
     });
     newlayer.name = layersNames[layerIndex];

@@ -7,7 +7,7 @@ function attachMapEventHandler(){
     $.ajax({
         url: "../../Tables/php/userContent.php",
         data: {
-            tag: "userMapNames"
+            tag: "userActiveMaps"
         },
         method: "POST",
         success: function (response) {
@@ -41,10 +41,9 @@ function attachMap(wmsURL,entityId){
     if (wmsURL != ""){
         if (wmsURL != "Empty") {
             setMapURL(wmsURL);
-            setMapEntity(entityId);
             updateMap();
-            map.mapEntity = entityId;
             map.mapURL = wmsURL;
+            setBbox(entityId);
             var treeData = generateTreeData();
             createLayerTree(treeData);
             createLegendMap();

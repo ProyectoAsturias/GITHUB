@@ -27,8 +27,7 @@ function menuDatosLayersLocalgis(){
 }
 
 function back(){
-	//window.location=server+"Tables/php/tables.php"+"?previous="+mapName;
-	window.location="http://localhost:8090/Asturias/"+"Tables/php/tables.php"+"?previous="+mapName;
+	window.location=server+"Tables/php/tables.php";//+"?previous="+mapName;
 }
 
 function confirmSaveMap(){
@@ -39,10 +38,16 @@ function confirmSaveMap(){
 }
 
 function confirmClearMap(){
-	bootbox.confirm("El contenido del mapa será eliminado", function(result) {
-		if (result)
-			clearMap();
-	});
+	var listLayers = map.getLayers().getArray();	
+	console.log(listLayers.length);
+	if(listLayers==null || listLayers.length==0)
+                success("El mapa está vacío.");
+	else{
+		bootbox.confirm("El contenido del mapa será eliminado", function(result) {
+			if (result)
+				clearMap();
+		});
+	}
 }
 
 function success(message){

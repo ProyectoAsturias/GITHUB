@@ -7,7 +7,8 @@
             <div id="leftBar">
                 <div id="mapName">
                     <!-- Trigger the modal with a button -->
-                    <button id="editWmsButton" type="button" class="btn btn-info btn-block" onclick="appendModalWms()" title="Editar datos del WMS" ></button>
+                    <label id="mapNameStyle" title="Nombre del mapa" ></label>
+                    <button id="editWmsButton" type="button" class="btn btn-success btn-block" onclick="appendModalWms()" title="Editar información del servicio WMS" >Editar información Wms</button>
                 </div>
                 <div id="layersList">
                     <ol class="simple_with_animation vertical">
@@ -21,6 +22,7 @@
                         <li><button class="btn btn-block" onclick="baseLayer('BAL')">Bing Aerial Layer</button></li>
                         <li><button class="btn btn-block" onclick="baseLayer('MQS')">Map Quest Satelite</button></li>
                         <li><button class="btn btn-block" onclick="baseLayer('GGM')">Google Maps</button></li>
+                        <li><button class="btn btn-block" onclick="baseLayer('GMS')">Google Satellite</button></li>
                     </ul>
                 </div>
                 <div class="btn-group btn-group-justified" role="group">

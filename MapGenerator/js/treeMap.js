@@ -1,20 +1,10 @@
-
 $(document).ready(function () {
-	leftBarResizable();
 	assignEventsHandlers();
+	leftBarResizable();
 });
 
-function leftBarResizable() {
-	$("#menucapas").resizable({
-		handles: "e",
-		resize: function (event, ui) {
-			map.updateSize();
-		}
-	});
-}
-
 function drawTree() {
-	var wms = serverGS + "geoserver/" + map.name + "/wms";
+	var wms = serverGS + "geoserver/" + map.name;
 	//console.log(wms);
 	loadWmsTree(wms);
 }
@@ -26,7 +16,10 @@ function loadWmsTree(wms) {
 		type : "GET",
 		jsonp : "callback",
 		dataType : 'text',
-		url : wms + '?request=getCapabilities&service=wms',
+		url : wms + requestCapabilities,
+		/*headers: {
+                        "Authorization": "Basic "+auth
+                },*/
 		crossDomain : true,
 		success : function (response) {
 			var service = parser.read(response);
@@ -50,27 +43,27 @@ function loadWmsTree(wms) {
 						bBox.push(parseFloat(split1[0]), parseFloat(split1[1]), parseFloat(split2[0]), parseFloat(split2[1]));
 						var extent = ol.extent.applyTransform(bBox, ol.proj.getTransform("EPSG:4326", "EPSG:3857"));
 						map.getView().fitExtent(extent, map.getSize());
+						for (var i = 0; i < capabilities.Layer.Layer.length; i++) {
+							if (!searchLayerByName(capabilities.Layer.Layer[i].Name)) {
+								var style = "";
+								if (capabilities.Layer.Layer[i].Style != null && capabilities.Layer.Layer[i].Style[0].Name)
+									style = capabilities.Layer.Layer[i].Style[0].Name;
+								if (capabilities.Layer.Layer[i].cascaded == 1) {
+									var layer = addLayerWms(capabilities.Layer.Layer[i].Name, wms+"/wms");
+									layer.wms = true;
+								} else {
+									var layer = addLayer(capabilities.Layer.Layer[i].Name, wms+"/wms", style, bBox);
+									layer.wms = false;
+								}
+								layers.push(layer);
+							}
+						}
+						updateTreeLayer();
 					},
 					error : function (response) {
 						console.log(response);
 					}
 				})
-				for (var i = 0; i < capabilities.Layer.Layer.length; i++) {
-					if (!searchLayerByName(capabilities.Layer.Layer[i].Name)) {
-						var style = "";
-						if (capabilities.Layer.Layer[i].Style != null && capabilities.Layer.Layer[i].Style[0].Name)
-							style = capabilities.Layer.Layer[i].Style[0].Name;
-						if (capabilities.Layer.Layer[i].cascaded == 1) {
-							var layer = addLayerWms(capabilities.Layer.Layer[i].Name, wms);
-							layer.wms = true;
-						} else {
-							var layer = addLayer(capabilities.Layer.Layer[i].Name, wms, style);
-							layer.wms = false;
-						}
-						layers.push(layer);
-					}
-				}
-				//console.log(map.getLayers());
 			}
 			updateTreeLayer();
 		},
@@ -151,7 +144,7 @@ function generateLayerListHTML() {
 
 function generateNode(layer) {
 	//console.log(layer);
-	var node = $("<li class='nodeLine' title='"+layer.name+"'><div class='layerName'>" + layer.name + "</div><div class='treeIcons'>" +
+	var node = $("<li class='nodeLine' title='" + layer.name + "'><div class='layerName'>" + layer.name + "</div><div class='treeIcons'>" +
 			"<span class='glyphicon glyphicon-remove removeLayer' title=\"Borrar capa\"></span>" +
 			"<span class='glyphicon glyphicon-eye-open visibilityLayer' title=\"Visiblidad de capa\"></span>" +
 			"<span class='glyphicon glyphicon-cog attributesLayer' title=\"Seleccionar atributos\"></span>" +
@@ -164,4 +157,13 @@ function generateNode(layer) {
 		console.log(node.find(".visibilityLayer"));
 		node.find(".visibilityLayer").css("color", "lightgray");
 	}
+}
+
+function leftBarResizable() {
+	$("#menucapas").resizable({
+		handles : "e",
+		resize : function (event, ui) {
+			map.updateSize();
+		}
+	});
 }

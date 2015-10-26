@@ -4,7 +4,6 @@ $(document).ready(function () {
 	deleteMapEventHandler();
 	publicateMapEventHandler();
 	unpublicateMapEventHandler();
-	copyToClipBoard();
 });
 
 function collapseMapIconEvent() {
@@ -42,7 +41,7 @@ function createNewMapEventsHandler() {
 				},
 				method : "POST",
 				success : function (response) {
-					console.log(response);
+				//	console.log(response);
 					var concejos = JSON.parse(response);
 
 					//console.log(concejos)
@@ -129,16 +128,20 @@ function mapModalSaveButtonHandler() {
 		var projection = $("#selectProjection").val();
 
 		var entityId;
-		console.log(mapName);
+		//console.log(mapName);
 		if (mapName == "") {
 			alert("El nombre del mapa no puede estar vacío");
 			return;
 		}
+		else if (!testMapName(mapName)){
+			alert("El nombre del mapa contiene caracteres inválidos. Debe comenzar con una letra, seguido de letras, números, o .-_");
+                        return;	
+		}
 
 		mapName = checkMapName(mapName);
 
-		console.log(entityId);
-		console.log(mapName);
+		//console.log(entityId);
+		//console.log(mapName);
 
 		if (entityParams[1] != 0) {
 			mapName = entityParams[0] + "_" + mapName;
@@ -149,7 +152,7 @@ function mapModalSaveButtonHandler() {
 		} else {
 			console.log($("#selectConcejo option:selected").text());
 			if ($("#selectConcejo option:selected").text() == "") {
-				alert("Debe escoger un townicipio");
+				alert("Debe escoger un munnicipio");
 				return;
 			}
 			mapName = $("#selectConcejo option:selected").text() + "_" + mapName;
@@ -178,7 +181,7 @@ function mapModalSaveButtonHandler() {
 }
 
 function createMap(mapName, entityId, town, projection) {
-	console.log(mapName + "," + entityId + "," + town + "," + projection);
+	//console.log(mapName + "," + entityId + "," + town + "," + projection);
 	$.ajax({
 		url : apiPath + "apiGeoserver.php",
 		data : {
@@ -202,6 +205,7 @@ function createMap(mapName, entityId, town, projection) {
 					console.log(result);
 					return;
 				}
+				unpublicateMap(mapName);
 				window.location.replace(mapPath + "php/mapGenerator.php?mapName=" + mapName + '&id=' + entityId);
 			});
 		},
@@ -280,7 +284,7 @@ function removeMap(map) {
 			if (response == 0)
 				console.log("Borrado ->" + map.name)
 			else
-					console.log(response);
+				console.log(response);
 			$.ajax({
 				url : "./userContent.php",
 				data : {
@@ -290,6 +294,7 @@ function removeMap(map) {
 				method : "POST",
 				success : function (response) {
 					console.log(response);
+					publicateMap(map.name); // Es necesario para eliminar la regla de privacidad
 				}
 			});
 		},
@@ -329,10 +334,10 @@ function mapModalPublicateButtonHandler() {
 
 function publicateMap(mapName) {
 	return $.ajax({
-		url : apiPath + "apiGeoserver.php",
+		url : apiPath + "layersSecurity.php",
 		data : {
-			mapName : mapName,
-			tag : "enableWms"
+			workspace : mapName,
+			tag : "free"
 		},
 		method : "POST",
 		success : function (response) {
@@ -372,7 +377,8 @@ function unpublicateMapEventHandler() {
 function mapModalUnpublicateButtonHandler() {
 	$("#unpublicateMapsModal").click(function () {
 		$("#table").bootstrapTable('getSelections').forEach(function (row) {
-			unpublicateMap(row).then(function (response) {
+			//console.log(row.name);
+			unpublicateMap(row.name).then(function (response) {
 				console.log(response);
 				$("#modalUnpublicateMaps").modal("hide");
 				if (response == "") {
@@ -389,12 +395,12 @@ function mapModalUnpublicateButtonHandler() {
 	})
 }
 
-function unpublicateMap(map) {
+function unpublicateMap(mapName) {
 	return $.ajax({
-		url : apiPath + "apiGeoserver.php",
+		url : apiPath + "layersSecurity.php",
 		data : {
-			mapName : map.name,
-			tag : "disableWms"
+			tag : "privatize",
+			workspace : mapName
 		},
 		method : "POST",
 		success : function (response) {
@@ -403,7 +409,7 @@ function unpublicateMap(map) {
 					url : "./userContent.php",
 					data : {
 						tag : "unpublicateMap",
-						mapName : map.name
+						mapName : mapName
 					},
 					method : "POST",
 					success : function (response) {
@@ -417,9 +423,11 @@ function unpublicateMap(map) {
 				console.log("Error al despublicar el mapa:" + response + ".");
 		},
 		error : function (error) {
+			console.log(error);
 			alert("Error al despublicar el mapa:" + error);
 		}
 	});
+	
 }
 
 function activateWmsMap(mapName, entityId) {
@@ -453,8 +461,17 @@ function copyToClipBoard() {
 function getWmsLink(mapName) {
 	var headHtml = "<button type=\"button\" class=\"close\" data-dismiss=\"modal\">&times;</button>" +
 		"<h4 class=\"modal-title\">Link WMS:" + mapName + "</h4>";
-	var bodyHtml = "<label for=\"linkWms\">Presione Ctrl+C para copiar</label><textarea rows=\"2\" class=\"form-control\" id=\"linkWms\" style=\"resize:none;\">" + serverGS + "geoserver/" + mapName + "/wms?request=getCapabilities&service=WMS</textarea>";
+	var bodyHtml = "<label for=\"linkWms\">Seleccione el texto y presione Ctrl+C para copiar</label><textarea rows=\"2\" class=\"form-control\" id=\"linkWms\" style=\"resize:none;\">" + serverGS + "geoserver/" + mapName + "/wms?request=getCapabilities&service=WMS</textarea>";
 	$("#modalWmsLink .modal-header").empty().append(headHtml);
 	$("#modalWmsLink .modal-body").empty().append(bodyHtml);
 	$("#modalWmsLink").modal("show");
+	copyToClipBoard();	
+}
+
+function testMapName(mapName){
+	var regex = /[a-zA-Z]/i;
+        var res = regex.test(mapName[0]);	
+	var regex = /[¨º~#@|!\\·$%&/()?'¡¿\[\^`\]+}{¨´><;,:]/i;
+	var res2 = !regex.test(mapName);
+	return res && res2;
 }

@@ -7,7 +7,7 @@
 	 * @return string
 	 */
 	function getWms() {
-		$dbConnection = new DBConnection("UserContent");
+		$dbConnection = new DBConnection(true);
 		$query='SELECT wms FROM "Users" WHERE id='.$_SESSION["userId"];
 		$result = pg_query($query) or die('Error: '.pg_last_error());
 		$dbConnection->close();
@@ -32,7 +32,7 @@
 				$wmsString = $wmsString . $wms[$i].",";
 			$wmsString = $wmsString . $wms[$i];
 
-			$dbConnection = new DBConnection("UserContent");
+			$dbConnection = new DBConnection(true);
 			$query = "UPDATE \"Users\" SET wms='".$wmsString."' WHERE id=".$_SESSION["userid"];
 			$result = pg_query($query)or die('Error: '.pg_last_error());
 			$dbConnection->close();
@@ -50,7 +50,7 @@
 		if(isset($_POST['layerName']) && isset($_POST['mapName'])){
 			$layerName=$_POST['layerName'];
 			$mapName=$_POST['mapName'];
-			$dbConnection = new DBConnection("UserContent");
+			$dbConnection = new DBConnection(true);
 			$query="SELECT \"layersInfo\" FROM \"Maps\" WHERE name='".$mapName."'";
 			$result = pg_query($query) or die('Error: '.pg_last_error());
 			$dbConnection->close();
@@ -102,7 +102,7 @@
 		if (isset($_POST['mapName']) && isset($_POST['layersInfo'])) {
 			$mapName = $_POST['mapName'];
 			
-			$dbConnection = new DBConnection("UserContent");
+			$dbConnection = new DBConnection(true);
 			$query = "SELECT \"layersInfo\" FROM \"Maps\" WHERE \"name\"='".$mapName."'";
 			$result = pg_query($query)or die('Error: '.pg_last_error());
 			$layersInfoDB = pg_fetch_result($result, 0,0);
@@ -130,7 +130,7 @@
                         $utf8 = array("\u00e1", "\u00e9", "\u00ed", "\u00f3", "\u00fa", "\u00c1", "\u00c9", "\u00cd", "\u00d3", "\u00da", "\u00f1", "\u00d1");
                         $li = str_replace($utf8, $acentos, $li);
 			
-			$query = "UPDATE \"Maps\" SET \"layersInfo\"='".$li."' WHERE \"name\"='".$mapName."'";
+			$query = "UPDATE \"Maps\" SET \"layersInfo\"='".$li."', date_update=NOW() WHERE \"name\"='".$mapName."'";
 			$result = pg_query($query)or die('Error: '.pg_last_error());
 			$dbConnection->close();
 
@@ -159,8 +159,8 @@
 		if (isset($_POST['mapName'])){
 			$mapName = $_POST['mapName'];
 
-                        $dbConnection = new DBConnection("UserContent");
-			$query = "UPDATE \"Maps\" SET \"layersInfo\"='[]' WHERE \"name\"='".$mapName."'";
+                        $dbConnection = new DBConnection(true);
+			$query = "UPDATE \"Maps\" SET \"layersInfo\"='[]', date_update=NOW() WHERE \"name\"='".$mapName."'";
                         $result = pg_query($query)or die('Error: '.pg_last_error());
                         $dbConnection->close();
 		}
@@ -176,8 +176,8 @@
 		if(isset($_POST['mapName']) && isset($_POST['description'])){
 			$mapName=$_POST['mapName'];
 			$description=$_POST['description'];
-			$dbConnection = new DBConnection("UserContent");
-			$query="UPDATE Maps SET description=".$description." WHERE name=".$mapName;
+			$dbConnection = new DBConnection(true);
+			$query="UPDATE \"Maps\" SET description=".$description.", date_update=NOW() WHERE name=".$mapName;
 			$result = pg_query($query) or die('Error: '.pg_last_error());
 			$dbConnection->close();
 
@@ -193,21 +193,6 @@
 	 * Creación de la vista de la capa.
 	 */
 	function createDBView($layerId,$layerName,$projection,$town){
-		/*$where="";
-		if($mapId<0)
-			$where="' AND id_map='".$mapId."'";
-
-		$query = "SELECT e.id_municipio FROM maps as m,entidades_municipios as e WHERE m.id_entidad=e.id_entidad".$where;
-		$result = pg_query($query) or die('Error: '.pg_last_error());
-		$town = pg_fetch_result($result, 0,0);*/
-		//39073;
-
-		/*SIN ACABAR $query = 'SELECT *  FROM maps, spatial_ref_sys WHERE ';
-		"SELECT srid, auth_name, auth_srid, srtext, proj4text FROM spatial_ref_sys where srtext like '%ED50 / UTM zone 30N%'"
-		$result = pg_query($query) or die('Error: '.pg_last_error());
-		$projection = pg_fetch_result($result, 0,0);*/
-		//$projection=23030;
-		//print($projection);
 		$dbConnection = new DBConnection();
 		$query = "SELECT selectquery FROM queries WHERE id_layer='".$layerId."'";
 		$result = pg_query($query) or die('Error: '.pg_last_error());
@@ -216,29 +201,113 @@
 		$select_layer=str_replace("?T","'".$projection."'",$select_layer);
 		$select_layer=str_replace("?M","".$town."",$select_layer);
 		//echo $select_layer;
-
-		//SELECT id, id_via, numvia, denominacion, fechaalta, fechabaja, id_municipio, transform("GEOMETRY", '23030') as "GEOMETRY", length, valido, fuente FROM TramosVia  
-		//WHERE TramosVia.ID_Municipio in ('39073') and valido = 1
-		/*$select_string=explode(" FROM ",$select_layer)[0];
-		$where_string=explode(" WHERE ",$select_layer)[1];
-		$from=explode(",",str_replace(" ","",explode(" WHERE ",explode(" FROM ",$select_layer)[1])[0]));
-		$from_string="";
-		for($i=0;$i<sizeof($from);$i++)
-			$from_string=$from_string."public.".$from[$i];
-		print($select_string." FROM ".$from_string." WHERE ".$where_string);*/
-		//return $select_layer;
-		
+		$select_layer=traduceQuery($select_layer);
 		$result = pg_query($select_layer) or die('Error: '.pg_last_error());
 		if(pg_num_rows($result)>0)
-			pg_query('CREATE OR REPLACE VIEW "localgisvistas"."'.$layerName.'" AS '.$select_layer)or die('Error: '.pg_last_error());
+			pg_query('CREATE OR REPLACE VIEW "localgisvistas"."'.$layerName.'" AS '.$select_layer)or die('Error: '.pg_last_error().' '.$select_layer);
 
-		//Comprobamos que la tabla está vacia: Si lo está hay que incluir el srs, ya que geoserver no puede extraerlo al no haber datos geoespaciales.
-		/*$q_select=pg_query($dbConnection->dbConn, $select_layer);
-		$proj=pg_fetch_all($q_select);
-		if($proj==null)
-			$proj=$projection;*/
 		$dbConnection->close();
+		return pg_num_rows($result);
 	}
+
+	function multiexplode ($delimiters,$string) {
+   		for($i=0;$i<sizeof($delimiters);$i++){
+			$str=explode($delimiters[$i],$string);
+			if(sizeof($str)>1)
+				return $str; 
+		} 
+		return  $string;
+	}
+
+	function traduceQuery($query){
+		$split1=multiexplode(array("FROM","From","from"),$query);
+		/*if(sizeof($split1)<2)
+                        $split1=explode("FROM",$query);*/
+                $select=multiexplode(array("SELECT","Select","select"),$split1[0]);
+		/*if(sizeof($select)<2)
+			$select=explode("Select",$split1[0]);	*/
+                $select=trim($select[1]);
+                $split2=multiexplode(array("WHERE","Where","where"),$split1[1]);
+		/*if(sizeof($split2)<2)
+                        $split2=explode("Where",$split1[1]);*/
+                $from=$split2[0];
+                $where="";
+                if(sizeof($split2)>1)
+                        $where=" WHERE".$split2[1];
+
+                $split3=explode(",",$select);
+                $tableColumns=array();
+                $select="";
+                for($i=0;$i<sizeof($split3);$i++){
+                        $tC=explode(".",$split3[$i]);
+                        $tableColumns=traduce($tC,$tradCount);
+                        if($tableColumns!=null){
+                                $from.=" LEFT JOIN (
+                                                SELECT
+                                                    domainnodes.pattern,
+                                                    dictionary.traduccion
+                                                FROM
+                                                    public.columns,
+                                                    public.domains,
+                                                    public.domainnodes,
+                                                    public.tables,
+                                                    public.dictionary
+                                                WHERE
+                                                    columns.id_domain = domains.id AND
+                                                    domainnodes.id_domain = domains.id AND
+                                                    tables.id_table = columns.id_table AND
+                                                    dictionary.id_vocablo = domainnodes.id_description AND
+                                                    dictionary.locale = 'es_ES' AND
+                                                    tables.name= '".$tC[0]."') as ".$tableColumns[0]."
+                                                ON ".$tableColumns[0].".pattern=".$tC[0].".".$tC[1];
+                                $select.=$tableColumns[0].".traduccion as ".$tC[1].",";
+                        }
+                        else
+                                $select.=$split3[$i].",";
+                                //$select.="\"".$tC[0]."\".\"".$tC[1]."\",";
+                }
+                $select=substr($select,0,-1);
+                return "SELECT ".$select." FROM".$from.$where;
+	}	
+
+	function traduce($tableColumn,&$tradCount){
+                if(sizeof($tableColumn)!=2 ||$tableColumn[1]=="id" || $tableColumn[1]=="id_municipio" || $tableColumn[1]=="\"id\"" || $tableColumn[1]=="\"id_municipio\"")
+                        return null;
+                $table=str_replace(" ","",trim($tableColumn[0]));
+                $table=str_replace("\"","",$table);
+				$column=str_replace(" ","",trim($tableColumn[1]));
+                $column=str_replace("\"","",$column);
+
+                $query=
+                        "SELECT
+                          dictionary.traduccion
+                        FROM
+                          public.columns,
+                          public.domains,
+                          public.domainnodes,
+                          public.tables,
+                          public.dictionary
+                        WHERE
+                          columns.id_domain = domains.id AND
+                          domainnodes.id_domain = domains.id AND
+                          tables.id_table = columns.id_table AND
+                          dictionary.id_vocablo = domainnodes.id_description AND
+                          dictionary.locale = 'es_ES' AND
+                          tables.name='".$table."' AND
+                          columns.name='".$column."'";
+                $result = pg_query($query) or die('Error: '.pg_last_error());
+                $count=pg_num_rows($result);
+                if($count>0){
+                        $table="s".$tradCount;
+                        $column="dictionary";
+                        $tradCount++;
+                        $result =  array($table,$column);
+                        return $result;
+                }
+                else
+                        return null;
+
+        }
 
 	/**
 	 *Borrado de la capa en base de datos

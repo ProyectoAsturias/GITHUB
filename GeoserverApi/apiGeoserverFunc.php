@@ -59,15 +59,22 @@
 			$projection=$_SESSION['projection'];
 			$layerDescription="Capa de Localgis";
 
-			//echo implode(",",$town);
-			//echo "-";
-			//echo $projection."-";
-
-			echo createDBView($layerId,$GLOBALS['mapName']."_".$layerName,$projection,$town);
-			if(($result=$GLOBALS['geoserver']->addLayer($GLOBALS['gsConnection']->wsName, $GLOBALS['gsConnection']->dsName, $layerName, $layerDescription, $projection))!="")
-				print("Advice: ".$result."\n");
+			/*echo $town;
+			echo "-";
+			echo $projection;*/
+			//Las vistas creadas no pueden tener un nombre mayor de 62 caracteres (Restricción de postgres)
+			$name=substr($GLOBALS['mapName']."_".$layerName,0,62);
+			$layerName=substr($layerName,0,strlen($name)-strlen($GLOBALS['mapName']."_"));
+			
+			if(createDBView($layerId,$name,$projection,$town)>0){
+				//echo $GLOBALS['gsConnection']->wsName."-".$GLOBALS['gsConnection']->dsName."-".$layerName."-".$layerDescription."-".$projection;
+				if(($result=$GLOBALS['geoserver']->addLayer($GLOBALS['gsConnection']->wsName, $GLOBALS['gsConnection']->dsName, $layerName, $layerDescription, $projection))!="")
+					print("Advice: ".$result."\n");
+				else
+					addStyles($layerId,$layerName,$mapId);
+			}
 			else
-				addStyles($layerId,$layerName,$mapId);
+				print("Capa vacía");
 		}
 		else
 			echo "Error: Parameters missed.";
@@ -94,6 +101,7 @@
 		$GLOBALS['geoserver']->addStyleToLayer($layerName, "point", $GLOBALS['mapName']);
 		$GLOBALS['geoserver']->addStyleToLayer($layerName, "line", $GLOBALS['mapName']);
 		$GLOBALS['geoserver']->addStyleToLayer($layerName, "polygon", $GLOBALS['mapName']);
+		$GLOBALS['geoserver']->addStyleToLayer($layerName, "generic", $GLOBALS['mapName']);	
 		return $result;
 	}
 
@@ -240,7 +248,15 @@
 		if($layerName!=null && $styleName !=null){
 			if($res=$GLOBALS['geoserver']->defaultStyleToLayer($layerName, $styleName, $GLOBALS['mapName'])!="")
 				print("Advice: ".$res."\n");
-			//print("Default style: ".$styleName."\n");
+			//Check getMap, por si el estilo falla
+			$urlWms = $GLOBALS['gsConnection']->url.'/'.$GLOBALS['mapName'].'/wms';
+			$curl = 'curl "'.$urlWms.'?service=WMS&version=1.1.0&request=GetMap&layers='.$GLOBALS['mapName'].':'.$layerName.'&styles=&bbox=674750.9375,4774188.5,700558.875,4805054.0&width=642&height=768&srs=EPSG:25829&format=application/openlayers" -H "Authorization : Basic cHJpdmF0ZVVzZXI6MTIzNA==" | grep "Exception" |wc -l';
+			$result=shell_exec($curl);
+			if ($result!=0){
+				echo "Error: Estilo incorrecto, estilo actual establecido: Generic";
+				if($res=$GLOBALS['geoserver']->defaultStyleToLayer($layerName, "generic", $GLOBALS['mapName'])!="")
+	                                print("Advice: ".$res."\n");
+			}
 		}
 		else
 			echo "Error: Parameters missed.";
@@ -278,5 +294,32 @@
 		$geoserver = new ApiRest($gsConnection->url,$gsConnection->user,$gsConnection->pass);
 
 		$geoserver->reload();
+	}
+	
+	function removeStyle(){
+		if (isset($_POST['styleName']) && isset($_POST['layerName'])) {
+			$styleName=$_POST['styleName'];
+			$layerName=$_POST['layerName'];
+			$stylesXml="<layer><styles>";
+			if (($styleList = $GLOBALS['geoserver']->listStyles($GLOBALS['mapName'], $layerName)) != ""){
+				if($styleList->styles!=null){
+					$styleList=$styleList->styles->style;
+					foreach($styleList as $style){
+						if ($style->name=="point" || $style->name=="line" || $style->name=="polygon")
+							$stylesXml .="<style><name>".$style->name."</name></style>";
+						else
+							if($style->name!=$styleName)
+								$stylesXml .="<style><name>".$style->name."</name><workspace>".$GLOBALS['mapName']."</workspace></style>";
+					}
+					$stylesXml.="</styles></layer>";
+					if (($res = $GLOBALS['geoserver']->unasignStyle($stylesXml, $layerName , $GLOBALS['mapName'])) != "")
+						print ("Advice: ".$res."\n");
+					if (($res = $GLOBALS['geoserver']->delStyle($styleName, $GLOBALS['mapName'])) != "")
+						print ("Advice: ".$res."\n");
+				}
+			}
+		}
+		else
+			echo "Error: Parameters missed.";
 	}
 ?>

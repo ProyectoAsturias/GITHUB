@@ -69,9 +69,6 @@ function createMap() {
             console.log("WOP");
         }
     }
-    if(mapDetails["entityId"]){
-        //setBbox(mapDetails["entityId"]);
-    }
     map.addControl(new ol.control.ScaleLine());
     if (typeof (toolsDraggable) == "function"){
         toolsDraggable();
@@ -144,7 +141,6 @@ function addLayersAndGroupsFromWMS(WMSUrl){
         //console.log(capabilitiesParser);
         for(var i = 0; i < capabilitiesParser.Capability.Layer.Layer.length; i ++){
             if(capabilitiesParser.Capability.Layer.Layer[i].cascaded==1){
-                console.log("pasa");
                 addLayerWmsToMap(capabilitiesParser.Capability.Layer.Layer[i].Name,WMSUrl);
             }
             else{

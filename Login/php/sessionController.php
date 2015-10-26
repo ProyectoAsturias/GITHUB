@@ -1,6 +1,7 @@
 <?php
     require_once "../../Common/php/DBConnection.php";
-require_once "../../Common/php/TCConfig.php";
+    require_once("../../Common/php/TCConfig.php");
+    //require_once("http://asturiasmodelo.dyndns.org:8093/LocalGIS/java/Java.inc");
     require_once($loginTomcatJava);
 
     //Hacer login con el servicio de localgis
@@ -16,35 +17,35 @@ require_once "../../Common/php/TCConfig.php";
     }
 
     function login($userName, $password, $redirect=""){
+	$encripter = new java("com.avanzit.encriptar.EncriptarPasswordAvanzit");
 
-		$encripter = new java("com.avanzit.encriptar.EncriptarPasswordAvanzit");
+	$connection=new DBConnection();        
+	$where=" AND bloqueado=FALSE AND fecha_proxima_modificacion > NOW()";
+	$query="SELECT password FROM iuseruserhdr WHERE name = '".$userName."'".$where;
+	$result=pg_query($query) or die('Error: '.pg_last_error());
+	$row=pg_fetch_row($result);
+	if(!$row){
+		$loginResponse = new stdClass();
+		$loginResponse->logged = false;
+		$loginResponse->errorMessage = "Error en la autenticación, consulte a su administrador.";
+		return $loginResponse;
+	}
+	$type=substr(explode("}",$row[0])[0],1);
+	$encPassword="";
+	switch($type){
+		case "TYPE1":
+			//$encPassword = $encripter->encriptar(explode("}",$row[0])[1], 1);
+			$encPassword = $encripter->encriptar($password, 1);
+			break;
+		case "TYPE2":
+			//$encPassword = $encripter->encriptar(explode("}",$row[0])[1], 2);
 
-			$connection=new DBConnection();        
-		$where=" AND bloqueado=FALSE AND fecha_proxima_modificacion > NOW()";
-		$query="SELECT password FROM iuseruserhdr WHERE name = '".$userName."'".$where;
-		$result=pg_query($query) or die('Error: '.pg_last_error());
-		$row=pg_fetch_row($result);
-		if(!$row){
-				$loginResponse = new stdClass();
-				$loginResponse->logged = false;
-				$loginResponse->errorMessage = "Error en la autenticación, consulte a su administrador.";
-				return $loginResponse;
-		}
-		$type=substr(explode("}",$row[0])[0],1);
-		$encPassword="";
-		switch($type){
-			case "TYPE1":
-				//$encPassword = $encripter->encriptar(explode("}",$row[0])[1], 1);
-				$encPassword = $encripter->encriptar($password, 1);
-				break;
-			case "TYPE2":
-				//$encPassword = $encripter->encriptar(explode("}",$row[0])[1], 2);
-				$encPassword = $encripter->encriptar($password, 2);
-				break;
-			default:
-				//$encPassword = $encripter->encriptar($row[0], 1);
-				$encPassword = $encripter->encriptar($password, 3);
-				break;
+			$encPassword = $encripter->encriptar($password, 2);
+			break;
+		default:
+			//$encPassword = $encripter->encriptar($row[0], 1);
+			$encPassword = $encripter->encriptar($password, 3);
+			break;
 	}			
         $query="SELECT id,id_entidad FROM iuseruserhdr WHERE name = '".$userName."' AND password='".$encPassword."'".$where;
         $result=pg_query($query) or die('Error: '.pg_last_error());
@@ -96,7 +97,7 @@ require_once "../../Common/php/TCConfig.php";
     }
 
     function registerUser($userId,$userName){
-        $connection=new DBConnection("UserContent");
+        $connection=new DBConnection(true);
         $query="SELECT name FROM \"Users\" WHERE id='".$userId."' and name='".$userName."'";
         $result=pg_query($query);
         $row=pg_fetch_row($result);

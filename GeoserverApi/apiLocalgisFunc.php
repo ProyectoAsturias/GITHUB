@@ -25,7 +25,7 @@
 		$maps = array();
 		$i = 0;
 		while ($row = pg_fetch_row($result))
-			$maps[$i++] = new LocalgisMap($row[0], $row[1], $row[2], $row[3], $row[4], $row[5], $row[6], $row[7]);
+			$maps[$i++] = new LocalgisMap($row[0], sanear_string($row[1]), $row[2], $row[3], $row[4], $row[5], $row[6], $row[7]);
 		return json_encode($maps);
 	}
 
@@ -45,7 +45,7 @@
 		$families = array();
 		$i = 0;
 		while ($row = pg_fetch_row($result))
-			$families[$i++] = new LocalgisFamily($row[0], $row[1]);
+			$families[$i++] = new LocalgisFamily($row[0], sanear_string($row[1]));
 		return json_encode($families);
 	}
 
@@ -70,7 +70,7 @@
 			$i = 0;
 			while ($row = pg_fetch_row($result))
 				if (isAccessible($row[0]))
-					$layers[$i++] = new LocalgisLayer($row[0], $row[1]);
+					$layers[$i++] = new LocalgisLayer($row[0], sanear_string($row[1]));
 			return json_encode($layers);
 		} else
 			echo "Error: Id family missed.";
@@ -98,7 +98,7 @@
 			$i = 0;
 			while ($row = pg_fetch_row($result)) {
 				if (isAccessible($row[0]))
-					$layers[$i++] = new LocalgisLayer($row[0], $row[1]);
+					$layers[$i++] = new LocalgisLayer($row[0], sanear_string($row[1]));
 			}
 			return json_encode($layers);
 		} else
@@ -189,7 +189,7 @@
 					$styleName = explode("</Name>", explode("<Name>", $sld_xml)[2])[0];
 					//var_dump($styleName);
 					//$styleName = explode(":_:", $styleName)[1];
-					$styleName = str_replace(" ","_",$styleName);
+					$styleName = sanear_string($styleName);
 					//var_dump($styleName);
 					$style = new LocalgisStyle($styleName, $sld_xml);
 					array_push($styles, $style);
@@ -236,16 +236,17 @@
 	function getEntityNames() {
 		$params = array();
 		$dbConnection = new DBConnection();
-		$query = "SELECT replace(nombreoficial,' ','')as name, id_entidad FROM entidad_supramunicipal ORDER BY name";
+		$query = "SELECT nombreoficial as name, id_entidad FROM entidad_supramunicipal ORDER BY name";
 		$result = pg_query($query)or die('Error: '.pg_last_error());
 		$numRows = pg_num_rows($result);
 		while ($row = pg_fetch_array($result, null, PGSQL_ASSOC)) {
-			$p = [$row['name'], $row['id_entidad']];
+			$p = [sanear_string($row['name']), $row['id_entidad']];
 			array_push($params, $p);
 		}
 		$dbConnection->close();
 		return json_encode($params);
 	}
+
 	function getBbox() {
 		$params = array();
 		if (isset($_POST["entityId"]))
@@ -262,4 +263,23 @@
 		}
 		return json_encode($params);
 	}
+	
+	/** Reemplaza todos los acentos por sus equivalentes sin ellos 
+ 	 *  @param $string * string la cadena a sanear 
+	 *  @return $string * string saneada 
+	 **/ 
+	 function sanear_string($string) { 
+		$string = str_replace(" ","_",$string);
+		$string = trim($string); 
+		/*$string = str_replace( array('á', 'à', 'ä', 'â', 'ª', 'Á', 'À', 'Â', 'Ä'), array('a', 'a', 'a', 'a', 'a', 'A', 'A', 'A', 'A'), $string ); 
+		$string = str_replace( array('é', 'è', 'ë', 'ê', 'É', 'È', 'Ê', 'Ë'), array('e', 'e', 'e', 'e', 'E', 'E', 'E', 'E'), $string ); 
+		$string = str_replace( array('í', 'ì', 'ï', 'î', 'Í', 'Ì', 'Ï', 'Î'), array('i', 'i', 'i', 'i', 'I', 'I', 'I', 'I'), $string ); 
+		$string = str_replace( array('ó', 'ò', 'ö', 'ô', 'Ó', 'Ò', 'Ö', 'Ô'), array('o', 'o', 'o', 'o', 'O', 'O', 'O', 'O'), $string ); 
+		$string = str_replace( array('ú', 'ù', 'ü', 'û', 'Ú', 'Ù', 'Û', 'Ü'), array('u', 'u', 'u', 'u', 'U', 'U', 'U', 'U'), $string );
+		$string = str_replace( array('ñ', 'Ñ', 'ç', 'Ç'), array('n', 'N', 'c', 'C',), $string );*/
+		//Esta parte se encarga de eliminar cualquier caracter extraño 
+		//$string = str_replace( array("\\", "¨", "º", "-", "~", "#", "@", "|", "!", "\"", "·", "$", "%", "&", "/", "(", ")", "?", "'", "¡", "¿", "[", "^", "`", "]", "+", "}", "{", "¨", "´", ">“, “< ", ";", ",", ":", ".", " "), '', $string ); 
+		$string = str_replace( array("\\", "¨", "º", "~", "#", "@", "|", "!", "\"", "·", "$", "%", "&", "/", "(", ")", "?", "'", "¡", "¿", "[", "^", "`", "]", "+", "}", "{", "¨", "´", ">", "< ", ";", ",", ":"), '_', $string );
+		return $string; 
+	} 
 ?>
