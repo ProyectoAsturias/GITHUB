@@ -1,10 +1,14 @@
 $(document).ready(function(){
     if (visorData != undefined){
         setMapDetails(visorData.mapDetails);
-        //console.log(visorData);
     }
     createMap();
-    createLegendMap();
+    if (appendLayersObjectToLegend != undefined){
+        $(document).ajaxStop(function(){
+            appendLayersObjectToLegend();
+            assignLegendEventsHandlers();
+        })
+    }
 })
 
 function replaceAllSubstring(text, target, replacement) {

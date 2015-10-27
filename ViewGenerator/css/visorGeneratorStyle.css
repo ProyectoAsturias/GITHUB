@@ -445,3 +445,25 @@ li.base{
 .ol-unselectable{
     max-height: 100% !important;
 }
+
+.layerName{
+    flex: 1 1 auto;
+    padding-left: 6px;
+    padding-top: 5px;
+    overflow-x: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.treeIcons{
+    padding-top: 5px;
+    flex: 0 0 10px;
+}
+
+.node-layersTree{
+    display: flex;
+    display-direction: row;
+    flex-wrap: nowrap;
+    align-items: center;
+    max-width: 100%;
+}

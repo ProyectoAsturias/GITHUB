@@ -1,5 +1,7 @@
+var lastData;
+
 $(document).ready(function(){
-    updateTreeLayer();
+    //updateTreeLayer();
 	makeLeftBarResizable();
 });
 
@@ -18,7 +20,7 @@ function updateTreeLayer(){
 }
 
 function generateNode(layer){
-    var node = {text: layer.name, nodes: [], layer: layer, state: {checked: true}};
+    var node = {text: '<div class="layerName">'+layer.name+'</div>', nodes: [], layer: layer, state: {checked: true}};
     if (layer instanceof ol.layer.Group){
         layer.getLayers().forEach(function(subLayer, indexInGroup){
             node.nodes.push(generateNode(subLayer));
@@ -38,10 +40,28 @@ function generateTreeData(){
     return treeData;
 }
 
+function createLayerTreeFromSource(dataSource){
+    $(document).ajaxStop(function(){
+        $(this).unbind("ajaxStop");
+        var layerData = [];
+        for (var i = 0; i<treeDataSource.length; i++){
+            var mapData = {text:'<div class="layerName">'+treeDataSource[i].name+'</div><div class="treeIcons"><span class="glyphicon glyphicon-remove removeMap" title="Eliminar este mapa"></span></div>', nodes: [], state: {checked: true}, wmsUrl: treeDataSource[i].url};
+            for (var h=0; h<treeDataSource[i].layers.length; h++){
+                mapData.nodes.push(generateNode(treeDataSource[i].layers[h]));
+            }
+            layerData.push(mapData);
+        }
+        createLayerTree(layerData);
+    })
+
+}
+
 function createLayerTree(data){
+    lastData = data;
     $("#layersTree").treeview({
         data: data,
         showCheckbox: true,
+        emptyIcon: "",
         onNodeChecked: function(event, node){
             if (node.layer) node.layer.setVisible(true);
             checkNodeChildrens(node);
@@ -51,6 +71,27 @@ function createLayerTree(data){
             uncheckNodeChildrens(node);
         }
     });
+    removeMapHandler();
+}
+
+function removeMapHandler(){
+    $("#layersTree").on("click",function(){
+        $(".removeMap").on("click", function(){
+            var nodes = $("#layersTree").treeview("getNode",$(this).parent().parent().data("nodeid")).nodes;
+            for (var i = 0; i<nodes.length; i++){
+                map.removeLayer(nodes[i].layer);
+            }
+            var deletedUrl = $("#layersTree").treeview("getNode",$(this).parent().parent().data("nodeid")).wmsUrl;
+            var index = mapDetails["WMSUrl"].indexOf(deletedUrl);
+            console.log($("#layersTree").treeview("getNode",$(this).parent().parent().data("nodeid")));
+            if (index !== -1) {
+                mapDetails["WMSUrl"].splice(index, 1);
+            }
+            $("#layersTree").treeview("remove");
+            createLayerTree($("#layersTree").treeview("getSiblings",$(this).parent().parent().data("nodeid")));
+        })
+    });
+
 }
 
 function makeLeftBarResizable(){

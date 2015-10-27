@@ -12,7 +12,6 @@ function attachMapEventHandler(){
         method: "POST",
         success: function (response) {
             var mapList=JSON.parse(response);
-            console.log(mapList);
             $("#selectMap").empty();
             $("#selectMap").append("<option style='color: orange' value=\""+"Empty"+"\">"+"Eliminar mapa actual"+"</option>");
             var hiddenList="";
@@ -40,13 +39,12 @@ function attachMapEventHandler(){
 function attachMap(wmsURL,entityId){
     if (wmsURL != ""){
         if (wmsURL != "Empty") {
-            setMapURL(wmsURL);
-            updateMap();
-            map.mapURL = wmsURL;
-            setBbox(entityId);
-            var treeData = generateTreeData();
-            createLayerTree(treeData);
-            createLegendMap();
+            addMapUrl(wmsURL);
+            var treeDataSource = addLayersAndGroupsFromWMS(wmsURL);
+            createLayerTreeFromSource(treeDataSource);
+            createLegendMap(wmsURL);
+            if (entityId != undefined)
+                setBbox(entityId);
         }else{
             setMapURL(undefined);
             updateMap();

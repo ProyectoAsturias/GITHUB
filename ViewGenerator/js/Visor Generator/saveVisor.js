@@ -48,7 +48,11 @@ function saveVisorData(visorData) {
  * @return ObjectExpression
  */
 function extractMapDetails(){
-    return {"center": map.getView().getCenter(), "zoom": map.getView().getZoom(), "WMSUrl": map.mapURL, "baseLayer": visorBaseLayer};
+    return {"center": map.getView().getCenter(), "zoom": map.getView().getZoom(), "WMSUrl": mapDetails["WMSUrl"], "baseLayer": visorBaseLayer};
+}
+
+function getMapUrlsJSON(){
+    return JSON.stringify(mapDetails["WMSUrl"]);
 }
 
 /**

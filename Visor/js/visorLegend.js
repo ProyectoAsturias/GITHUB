@@ -30,10 +30,9 @@ function makeLegendResizable(){
 }
 
 
-function createLegendMap(){
+function createLegendMap(urlWms){
     //var urlWms= server+"geoserver/"+map.name+"/wms";
     //var legendImg ="<img class=\"legendIcon\" src='"+urlWms+"?REQUEST=GetLegendGraphic&VERSION=1.0.0&FORMAT=image/png&WIDTH=20&HEIGHT=20&LAYER="+layerName+"' />";
-    var urlWms = map.mapURL;
     if (urlWms == undefined){
         createEmptyLegend();
         return;
@@ -50,45 +49,40 @@ function createLegendMap(){
             var capabilities = service.Capability;
             var contentHtml="";
             for(var i=0; i<capabilities.Layer.Layer.length; i++){
-                contentHtml +="<div class=\"titleLayer\"><label id=\""+capabilities.Layer.Layer[i].Name+"\">"+capabilities.Layer.Layer[i].Name+"</label></div><div class=\"imgLayer\" id=\""+capabilities.Layer.Layer[i].Name+"\"><img crossOrigin=\"Anonymous\" src='"+urlWms+"?REQUEST=GetLegendGraphic&VERSION=1.0.0&FORMAT=image/png&WIDTH=20&HEIGHT=20&LAYER="+capabilities.Layer.Layer[i].Name+"&LEGEND_OPTIONS=forceLabels:on' /></div>";
-                legendLayersNames.push(capabilities.Layer.Layer[i].Name);
+                var result = searchLayerInLegend(capabilities.Layer.Layer[i].Name);
+                if(!searchLayerInLegend(capabilities.Layer.Layer[i].Name)) {
+                    contentHtml += "<div class=\"titleLayer\"><label for=\"" + capabilities.Layer.Layer[i].Name + "\">" + capabilities.Layer.Layer[i].Name + "</label></div><div class=\"imgLayer\" id=\"" + capabilities.Layer.Layer[i].Name + "\"><img crossOrigin=\"Anonymous\" src='" + urlWms + "?REQUEST=GetLegendGraphic&VERSION=1.0.0&FORMAT=image/png&WIDTH=20&HEIGHT=20&LAYER=" + capabilities.Layer.Layer[i].Name + "&LEGEND_OPTIONS=forceLabels:on' /></div>";
+                    legendLayersNames.push(capabilities.Layer.Layer[i].Name);
+                }
             }
-            var legendHtml="<div id=\"titleMap\"><label for=\"legendContent\">LEYENDA</label>"+
-                "<span class='glyphicon glyphicon-remove removeLegend legend'></span>"+
-                "<span class='glyphicon glyphicon-minus hideLegend legend'></span></div>"+
-                "<div id=\"legendContent\"></div>";
-            $('.legendBar').empty();
-            //console.log(legendHtml);
-            $('.legendBar').append(legendHtml);
             $('#legendContent').append(contentHtml);
             showLegend=true;
-            appendLayersObjectToLegend();
-            assignLegendEventsHandlers();
         },
         error:function(error){
-            alert("Ha fallado la petición GetCapabilities al mapa introducido, por favor, compruebe la integridad del mismo.");
+            alert("Ha fallado la petición GetCapabilities al mapa introducido, ("+ urlWms +") por favor, compruebe la integridad del mismo.");
         }
     });
 }
 
 function appendLayersObjectToLegend(){
     for(var i=0; i<legendLayersNames.length; i++){
-        console.log(legendLayersNames[i]);
-        $(".titleLayer [id='"+ legendLayersNames[i]+"']").append("<span class='glyphicon glyphicon-eye-open visibilityLayer' title=\"Visiblidad de capa\"></span>")
-        $(".titleLayer [id='"+ legendLayersNames[i]+"']").data("layer", searchLayerByName(legendLayersNames[i]));
-        console.log($(".titleLayer [id='"+ legendLayersNames[i]+"']").data());
+        $(".titleLayer label[for='"+ legendLayersNames[i]+"']").append("<span class='glyphicon glyphicon-eye-open visibilityLayer' title=\"Visiblidad de capa\"></span>")
+        $(".titleLayer label[for='"+ legendLayersNames[i]+"']").data("layer", searchLayerByName(legendLayersNames[i]));
     }
 }
 
 function eyeIconClickHandler() {
     $(".visibilityLayer").click(function (event) {
-        if ($(this).parent().data().layer.getVisible()) {
-            $(this).css("color", "rgb(120,0,0)");
-            $(this).parent().data().layer.setVisible(false);
-        } else {
-            $(this).css("color", "black");
-            $(this).parent().data().layer.setVisible(true);
+        for (var i=0; i<$(this).parent().data().layer.length; i++){
+            if ($(this).parent().data().layer[i].getVisible()) {
+                $(this).css("color", "rgb(120,0,0)");
+                $(this).parent().data().layer[i].setVisible(false);
+            } else {
+                $(this).css("color", "black");
+                $(this).parent().data().layer[i].setVisible(true);
+            }
         }
+
     });
 }
 
@@ -123,20 +117,36 @@ function closeLegend(){
 }
 
 function createEmptyLegend(){
-    var legendHtml="<div id=\"titleMap\"><label for=\"legendContent\">Leyenda</label>"+
-        "<span class='glyphicon glyphicon-remove removeLegend legend'></span>"+
-        "<span class='glyphicon glyphicon-minus hideLegend legend'></span></div>"+
-        "<div id=\"legendContent\"></div>";
-    $('.legendBar').empty();
-    $('.legendBar').append(legendHtml);
     assignLegendEventsHandlers();
 }
 
 function searchLayerByName(layerName){
+    var searchResult = [];
     for (var i=0; i<map.getLayers().getLength(); i++){
         if (map.getLayers().getArray()[i].name == layerName){
-            return map.getLayers().getArray()[i];
+            searchResult.push(map.getLayers().getArray()[i]);
+        }
+    }
+    if (searchResult.length == 0){
+        return false;
+    }else{
+        return searchResult;
+    }
+}
+
+function attachMap(wmsURL){
+    addMapUrl(wmsURL);
+    addLayersAndGroupsFromWMS(wmsURL);
+    createLegendMap(wmsURL);
+}
+
+function searchLayerInLegend(layerName){
+    var labels = $(".titleLayer label").toArray();
+    for (var i = 0; i<labels.length; i++){
+        if (labels[i].innerText == layerName){
+            return true;
         }
     }
     return false;
 }
+

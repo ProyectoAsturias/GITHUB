@@ -28,14 +28,7 @@ function makeLegendResizable(){
 	});
 }
 
-function createLegendMap(){
-	//var urlWms= server+"geoserver/"+map.name+"/wms";
-	//var legendImg ="<img class=\"legendIcon\" src='"+urlWms+"?REQUEST=GetLegendGraphic&VERSION=1.0.0&FORMAT=image/png&WIDTH=20&HEIGHT=20&LAYER="+layerName+"' />";
-	var urlWms = map.mapURL;
-	if (urlWms == undefined){
-		createEmptyLegend();
-		return;
-	}
+function createLegendMap(urlWms){
 	var parser = new ol.format.WMSCapabilities();
 	$.ajax({
 		type : "GET",
@@ -50,24 +43,31 @@ function createLegendMap(){
 			var service = parser.read(response);
 			var capabilities = service.Capability;
 			var contentHtml="";
-			for(var i=0; i<capabilities.Layer.Layer.length; i++){
-				contentHtml +="<div class=\"titleLayer\"><label for=\""+capabilities.Layer.Layer[i].Name+"\">"+capabilities.Layer.Layer[i].Name+"</label></div><div class=\"imgLayer\" id=\""+capabilities.Layer.Layer[i].Name+"\"><img crossOrigin=\"Anonymous\" src='"+urlWms+"?REQUEST=GetLegendGraphic&VERSION=1.0.0&FORMAT=image/png&WIDTH=20&HEIGHT=20&LAYER="+capabilities.Layer.Layer[i].Name+"&LEGEND_OPTIONS=forceLabels:on' /></div>";
-			}
-			var legendHtml="<div id=\"titleMap\"><label for=\"legendContent\">LEYENDA</label>"+
-								"<span class='glyphicon glyphicon-remove removeLegend legend'></span>"+
-								"<span class='glyphicon glyphicon-minus hideLegend legend'></span></div>"+
-							"<div id=\"legendContent\"></div>";
-			$('.legendBar').empty();
-			//console.log(legendHtml);				
-			$('.legendBar').append(legendHtml);
-			$('#legendContent').append(contentHtml);
+				for(var i=0; i<capabilities.Layer.Layer.length; i++){
+					var result = searchLayerInLegend(capabilities.Layer.Layer[i].Name);
+					console.log("Capa " + capabilities.Layer.Layer[i].Name + result);
+					if(!searchLayerInLegend(capabilities.Layer.Layer[i].Name)) {
+						contentHtml += "<div class=\"titleLayer\"><label for=\"" + capabilities.Layer.Layer[i].Name + "\">" + capabilities.Layer.Layer[i].Name + "</label></div><div class=\"imgLayer\" id=\"" + capabilities.Layer.Layer[i].Name + "\"><img crossOrigin=\"Anonymous\" src='" + urlWms + "?REQUEST=GetLegendGraphic&VERSION=1.0.0&FORMAT=image/png&WIDTH=20&HEIGHT=20&LAYER=" + capabilities.Layer.Layer[i].Name + "&LEGEND_OPTIONS=forceLabels:on' /></div>";
+					}
+				}
+				$('#legendContent').append(contentHtml);
 			showLegend=true;
 			assignLegendEventsHandlers();
 		},
 		error:function(error){
-			alert("Ha fallado la petición GetCapabilities al mapa introducido, por favor, compruebe la integridad del mismo.");
+			alert("Ha fallado la petición GetCapabilities al mapa introducido, ("+ urlWms +") por favor, compruebe la integridad del mismo.");
 		}
-	});
+	})
+}
+
+function searchLayerInLegend(layerName){
+	var labels = $(".titleLayer label").toArray();
+	for (var i = 0; i<labels.length; i++){
+		if (labels[i].innerText == layerName){
+			return true;
+		}
+	}
+	return false;
 }
 
 function assignLegendEventsHandlers(){
