@@ -64,9 +64,12 @@ function createMap() {
         })
     });
 
-    visorData.mapDetails.WMSUrl.forEach(function (url){
-        attachMap(url);
-    })
+    if (visorData != null){
+        visorData.mapDetails.WMSUrl.forEach(function (url){
+            attachMap(url);
+        })
+    }
+
 
     map.addControl(new ol.control.ScaleLine());
     if (typeof (toolsDraggable) == "function"){

@@ -3,7 +3,7 @@ $(document).ready(function(){
         setMapDetails(visorData.mapDetails);
     }
     createMap();
-    if (appendLayersObjectToLegend != undefined){
+    if (typeof appendLayersObjectToLegend == "function"){
         $(document).ajaxStop(function(){
             appendLayersObjectToLegend();
             assignLegendEventsHandlers();
