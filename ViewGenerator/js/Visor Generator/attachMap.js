@@ -13,7 +13,7 @@ function attachMapEventHandler(){
         success: function (response) {
             var mapList=JSON.parse(response);
             $("#selectMap").empty();
-            $("#selectMap").append("<option style='color: orange' value=\""+"Empty"+"\">"+"Eliminar mapa actual"+"</option>");
+            $("#selectMap").append("<option style='color: orange' value=\""+"Empty"+"\">"+"Eliminar mapas actuales"+"</option>");
             var hiddenList="";
             for(var i=0; i<mapList.length; i++){
                 $("#selectMap").append("<option value=\""+mapList[i].name+"\">"+mapList[i].name+"</option>");
@@ -46,10 +46,11 @@ function attachMap(wmsURL,entityId){
             if (entityId != undefined)
                 setBbox(entityId);
         }else{
-            setMapURL(undefined);
-            updateMap();
+            setMapURL(new Array());
+            map.getLayers().getArray().forEach(function (layer){
+                map.removeLayer(layer);
+            })
             var treeData = generateTreeData();
-            createLayerTree(treeData);
             createEmptyLegend();
         }
     }

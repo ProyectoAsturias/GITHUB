@@ -7,6 +7,7 @@ $(document).ready(function(){
         $(document).ajaxStop(function(){
             appendLayersObjectToLegend();
             assignLegendEventsHandlers();
+            $(this).unbind("ajaxStop");
         })
     }
 })

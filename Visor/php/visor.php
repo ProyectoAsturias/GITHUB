@@ -18,12 +18,20 @@ $twig = new Twig_Environment($loader, array(
 $twig->addExtension(new Twig_Extension_Debug());
 
 
+session_start();
+if (isset($_SESSION['userName'])){
+    $userName = $_SESSION['userName'];
+}else{
+    $userName = "";
+}
+
 $visorData = loadVisorContent($_GET["visorName"]);
 //$visorData = loadVisorContent($_GET["visorName"]);
 //$json = '{"mapDetails":{"center":[-385480.6330376505,6836280.051162561],"zoom":5,"WMSUrl":"http://ogc.bgs.ac.uk/cgi-bin/BGS_Bedrock_and_Superficial_Geology/wms"},"functionsBar":[{"position":{"top":"650px","left":"275px"},"functions":["fullScreen","dataRetrieve","panTo","zoomOut","empty","panTo"]}]}';
 //$visorData = json_decode($json);
 
 echo $twig->render('index.html.twig', array(
+    "userName" => $userName,
     "visorName" => $_GET["visorName"],
     "visorData" => json_decode($visorData[0]['content'])
 ));

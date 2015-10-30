@@ -82,8 +82,9 @@ function removeMapHandler(){
                 map.removeLayer(nodes[i].layer);
             }
             var deletedUrl = $("#layersTree").treeview("getNode",$(this).parent().parent().data("nodeid")).wmsUrl;
+            console.log(deletedUrl);
             var index = mapDetails["WMSUrl"].indexOf(deletedUrl);
-            console.log($("#layersTree").treeview("getNode",$(this).parent().parent().data("nodeid")));
+            console.log(index);
             if (index !== -1) {
                 mapDetails["WMSUrl"].splice(index, 1);
             }

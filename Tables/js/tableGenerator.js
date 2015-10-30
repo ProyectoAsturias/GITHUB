@@ -3,7 +3,6 @@ var layersPerMap = [];
 var entityParams = []; //id,nombre,proyección y town de la entidad base del usuario
 
 $(document).ready(function () {
-
 	geoLogin();
 
 	$("#userName").append(userName);
@@ -198,7 +197,8 @@ function createMapsTable(target) {
 			mapsData = convertBinaryDataToImages(mapsData);
 		}
 		createTable(target, columns, mapsData);
-		appendImages(mapsData);
+		//appendImages(mapsData);
+		downloadLayersInfoPerMap(mapsData);
 	});
 }
 
@@ -345,7 +345,6 @@ function layersBubbleTooltip(value, row, index) {
 		content = "Este mapa no tiene ninguna capa asignada";
 	} else {
 		var parsedContent = JSON.parse(row.layersInfo);
-		console.log(parsedContent);
 	}
 
 	var htmlObject = $('<div >', {
@@ -384,6 +383,12 @@ function mapsClickEventsHandler() {
 				$("#modalActivateWmsMaps").modal("show");
 			}*/
 		}
+	})
+	$("#listMapsCollapse").on("click", function(){
+		history.pushState({previous: "#listMapsCollapse"}, "", location.pathname);
+	})
+	$("#listVisorsCollapse").on("click", function(){
+		history.pushState({previous: "#listVisorsCollapse"}, "", location.pathname);
 	})
 }
 
@@ -444,7 +449,7 @@ window.location.href = viewPath + "php/generateVisor.php?visorName=" + row.name;
 function appendImages() {
 	if (mapNames) {
 		mapNames.forEach(function (mapName) {
-			getImageBbox(mapName.name, mapName.entityId);
+			//getImageBbox(mapName.name, mapName.entityId);
 		});
 	}
 }
@@ -600,7 +605,7 @@ function focusVisorElement(previousElement){
 				$("#listVisorsCollapse").trigger("click");
 			}
 			location.href="#"+previousElement;
-			history.pushState({previous: previousElement}, "", location.pathname);
+			history.pushState({previous: "#listVisorsCollapse"}, "", location.pathname);
 			$("#tableVisors").off("post-body.bs.table");
 		}
 	})
@@ -610,16 +615,48 @@ function focusMapElement(previousElement){
 	$("#table").on("post-body.bs.table", function(){
 		if (previousElement != undefined){
 			location.href="#"+previousElement;
-			history.pushState({previous: previousElement}, "", location.pathname);
 			$("#table").off("post-body.bs.table");
 		}
 	})
 }
 
+function downloadLayersInfoPerMap(mapsData){
+	console.log(mapsData);
+	if (mapsData) {
+		mapsData.forEach(function (mapData) {
+			getLayersMap(mapData.name, mapData.entityId);
+		});
+	}
+}
+
+function getLayersMap(mapName){
+	var parser = new ol.format.WMSCapabilities();
+	var urlWms = serverGS + 'geoserver/' + mapName + '/wms';
+	$.ajax({
+		type : "GET",
+		dataType : 'text',
+		url : urlWms + requestCapabilities,
+		success : function (response) {
+			var service = parser.read(response);
+			if (service.Capability && service.Capability.Layer.Layer) {
+				var layersNames = "";
+				for (var i = 0; i < service.Capability.Layer.Layer.length; i++) {
+					layersNames += service.Capability.Layer.Layer[i].Name + ",";
+				}
+				layersPerMap[mapName] = layersNames;
+			}
+		}
+ 	})
+}
+
 window.onload = function(e){
 	try{
-		focusVisorElement(history.state.previous);
-		focusMapElement(history.state.previous);
+		if (history.state.previous == "#listVisorsCollapse") {
+			$("#tableVisors").on("post-body.bs.table", function(){
+				$("" + history.state.previous).trigger("click");
+				$("#tableVisors").off("post-body.bs.table");
+			})
+		}
 	} catch (e){
 		return;
 	}

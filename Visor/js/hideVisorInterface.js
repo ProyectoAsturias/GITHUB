@@ -1,6 +1,6 @@
 interfaceShown = true;
 $(document).ready(function (){
-    $(".ol-viewport").append('<div id="hideInterface"></div>');
+    $("#mapContainer").append('<div id="hideInterface"></div>');
     hideInterfaceHandler();
 })
 
