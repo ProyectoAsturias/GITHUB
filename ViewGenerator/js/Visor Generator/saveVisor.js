@@ -61,12 +61,16 @@ function getMapUrlsJSON(){
  * @return Array functionsStructure
  */
 function extractFunctionsBar(){
+    var topLimit = $(".ol-viewport").offset()["top"];
+    var mapWidth = $(".ol-viewport").width();
+    var mapHeight = $(".ol-viewport").height();
+    var leftLimit = $(".ol-viewport").offset()["left"];
     var functionsStructure = new Array();
     $(".functionsBar").each(function(){
         var functionBar = {
             "id": $(this)[0].id ,
             "type": $(this)[0].classList[2],
-            "position" : {"top" : $(this).css("top"), "left" : $(this).css("left")},
+            "position" : {"top" : ($(this).offset()["top"] - topLimit)*100/mapHeight, "left" : (($(this).offset()["left"]) - leftLimit)*100/mapWidth},
             "functions" : []};
         $(this).find(".function").each(function(){
             functionBar["functions"].push($(this).data("function"));

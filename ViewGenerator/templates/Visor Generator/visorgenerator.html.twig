@@ -59,7 +59,7 @@
                     </div>
 
                             {% for functionBar in visorData.functionsBar %}
-                                <div class="functionsBar container {{functionBar.type}}" id="{{functionBar.id}}" style="top: {{ functionBar.position.top }}; left: {{ functionBar.position.left }} ;">
+                                <div class="functionsBar container {{functionBar.type}}" id="{{functionBar.id}}">
                                     <div class="{{functionBar.type}}iconFunctionBar"><span class='glyphicon glyphicon-remove removeFunctionBar'></span></div>
 
                                     {% for function in functionBar.functions %}
@@ -72,12 +72,6 @@
                         {% endif %}
                         {% if visorData.legendFrame != "" %}
                             {% include "Visor Generator/legend.html.twig" %}
-                            <script>
-                                $(".legendBar").css("top", visorData.legendFrame.position.top);
-                                $(".legendBar").css("left", visorData.legendFrame.position.left);
-                                $(".legendBar").css("height", visorData.legendFrame.position.height);
-                                $(".legendBar").css("width", visorData.legendFrame.position.width);
-                            </script>
                         {% endif %}
 
 
