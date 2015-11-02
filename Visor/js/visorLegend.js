@@ -136,7 +136,8 @@ function searchLayerByName(layerName){
 
 function attachMap(wmsURL){
     addMapUrl(wmsURL);
-    addLayersAndGroupsFromWMS(wmsURL);
+    var treeData = addLayersAndGroupsFromWMS(wmsURL);
+    createLayerTreeFromSource(treeDataSource);
     createLegendMap(wmsURL);
 }
 

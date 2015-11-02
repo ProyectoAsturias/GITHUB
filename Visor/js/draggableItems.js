@@ -2,6 +2,7 @@ var draggableButton = false;
 $(document).ready(function (){
     $("#mapContainer").append('<div id="toolsDraggable"></div>');
     draggableButtonHandler();
+    enableToolsDraggable();
 })
 
 function draggableButtonHandler(){
@@ -17,12 +18,14 @@ function toolsDraggable(){
     makeFunctionsBarDraggable();
     makeScaleDraggable();
     makeLegendBarDraggable();
+    makeTreeViewDraggable();
 }
 
 function toolsFixed(){
     makeFunctionsBarFixed();
     makeScaleFixed();
     makeLegendBarFixed();
+    makeTreeViewFixed();
     $("#toolsDraggable").css("border", "solid 2px red");
     draggableButton=false;
 }
@@ -31,6 +34,7 @@ function enableToolsDraggable(){
     enableFunctionsBarDraggable();
     enableScaleDraggable();
     enableLegendBarDraggable();
+    enableTreeViewDraggable();
     $("#toolsDraggable").css("border", "solid 2px white");
     draggableButton=true;
 }
@@ -63,6 +67,13 @@ function makeLegendBarDraggable() {
     });
 }
 
+function makeTreeViewDraggable(){
+    $("#layersTreeWrapper").draggable({
+        containment: $(".ol-viewport"),
+        disabled: true
+    });
+}
+
 function makeFunctionsBarFixed(){
     $( ".functionsBar" ).draggable( "option", "disabled", true );
 }
@@ -75,6 +86,10 @@ function makeLegendBarFixed(){
     $( ".legendBar" ).draggable( "option", "disabled", true );
 }
 
+function makeTreeViewFixed(){
+    $( "#layersTreeWrapper" ).draggable( "option", "disabled", true );
+}
+
 function enableFunctionsBarDraggable(){
     $( ".functionsBar" ).draggable( "option", "disabled", false );
 }
@@ -85,4 +100,8 @@ function enableScaleDraggable(){
 
 function enableLegendBarDraggable(){
     $( ".legendBar" ).draggable( "option", "disabled", false );
+}
+
+function enableTreeViewDraggable(){
+    $( "#layersTreeWrapper" ).draggable( "option", "disabled", false );
 }

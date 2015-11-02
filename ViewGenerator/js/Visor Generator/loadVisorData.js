@@ -5,7 +5,7 @@ $(document).ready(function(){
     createMap();
     if (typeof appendLayersObjectToLegend == "function"){
         $(document).ajaxStop(function(){
-            appendLayersObjectToLegend();
+            //appendLayersObjectToLegend();
             assignLegendEventsHandlers();
             $(this).unbind("ajaxStop");
         })

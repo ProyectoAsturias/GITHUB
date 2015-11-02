@@ -55,6 +55,7 @@
     <script src="../js/draggableItems.js" text="text/javascript"></script>
     <script src="../../Common/js/createLayersJSON.js"></script>
     <script src="../js/hideVisorInterface.js"></script>
+    <script src="../js/layerTree.js"></script>
 
     <script>
         visorName = "{{ visorName }}";
@@ -143,7 +144,15 @@
         </script>
     {% endif %}
     {#{% include "SLD Editor/sldEditorModal_template.html.twig" %}#}
+<div id="layersTreeWrapper">
+    <div id="titleMap"><label for="legendContent">CAPAS</label>
+        <span class='glyphicon glyphicon-remove removeLayers legend'></span>
+        <span class='glyphicon glyphicon-minus hideLayers legend'></span>
+    </div>
+    <div id="layersTree">
 
+    </div>
+</div>
 </body>
 </html>
 
