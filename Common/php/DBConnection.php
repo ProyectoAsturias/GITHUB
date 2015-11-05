@@ -46,9 +46,9 @@
 		var $pass;
 
 
-		public function __construct($database=null,$schema=null){
-			$this->host="asturiasmodelo.dyndns.org";
+		public function __construct($database=null,$schema=null){$this->host="asturiasmodelo.dyndns.org";
 			//$this->host="192.168.1.66";
+			$this->host="asturiasmodelo.dyndns.org";
 			$this->port="15432";
 			//$this->port="5432";
 			if ($database==null)

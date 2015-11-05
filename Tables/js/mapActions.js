@@ -181,7 +181,6 @@ function mapModalSaveButtonHandler() {
 }
 
 function createMap(mapName, entityId, town, projection) {
-	//console.log(mapName + "," + entityId + "," + town + "," + projection);
 	$.ajax({
 		url : apiPath + "apiGeoserver.php",
 		data : {
@@ -198,7 +197,7 @@ function createMap(mapName, entityId, town, projection) {
 				return;
 			}
 			var description = $("#newMapDescription").val();
-			saveNewMap(mapName, description, userName, entityId, town).then(function (result) {
+			saveNewMap(mapName, description, userName, entityId, town, projection).then(function (result) {
 				console.log(result);
 				if (result != "") {
 					//TODO: Mostrar mensaje de error
@@ -226,7 +225,7 @@ function checkMapName(text) {
 	return text;
 }
 
-function saveNewMap(mapName, mapDescription, mapOwner, entityId, town) {
+function saveNewMap(mapName, mapDescription, mapOwner, entityId, town, projection) {
 	return $.ajax({
 		url : "./userContent.php",
 		data : {
@@ -235,7 +234,8 @@ function saveNewMap(mapName, mapDescription, mapOwner, entityId, town) {
 			mapDescription : mapDescription,
 			mapOwner : mapOwner,
 			entityId : entityId,
-			town : town
+			town : town,
+			projection : projection
 		},
 		method : "POST",
 		success : function (response) {
@@ -260,6 +260,7 @@ function mapModalDeleteButtonHandler() {
 	$("#deleteMapsModal").click(function () {
 		var mapsId = [];
 		$("#table").bootstrapTable('getSelections').forEach(function (row) {
+			publicateMap(row.name); // Es necesario para eliminar la regla de privacidad
 			removeMap(row).then(function (response) {
 				mapsId.push(row.id);
 				$("#table").bootstrapTable('remove', {
@@ -292,9 +293,8 @@ function removeMap(map) {
 					mapName : map.name
 				},
 				method : "POST",
-				success : function (response) {
+				success : function (response){
 					console.log(response);
-					publicateMap(map.name); // Es necesario para eliminar la regla de privacidad
 				}
 			});
 		},
@@ -324,7 +324,6 @@ function mapModalPublicateButtonHandler() {
 						index : getMapRowIndexById(row.id),
 						row : row
 					});
-					appendImages();
 				} else
 					alert("Error: No se pudo publicar el mapa");
 			})
@@ -333,7 +332,7 @@ function mapModalPublicateButtonHandler() {
 }
 
 function publicateMap(mapName) {
-	return $.ajax({
+	/*return $.ajax({
 		url : apiPath + "layersSecurity.php",
 		data : {
 			workspace : mapName,
@@ -363,7 +362,7 @@ function publicateMap(mapName) {
 		error : function (error) {
 			console.log("Error al publicar el mapa:" + error);
 		}
-	});
+	});*/
 }
 
 function unpublicateMapEventHandler() {
@@ -377,7 +376,7 @@ function unpublicateMapEventHandler() {
 function mapModalUnpublicateButtonHandler() {
 	$("#unpublicateMapsModal").click(function () {
 		$("#table").bootstrapTable('getSelections').forEach(function (row) {
-			//console.log(row.name);
+			//console.log(.name);
 			unpublicateMap(row.name).then(function (response) {
 				console.log(response);
 				$("#modalUnpublicateMaps").modal("hide");
@@ -387,7 +386,6 @@ function mapModalUnpublicateButtonHandler() {
 						index : getMapRowIndexById(row.id),
 						row : row
 					});
-					appendImages();
 				} else
 					alert("Error: No se pudo despublicar el mapa: " + response);
 			})
@@ -396,7 +394,7 @@ function mapModalUnpublicateButtonHandler() {
 }
 
 function unpublicateMap(mapName) {
-	return $.ajax({
+	/*return $.ajax({
 		url : apiPath + "layersSecurity.php",
 		data : {
 			tag : "privatize",
@@ -426,8 +424,7 @@ function unpublicateMap(mapName) {
 			console.log(error);
 			alert("Error al despublicar el mapa:" + error);
 		}
-	});
-	
+	});*/
 }
 
 function activateWmsMap(mapName, entityId) {

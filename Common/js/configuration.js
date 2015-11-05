@@ -1,6 +1,6 @@
 var serverUrl = "asturiasmodelo.dyndns.org";
 var port = "8092";
-var portGS = "8090";
+var portGS ="8090";
 
 var server = "http://"+serverUrl+":"+port+"/";
 var serverGS = "http://"+serverUrl+":"+portGS+"/";
@@ -12,7 +12,7 @@ var viewPath = installationPath+"ViewGenerator/";
 var tablesPath = installationPath+"Asturias/Tables/";
 var destPath = installationPath+"Views/";
 var printingServer = server;
-var printingPath = printingServer+"JasperReports/";
+var printingPath = "http://localhost:8090/Asturias/"+"JasperReports/";
 
-var auth = btoa('admin:geoserver');
+var auth = btoa('privateUser:1234');
 var requestCapabilities='/wms?request=getCapabilities&service=wms';

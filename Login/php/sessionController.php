@@ -1,7 +1,6 @@
 <?php
-    require_once "../../Common/php/DBConnection.php";
+    require_once("../../Common/php/DBConnection.php");
     require_once("../../Common/php/TCConfig.php");
-    //require_once("http://asturiasmodelo.dyndns.org:8093/LocalGIS/java/Java.inc");
     require_once($loginTomcatJava);
 
     //Hacer login con el servicio de localgis
@@ -18,7 +17,6 @@
 
     function login($userName, $password, $redirect=""){
 	$encripter = new java("com.avanzit.encriptar.EncriptarPasswordAvanzit");
-
 	$connection=new DBConnection();        
 	$where=" AND bloqueado=FALSE AND fecha_proxima_modificacion > NOW()";
 	$query="SELECT password FROM iuseruserhdr WHERE name = '".$userName."'".$where;
@@ -35,18 +33,18 @@
 	switch($type){
 		case "TYPE1":
 			//$encPassword = $encripter->encriptar(explode("}",$row[0])[1], 1);
-			$encPassword = $encripter->encriptar($password, 1);
+			$encPassword = $encripter->encriptar($password, '1');
 			break;
 		case "TYPE2":
 			//$encPassword = $encripter->encriptar(explode("}",$row[0])[1], 2);
-
-			$encPassword = $encripter->encriptar($password, 2);
+			$encPassword = $encripter->encriptar($password, '2');
 			break;
 		default:
 			//$encPassword = $encripter->encriptar($row[0], 1);
-			$encPassword = $encripter->encriptar($password, 3);
+			$encPassword = $encripter->encriptar($password, '3');
 			break;
 	}			
+	//return $encPassword;
         $query="SELECT id,id_entidad FROM iuseruserhdr WHERE name = '".$userName."' AND password='".$encPassword."'".$where;
         $result=pg_query($query) or die('Error: '.pg_last_error());
         $row=pg_fetch_row($result);
@@ -71,7 +69,8 @@
             $loginResponse->previousUrl = $_SERVER['HTTP_REFERER'];
             registerUser($userId,$userName);
             return $loginResponse;
-        }else{
+        }
+	else{
             $loginResponse = new stdClass();
             $loginResponse->logged = false;
             $loginResponse->errorMessage = "Error en la autenticación, consulte a su administrador.";

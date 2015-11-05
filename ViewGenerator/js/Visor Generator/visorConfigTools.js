@@ -53,5 +53,5 @@ function hideToolBar(){
 }
 
 function back(){
-	window.location="http://localhost:8090/Asturias/"+"Tables/php/tables.php"+"?previous="+visorName;
+	window.location=server+"Tables/php/tables.php"+"?previous="+visorName;
 }

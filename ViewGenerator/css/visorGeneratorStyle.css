@@ -69,7 +69,7 @@
 
 #layersTree{
     height: 41vh;
-    min-height: 48ex;
+    min-height: 48px;
 }
 
 #baseLayerButton{
@@ -97,22 +97,14 @@
 }
 
 .functionsBar{
-    /* Permalink - use to edit and share this gradient: http://colorzilla.com/gradient-editor/#bdf3fd+0,a2daf5+45,a2daf5+68,90bcea+76,90bae4+100,a9d2f3+100,b8e1fc+100 */
-    background: #bdf3fd; /* Old browsers */
-    background: -moz-linear-gradient(top,  #bdf3fd 0%, #a2daf5 45%, #a2daf5 68%, #90bcea 76%, #90bae4 100%, #a9d2f3 100%, #b8e1fc 100%); /* FF3.6+ */
-    background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#bdf3fd), color-stop(45%,#a2daf5), color-stop(68%,#a2daf5), color-stop(76%,#90bcea), color-stop(100%,#90bae4), color-stop(100%,#a9d2f3), color-stop(100%,#b8e1fc)); /* Chrome,Safari4+ */
-    background: -webkit-linear-gradient(top,  #bdf3fd 0%,#a2daf5 45%,#a2daf5 68%,#90bcea 76%,#90bae4 100%,#a9d2f3 100%,#b8e1fc 100%); /* Chrome10+,Safari5.1+ */
-    background: -o-linear-gradient(top,  #bdf3fd 0%,#a2daf5 45%,#a2daf5 68%,#90bcea 76%,#90bae4 100%,#a9d2f3 100%,#b8e1fc 100%); /* Opera 11.10+ */
-    background: -ms-linear-gradient(top,  #bdf3fd 0%,#a2daf5 45%,#a2daf5 68%,#90bcea 76%,#90bae4 100%,#a9d2f3 100%,#b8e1fc 100%); /* IE10+ */
-    background: linear-gradient(to bottom,  #bdf3fd 0%,#a2daf5 45%,#a2daf5 68%,#90bcea 76%,#90bae4 100%,#a9d2f3 100%,#b8e1fc 100%); /* W3C */
-    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#bdf3fd', endColorstr='#b8e1fc',GradientType=0 ); /* IE6-9 */
-
-    -webkit-border-radius: 15px;
-    -moz-border-radius: 15px;
-    border-radius: 15px;
+    background-color: rgb(255,255,255);
+    background-color: rgba(255,255,255,0.9);
+    border-bottom: 4px solid #559FCB;
+    -webkit-box-shadow: 0px 1px 2px 0px rgba(0,0,0,0.3);
+    -moz-box-shadow: 0px 1px 2px 0px rgba(0,0,0,0.3);
+    box-shadow: 0px 1px 2px 0px rgba(0,0,0,0.3);
     height: 50px;
     width:60vw;
-    background-color:beige;
     position: absolute;
     top: 250px;
     z-index: 1;
@@ -124,13 +116,13 @@
 }
 
 .functionsBar .functionContainer:hover{
-    top: -5px !important;
+    /*top: -5px !important;*/
 }
 
 .areaZoom{
     cursor: pointer;
-    height: 38px;
-    width: 38px;
+    height: 30px;
+    width: 30px;
     background-image:url("../templates/images/areazoom.png");
     background-repeat:no-repeat;
     background-size: contain;
@@ -138,8 +130,8 @@
 
 .clickCoordinatesButton{
     cursor: pointer;
-    height: 38px;
-    width: 38px;
+    height: 30px;
+    width: 30px;
     background-image:url("../templates/images/coordinates.png");
     background-repeat:no-repeat;
     background-size: contain;
@@ -147,8 +139,8 @@
 
 .dataRetrieving{
     cursor: pointer;
-    height: 38px;
-    width: 38px;
+    height: 30px;
+    width: 30px;
     background-image:url("../templates/images/retrieveData.png");
     background-repeat:no-repeat;
     background-size: contain;
@@ -156,8 +148,8 @@
 
 .drawType{
     cursor: pointer;
-    height: 38px;
-    width: 38px;
+    height: 30px;
+    width: 30px;
     background-image:url("../templates/images/draw.png");
     background-repeat:no-repeat;
     background-size: contain;
@@ -165,8 +157,8 @@
 
 .fullScreen{
     cursor: pointer;
-    height: 38px;
-    width: 38px;
+    height: 30px;
+    width: 30px;
     background-image:url("../templates/images/fullScreen.png");
     background-repeat:no-repeat;
     background-size: contain;
@@ -174,8 +166,8 @@
 
 .panTo{
     cursor: pointer;
-    height: 38px;
-    width: 38px;
+    height: 30px;
+    width: 30px;
     background-image:url("../templates/images/panTo.png");
     background-repeat:no-repeat;
     background-size: contain;
@@ -184,8 +176,8 @@
 
 .printMap{
     cursor: pointer;
-    height: 38px;
-    width: 38px;
+    height: 30px;
+    width: 30px;
     background-image:url("../templates/images/printMap.png");
     background-repeat:no-repeat;
     background-size: contain;
@@ -193,8 +185,8 @@
 
 .export{
     cursor: pointer;
-    height: 38px;
-    width: 38px;
+    height: 30px;
+    width: 30px;
     background-image:url("../templates/images/export.png");
     background-repeat:no-repeat;
     background-size: contain;
@@ -202,8 +194,8 @@
 
 .zoomInButton{
     cursor: pointer;
-    height: 38px;
-    width: 38px;
+    height: 30px;
+    width: 30px;
     background-image:url("../templates/images/zoomIn.png");
     background-repeat:no-repeat;
     background-size: contain;
@@ -211,8 +203,8 @@
 
 .zoomOutButton{
     cursor: pointer;
-    height: 38px;
-    width: 38px;
+    height: 30px;
+    width: 30px;
     background-image:url("../templates/images/zoomOut.png");
     background-repeat:no-repeat;
     background-size: contain;
@@ -220,80 +212,80 @@
 
 .empty{
     cursor: pointer;
-    height: 38px;
-    width: 38px;
+    height: 30px;
+    width: 30px;
     background-image:url("../templates/images/empty.png");
     background-repeat:no-repeat;
     background-size: contain;
 }
 .export{
     cursor: pointer;
-    height: 38px;
-    width: 38px;
+    height: 30px;
+    width: 30px;
     background-image:url("../templates/images/export.png");
     background-repeat:no-repeat;
     background-size: contain;
 }
 .configuration{
     cursor: pointer;
-    height: 38px;
-    width: 38px;
+    height: 30px;
+    width: 30px;
     background-image:url("../templates/images/configuration.png");
     background-repeat:no-repeat;
     background-size: contain;
 }
 .help{
     cursor: pointer;
-    height: 38px;
-    width: 38px;
+    height: 30px;
+    width: 30px;
     background-image:url("../templates/images/help.png");
     background-repeat:no-repeat;
     background-size: contain;
 }
 .homeinfo{
     cursor: pointer;
-    height: 38px;
-    width: 38px;
+    height: 30px;
+    width: 30px;
     background-image:url("../templates/images/homeinfo.png");
     background-repeat:no-repeat;
     background-size: contain;
 }
 .lastview{
     cursor: pointer;
-    height: 38px;
-    width: 38px;
+    height: 30px;
+    width: 30px;
     background-image:url("../templates/images/lastview.png");
     background-repeat:no-repeat;
     background-size: contain;
 }
 .mail{
     cursor: pointer;
-    height: 38px;
-    width: 38px;
+    height: 30px;
+    width: 30px;
     background-image:url("../templates/images/mail.png");
     background-repeat:no-repeat;
     background-size: contain;
 }
 .selection{
     cursor: pointer;
-    height: 38px;
-    width: 38px;
+    height: 30px;
+    width: 30px;
     background-image:url("../templates/images/selection.png");
     background-repeat:no-repeat;
     background-size: contain;
 }
 .update{
     cursor: pointer;
-    height: 38px;
-    width: 38px;
+    height: 30px;
+    width: 30px;
     background-image:url("../templates/images/update.png");
     background-repeat:no-repeat;
     background-size: contain;
 }
 .wmsimport{
     cursor: pointer;
-    height: 38px;
-    width: 38px;
+    height: 30px;
+    width: 30px;
     background-image:url("../templates/images/wms.png");
     background-repeat:no-repeat;
     background-size: contain;
@@ -302,8 +294,8 @@
 .legendBar{
     left: 800px;
     z-index: 1;
-    border: solid 1px black;
-    border-radius:5px;
+    /*border: solid 1px black;*/
+    /*border-radius:5px;*/
     width:13vw;
     background-color:#CCC;
     opacity:0.9;
@@ -321,19 +313,21 @@
 #titleMap{
     width:100%;
     height:25px;
-    border-bottom:solid 1px black;
-    border-radius:2px;
-    background-color:#2C31ED;
-    text-align:center;
-
+    background-color:#559FCB;
+    text-align:left;
     color:#FFF;
+    -webkit-box-shadow: 0px 1px 2px 0px rgba(0,0,0,0.3);
+    -moz-box-shadow: 0px 1px 2px 0px rgba(0,0,0,0.3);
+    box-shadow: 0px 1px 2px 0px rgba(0,0,0,0.3);
+    padding: 0.2em;
 }
 .titleLayer{
     width: 100%;
-    height:20px;
+    /*height:20px;*/
     overflow:hidden;
     text-align:center;
-    border: solid 1px blue;
+    /*border: solid 1px blue;*/
+    padding: 4px;
 }
 .imgLayer{
     width: 100%;
@@ -365,29 +359,21 @@ span.legend{
 }
 
 .vertical{
-    /* Permalink - use to edit and share this gradient: http://colorzilla.com/gradient-editor/#bdf3fd+0,a2daf5+45,a2daf5+68,90bcea+76,90bae4+100,a9d2f3+100,b8e1fc+100 */
-    background: #bdf3fd; /* Old browsers */
-    background: -moz-linear-gradient(top,  #bdf3fd 0%, #a2daf5 45%, #a2daf5 68%, #90bcea 76%, #90bae4 100%, #a9d2f3 100%, #b8e1fc 100%); /* FF3.6+ */
-    background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#bdf3fd), color-stop(45%,#a2daf5), color-stop(68%,#a2daf5), color-stop(76%,#90bcea), color-stop(100%,#90bae4), color-stop(100%,#a9d2f3), color-stop(100%,#b8e1fc)); /* Chrome,Safari4+ */
-    background: -webkit-linear-gradient(top,  #bdf3fd 0%,#a2daf5 45%,#a2daf5 68%,#90bcea 76%,#90bae4 100%,#a9d2f3 100%,#b8e1fc 100%); /* Chrome10+,Safari5.1+ */
-    background: -o-linear-gradient(top,  #bdf3fd 0%,#a2daf5 45%,#a2daf5 68%,#90bcea 76%,#90bae4 100%,#a9d2f3 100%,#b8e1fc 100%); /* Opera 11.10+ */
-    background: -ms-linear-gradient(top,  #bdf3fd 0%,#a2daf5 45%,#a2daf5 68%,#90bcea 76%,#90bae4 100%,#a9d2f3 100%,#b8e1fc 100%); /* IE10+ */
-    background: linear-gradient(to bottom,  #bdf3fd 0%,#a2daf5 45%,#a2daf5 68%,#90bcea 76%,#90bae4 100%,#a9d2f3 100%,#b8e1fc 100%); /* W3C */
-    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#bdf3fd', endColorstr='#b8e1fc',GradientType=0 ); /* IE6-9 */
-
-
-    -webkit-border-radius: 15px;
-    -moz-border-radius: 15px;
-    border-radius: 15px;
+    background-color: rgb(255,255,255);
+    background-color: rgba(255,255,255,0.9);
+    /*border-right: 4px solid #559FCB;*/
+    -webkit-box-shadow: 0px 1px 2px 0px rgba(0,0,0,0.3);
+    -moz-box-shadow: 0px 1px 2px 0px rgba(0,0,0,0.3);
+    box-shadow: 0px 1px 2px 0px rgba(0,0,0,0.3);
     width:70px;
     height:46vh;
-    background-color:beige;
     padding-left: 0;
     padding-top: 26px;
     position: absolute;
     top: 250px;
     left: 250px;
-    z-index: 1
+    z-index: 1;
+    cursor: move;
 }
 
 #hideInterface{
@@ -401,8 +387,8 @@ span.legend{
 }
 
 #wmsImportWindow{
-	width:350px;
-	position: absolute;
+    width:350px;
+    position: absolute;
     top: 250px;
     left: 50px;
     opacity: 0.8;
@@ -453,6 +439,7 @@ li.base{
     overflow-x: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
+    font-size: 0.9em;
 }
 
 .treeIcons{

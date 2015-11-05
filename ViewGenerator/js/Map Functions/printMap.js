@@ -38,8 +38,8 @@ function changeReportSelectorHandler(){
 
 function changePreview(){
     $.ajax({
-        //url: "../../JasperReports/src/generateReport.php",
-        url: printingPath + "src/generateReport.php",
+        url: "../../JasperReports/src/generateReport.php",
+        //url: printingPath + "src/generateReport.php",
         data: {
             reportName: $(".reportsAvailable").val(),
             mapImage: generateMapImage(),
@@ -50,6 +50,7 @@ function changePreview(){
         },
         type: "POST",
         success: function (response) {
+            console.log(response);
             $("#previewCanvas iframe").attr("src", printingPath + "src/generateReport.php?tag=getPreview");
         }
     });

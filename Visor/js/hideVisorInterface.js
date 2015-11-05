@@ -16,6 +16,8 @@ function hideInterfaceHandler(){
 function showInterface(){
     $(".functionsBar").show();
     $(".legendBar").show();
+    $("#layersTreeWrapper").show();
+    $(".imagenFooterVisor").show();
     $("#hideInterface").css("background-image", "url('../../Common/images/hideInterface-left.png')");
     interfaceShown = true;
 }
@@ -23,6 +25,8 @@ function showInterface(){
 function hideInterface(){
     $(".functionsBar").hide();
     $(".legendBar").hide();
+    $(".imagenFooterVisor").hide();
+    $("#layersTreeWrapper").hide();
     $("#hideInterface").css("background-image", "url('../../Common/images/hideInterface-right.png')");
     interfaceShown = false;
 }

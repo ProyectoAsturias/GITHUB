@@ -82,10 +82,13 @@ function extractFunctionsBar(){
 }
 
 function extractLegendFrame(){
-
+    var topLimit = $(".ol-viewport").offset()["top"];
+    var mapWidth = $(".ol-viewport").width();
+    var mapHeight = $(".ol-viewport").height();
+    var leftLimit = $(".ol-viewport").offset()["left"];
     if ($(".legendBar") !== undefined){
         var legendBar = {
-            "position": {"top": $(".legendBar").css("top"), "left": $(".legendBar").css("left"), "height": $(".legendBar").css("height"), "width": $(".legendBar").css("width")}
+            "position" : {"top" : ($(".legendBar").offset()["top"] - topLimit)*100/mapHeight, "left" : (($(".legendBar").offset()["left"]) - leftLimit)*100/mapWidth, "height": $(".legendBar").css("height"), "width": $(".legendBar").css("width")}
         }
         return legendBar;
     }else{

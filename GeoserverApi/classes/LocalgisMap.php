@@ -87,7 +87,7 @@
 		 */
 		public function __construct($id, $name, $xml, $image, $id_entidad, $projection_id, $fecha_ins, $fecha_mod){
 			$this->id=$id;
-			$this->name=str_replace(" ","_",utf8_encode($name));
+			$this->name=$name;
 			if($xml!=""){
 				$data=simplexml_load_string(utf8_encode($xml));
 				$this->description=(string)$data->description;

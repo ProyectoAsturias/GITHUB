@@ -12,8 +12,9 @@
 	 * Crea un mapa en Geoserver. Genera un WorkSpace y un Datastore en Geoserver.
 	 */
 	function createMap(){
-		if(isset($_POST['projection']) && isset($_POST['town'])){
-			$_SESSION["projection"]=$_POST['projection'];
+		//if(isset($_POST['projection']) && isset($_POST['town'])){
+		if(isset($_POST['town'])){
+			//$_SESSION["projection"]=$_POST['projection'];
 			#Creación del WS y el DS
 			if(($result=$GLOBALS['geoserver']->createWorkspace($GLOBALS['gsConnection']->wsName))!="")
 				print("Advice".$result."\n");
@@ -51,12 +52,14 @@
 	 * Añade una capa al workspace
 	 */	
 	function addLayer(){
-		if(isset($_POST['layerId']) && isset($_POST['layerName']) && isset($_POST['mapId']) && isset($_POST['town'])){
+		//if(isset($_POST['layerId']) && isset($_POST['layerName']) && isset($_POST['mapId']) && isset($_POST['town'])){
+		if(isset($_POST['layerId']) && isset($_POST['layerName']) && isset($_POST['mapId']) && isset($_POST['town']) && isset($_POST['projection'])){
 			$layerId=$_POST['layerId'];
 			$layerName=$_POST['layerName'];
 			$mapId=$_POST['mapId'];
 			$town=$_POST['town'];
-			$projection=$_SESSION['projection'];
+			//$projection=$_SESSION['projection'];
+			$projection=$_POST['projection'];
 			$layerDescription="Capa de Localgis";
 
 			/*echo $town;
@@ -87,16 +90,23 @@
 		require_once("apiLocalgisFunc.php");
 		$styles = getStyles($layerId,$mapId);
 		$result=0;
+		$default=false;
 		for($i=0;$i<sizeof($styles);$i++){
 			$styleName=$styles[$i]->name;//."_".$i;
 			//print("Estilo: ".$styleName."\n");
 			if(($res=$GLOBALS['geoserver']->createStyle($GLOBALS['gsConnection']->wsName, $styles[$i]->sld, $styleName))!="")
 				$result=$result."Advice: ".$res."\n";
-			//Toma por defecto el primero
-			if($i==0)
-				$result=$result.setDefaultStyle($layerName,$styles[0]->name);//."_0");
-			if(($res=$GLOBALS['geoserver']->addStyleToLayer($layerName, $styleName, $GLOBALS['mapName']))!="")
-				$result=$result."Advice: ".$res."\n";
+			else{
+				//Toma por defecto el primero
+				if($default==false){
+					$res=setDefaultStyle($layerName,$styles[0]->name);
+					if($res=="")
+						$default=true;
+					$result=$result.$res;
+				}
+				if(($res=$GLOBALS['geoserver']->addStyleToLayer($layerName, $styleName, $GLOBALS['mapName']))!="")
+					$result=$result."Advice: ".$res."\n";
+			}
 		}
 		$GLOBALS['geoserver']->addStyleToLayer($layerName, "point", $GLOBALS['mapName']);
 		$GLOBALS['geoserver']->addStyleToLayer($layerName, "line", $GLOBALS['mapName']);
@@ -252,8 +262,12 @@
 			$urlWms = $GLOBALS['gsConnection']->url.'/'.$GLOBALS['mapName'].'/wms';
 			$curl = 'curl "'.$urlWms.'?service=WMS&version=1.1.0&request=GetMap&layers='.$GLOBALS['mapName'].':'.$layerName.'&styles=&bbox=674750.9375,4774188.5,700558.875,4805054.0&width=642&height=768&srs=EPSG:25829&format=application/openlayers" -H "Authorization : Basic cHJpdmF0ZVVzZXI6MTIzNA==" | grep "Exception" |wc -l';
 			$result=shell_exec($curl);
+			$curl = 'curl "'.$urlWms.'?service=WMS&version=1.1.0&request=GetMap&layers='.$GLOBALS['mapName'].':'.$layerName.'&styles=&bbox=674750.9375,4774188.5,700558.875,4805054.0&width=642&height=768&srs=EPSG:25829&format=application/openlayers" -H "Authorization : Basic cHJpdmF0ZVVzZXI6MTIzNA=="';
+
+			$error=shell_exec($curl);
 			if ($result!=0){
 				echo "Error: Estilo incorrecto, estilo actual establecido: Generic";
+				echo "<br>Definición del error:".$error;
 				if($res=$GLOBALS['geoserver']->defaultStyleToLayer($layerName, "generic", $GLOBALS['mapName'])!="")
 	                                print("Advice: ".$res."\n");
 			}

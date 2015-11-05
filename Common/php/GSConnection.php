@@ -53,7 +53,7 @@
 		 */
 		public function __construct($mapName=""){
 			$this->host="asturiasmodelo.dyndns.org";
-			$this->port="8092";
+			$this->port="8090";
 			$this->user="admin";
 			$this->pass="geoserver";
 			$this->wsName=$mapName;

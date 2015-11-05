@@ -408,19 +408,17 @@ class ApiRest {
 	 * @return mixed|string
 	 */
 	public function delLayer($workspaceName, $datastoreName, $layerName) {
-		$result='';
 		//Lista de estilos
 		$styleList=$this->listStyles($workspaceName,$layerName);
 		//Borrado de la capa en Geoserver
-		$result=$this->runApi('layers/'.urlencode($layerName).'.xml', 'DELETE');
-		$result=$result.$this->runApi('workspaces/'.urlencode($workspaceName).'/datastores/'.urlencode($datastoreName).'/featuretypes/'.urlencode($layerName).'.xml', 'DELETE');
-
+		$result=$this->runApi('layers/'.urlencode($workspaceName.':'.$layerName).'.xml', 'DELETE');
+		$result=$this->runApi('workspaces/'.urlencode($workspaceName).'/datastores/'.urlencode($datastoreName).'/featuretypes/'.urlencode($layerName).'.xml', 'DELETE');
 		//Borrado de los estilos asociados
-		if($styleList->styles!=null){
+		if($styleList!=null && $styleList->styles!=null){
 			$styleList=$styleList->styles->style;
 			foreach($styleList as $style)
-				if($style->name!="point" && $style->name!="line" && $style->name!="polygon")
-					$result=$result.$this->delStyle($style->name,$workspaceName);
+				if($style->name!="point" && $style->name!="line" && $style->name!="polygon" && $style->name!="generic")
+					$this->delStyle($style->name,$workspaceName);
 		}
 		
 		return $result;
@@ -704,7 +702,8 @@ class ApiRest {
 		if($styleName=="point"||$styleName=="line"||$styleName=="polygon"||$styleName=="generic")
 			$xml='<layer><defaultStyle><name>'.htmlentities($styleName, ENT_COMPAT).'</name></defaultStyle></layer>';
 		else
-			$xml='<layer><defaultStyle><name>'.htmlentities($workspaceName, ENT_COMPAT).':'.htmlentities($styleName, ENT_COMPAT).'</name></defaultStyle></layer>';
+			//$xml='<layer><defaultStyle><name>'.htmlentities($workspaceName, ENT_COMPAT).':'.htmlentities($styleName, ENT_COMPAT).'</name></defaultStyle></layer>';
+			$xml='<layer><defaultStyle><name>'.htmlentities($styleName, ENT_COMPAT).'</name><workspace>'.$workspaceName.'</workspace></defaultStyle></layer>';
 		return $this->runApi('layers/'.urlencode($workspaceName).':'.urlencode($layerName).'.xml', 'PUT', $xml);
 	}
 
@@ -717,7 +716,8 @@ class ApiRest {
 	public function delStyle($styleName,$workspaceName) {
 		if($styleName=="point"||$styleName=="line"||$styleName=="polygon"||$styleName=="generic")
 			return "";
-		return $this->runApi('styles/'.urlencode($workspaceName).':'.htmlentities($styleName, ENT_COMPAT).'/styles', 'DELETE');
+		//return $this->runApi('styles/'.urlencode($workspaceName).':'.urlencode($styleName).'/styles', 'DELETE');
+		return $this->runApi('workspaces/'.urlencode($workspaceName).'/styles/'.urlencode($styleName).'/styles', 'DELETE');
 	}
 
 //wms

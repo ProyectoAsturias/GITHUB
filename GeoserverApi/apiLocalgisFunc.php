@@ -24,8 +24,9 @@
 
 		$maps = array();
 		$i = 0;
-		while ($row = pg_fetch_row($result))
+		while ($row = pg_fetch_row($result)){
 			$maps[$i++] = new LocalgisMap($row[0], sanear_string($row[1]), $row[2], $row[3], $row[4], $row[5], $row[6], $row[7]);
+		}
 		return json_encode($maps);
 	}
 
@@ -39,7 +40,8 @@
 			$where = " AND r.id_map = '".$idMap."'";
 
 		$dbConnection = new DBConnection();
-		$query = "SELECT DISTINCT(lf.id_layerfamily) , d.traduccion FROM maps_layerfamilies_relations as r, layerfamilies as lf , dictionary d WHERE r.id_layerfamily=lf.id_layerfamily AND lf.id_name=d.id_vocablo ".$GLOBALS['whereEntity']." AND d.locale='es_ES' ".$where." ORDER By d.traduccion";
+		//$query = "SELECT DISTINCT(lf.id_layerfamily) , d.traduccion FROM maps_layerfamilies_relations as r, layerfamilies as lf , dictionary d WHERE r.id_layerfamily=lf.id_layerfamily AND lf.id_name=d.id_vocablo ".$GLOBALS['whereEntity']." AND d.locale='es_ES' ".$where." ORDER By d.traduccion";
+		$query = "SELECT DISTINCT(lf.id_layerfamily), d.traduccion FROM layerfamilies as lf , dictionary d WHERE lf.id_name=d.id_vocablo AND d.locale='es_ES'  ORDER By d.traduccion";
 		$result = pg_query($query)or die('Error: '.pg_last_error());
 		$dbConnection->close();
 		$families = array();
@@ -89,8 +91,9 @@
 				$where = "AND l.id_entidad=".$_SESSION["entityId"];
 			else if (isset($_POST['entityId']))
 				$where = "AND l.id_entidad=".$_POST['entityId'];
-			//$query="SELECT ls.id_layer,d.traduccion FROM layers_styles as ls, layers as l , dictionary d WHERE id_map=".$idMap." AND l.id_layer=ls.id_layer AND l.id_name=d.id_vocablo AND d.locale='es_ES' ".$where." ORDER BY position";
-			$query = "SELECT DISTINCT * FROM (SELECT ls.id_layer as id,d.traduccion as trad FROM layers_styles as ls, layers as l , dictionary d WHERE id_map=".$idMap." AND l.id_layer=ls.id_layer AND l.id_name=d.id_vocablo AND d.locale='es_ES' ".$where." ORDER BY position) as layers ";
+			//$query = "SELECT DISTINCT * FROM (SELECT ls.id_layer as id,d.traduccion as trad FROM layers_styles as ls, layers as l , dictionary d WHERE id_map=".$idMap." AND l.id_layer=ls.id_layer AND l.id_name=d.id_vocablo AND d.locale='es_ES' ".$where." ORDER BY position) as layers ";
+			$query = "SELECT DISTINCT * FROM (SELECT ls.id_layer as id,d.traduccion as trad FROM layers_styles as ls, layers as l , dictionary d WHERE id_map=".$idMap." AND l.id_layer=ls.id_layer AND l.id_name=d.id_vocablo AND d.locale='es_ES' ORDER BY position) as layers ";
+			
 			$result = pg_query($query)or die('Error: '.pg_last_error());
 			$dbConnection->close();
 
@@ -271,12 +274,12 @@
 	 function sanear_string($string) { 
 		$string = str_replace(" ","_",$string);
 		$string = trim($string); 
-		/*$string = str_replace( array('á', 'à', 'ä', 'â', 'ª', 'Á', 'À', 'Â', 'Ä'), array('a', 'a', 'a', 'a', 'a', 'A', 'A', 'A', 'A'), $string ); 
-		$string = str_replace( array('é', 'è', 'ë', 'ê', 'É', 'È', 'Ê', 'Ë'), array('e', 'e', 'e', 'e', 'E', 'E', 'E', 'E'), $string ); 
-		$string = str_replace( array('í', 'ì', 'ï', 'î', 'Í', 'Ì', 'Ï', 'Î'), array('i', 'i', 'i', 'i', 'I', 'I', 'I', 'I'), $string ); 
-		$string = str_replace( array('ó', 'ò', 'ö', 'ô', 'Ó', 'Ò', 'Ö', 'Ô'), array('o', 'o', 'o', 'o', 'O', 'O', 'O', 'O'), $string ); 
-		$string = str_replace( array('ú', 'ù', 'ü', 'û', 'Ú', 'Ù', 'Û', 'Ü'), array('u', 'u', 'u', 'u', 'U', 'U', 'U', 'U'), $string );
-		$string = str_replace( array('ñ', 'Ñ', 'ç', 'Ç'), array('n', 'N', 'c', 'C',), $string );*/
+		$string = str_replace( array('à', 'ä', 'â', 'ª', 'À', 'Â', 'Ä'), array('a', 'a', 'a', 'a', 'A', 'A', 'A'), $string ); 
+		$string = str_replace( array('è', 'ë', 'ê', 'È', 'Ê', 'Ë'), array('e', 'e', 'e', 'E', 'E', 'E'), $string ); 
+		$string = str_replace( array('ì', 'ï', 'î', 'Ì', 'Ï', 'Î'), array('i', 'i', 'i', 'I', 'I', 'I'), $string ); 
+		$string = str_replace( array('ò', 'ö', 'ô', 'º', 'Ò', 'Ö', 'Ô'), array('o', 'o', 'o', 'o', 'O', 'O', 'O'), $string ); 
+		$string = str_replace( array('ù', 'ü', 'û', 'Ù', 'Û', 'Ü'), array('u', 'u', 'u', 'U', 'U', 'U'), $string );
+		/*$string = str_replace( array('ñ', 'Ñ', 'ç', 'Ç'), array('n', 'N', 'c', 'C',), $string );*/
 		//Esta parte se encarga de eliminar cualquier caracter extraño 
 		//$string = str_replace( array("\\", "¨", "º", "-", "~", "#", "@", "|", "!", "\"", "·", "$", "%", "&", "/", "(", ")", "?", "'", "¡", "¿", "[", "^", "`", "]", "+", "}", "{", "¨", "´", ">“, “< ", ";", ",", ":", ".", " "), '', $string ); 
 		$string = str_replace( array("\\", "¨", "º", "~", "#", "@", "|", "!", "\"", "·", "$", "%", "&", "/", "(", ")", "?", "'", "¡", "¿", "[", "^", "`", "]", "+", "}", "{", "¨", "´", ">", "< ", ";", ",", ":"), '_', $string );

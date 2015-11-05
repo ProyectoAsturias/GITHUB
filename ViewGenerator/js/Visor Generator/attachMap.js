@@ -11,6 +11,7 @@ function attachMapEventHandler(){
         },
         method: "POST",
         success: function (response) {
+		//console.log(response);
             var mapList=JSON.parse(response);
             $("#selectMap").empty();
             $("#selectMap").append("<option style='color: orange' value=\""+"Empty"+"\">"+"Eliminar mapas actuales"+"</option>");

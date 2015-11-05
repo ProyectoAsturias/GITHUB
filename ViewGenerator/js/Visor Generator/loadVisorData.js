@@ -15,8 +15,23 @@ $(document).ready(function(){
 })
 
 function setLegendBarPosition(legendFrame){
-    $(".legendBar").css("top", legendFrame.position.top);
-    $(".legendBar").css("left", legendFrame.position.left);
+    var leftBarWidth = $("#leftBar").width();
+    if (leftBarWidth == null) {
+        leftBarWidth == 0;
+    }else {
+        leftBarWidth += 20;
+    }
+    var topBarHeight = $("#allTools").height();
+    if (topBarHeight == null){
+        topBarHeight = 0;
+    }else{
+        topBarHeight += 10;
+    }
+    if (leftBarWidth == null && legendFrame.position.left > 80){
+        leftBarWidth += 0;
+    }
+    $(".legendBar").css("top", ($(".ol-viewport").height()/100)*legendFrame.position.top + topBarHeight)
+    $(".legendBar").css("left", ($(".ol-viewport").width()/100)*legendFrame.position.left + leftBarWidth)
     $(".legendBar").css("height", legendFrame.position.height);
     $(".legendBar").css("width", legendFrame.position.width);
 }

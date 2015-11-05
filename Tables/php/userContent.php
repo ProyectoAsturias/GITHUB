@@ -13,14 +13,14 @@
             case "userVisors":
                 echo json_encode(downloadUserVisors($_SESSION["userName"]));
                 break;
-			case "entityMaps":
+	    case "entityMaps":
                echo json_encode(downloadEntityMaps($_POST["userEntityId"]));
                break;
             case "entityVisors":
                 echo json_encode(downloadEntityVisors($_POST["userEntityId"]));
                 break;
             case "saveMap":
-                echo json_encode(saveMap($_POST["mapName"],$_POST["mapDescription"],$_POST["mapOwner"],$_POST["entityId"],$_POST["town"]));
+                echo json_encode(saveMap($_POST["mapName"],$_POST["mapDescription"],$_POST["mapOwner"],$_POST["entityId"],$_POST["town"],$_POST["projection"]));
                 break;
             case "saveVisor":
                 echo json_encode(saveVisor($_POST["visorName"],$_POST["visorDescription"],$_POST["visorOwner"]));
@@ -49,7 +49,7 @@
             case "updateDescriptionMap":
                 echo json_encode(updateDescriptionMap($_POST["mapName"],$_POST["mapDescription"]));
                 break;
-			case "updateDescriptionView":
+	        case "updateDescriptionView":
                 echo json_encode(updateDescriptionView($_POST["viewName"],$_POST["viewDescription"]));
                 break;
             case "saveMapBaselayer":
@@ -61,16 +61,21 @@
             case "userMapNames":
                 echo json_encode(downloadUserMapNames($_SESSION["userName"]));
                 break;
-			case "getTown":
-				echo json_encode(getTown($_POST["mapName"]));
-				//echo json_encode(getTown($_POST["mapName"]));
-				break;
-			case "getVersionInfo":
-				echo json_encode(getVersionInfo());
-				break;
-			case "userActiveMaps":
+    	    case "getMapVars":
+        		echo json_encode(getMapVars($_POST["mapName"]));
+        		break;
+    	    case "getVersionInfo":
+        		echo json_encode(getVersionInfo());
+        		break;
+    	    case "userActiveMaps":
                 echo json_encode(downloadUserActiveMaps($_SESSION["userName"]));
                	break;
+	        case "getMiniImages":
+                echo json_encode(getMiniImages($_POST["userEntityId"]));
+                break;
+            case "geMapProjection":
+                echo json_encode(geMapProjection($_POST["nameLayer"]));
+                break;
             default:
                 echo "Error userContent: Function ".$_POST["tag"]." don't exists.";
         }
@@ -92,9 +97,9 @@
     function downloadEntityMaps($entityId){
 	$query="";
 	if($entityId!=0)
-	    $query = "SELECT id, name, description, date_creation, date_update, published, image, \"entityId\"  FROM public.\"Maps\" WHERE \"entityId\"='".$entityId."';";
+	    $query = "SELECT id, name, description, date_creation, date_update, published, \"entityId\"  FROM public.\"Maps\" WHERE \"entityId\"='".$entityId."';";
 	else
-            $query = "SELECT id, name, description, date_creation, date_update, published, image, \"entityId\"  FROM public.\"Maps\" ;";	
+            $query = "SELECT id, name, description, date_creation, date_update, published, \"entityId\"  FROM public.\"Maps\" ;";	
         $result = pg_query($query) or die('Error: '.pg_last_error());
         return pg_fetch_all($result);
     }
@@ -104,8 +109,8 @@
         $result = pg_query($query) or die('Error: '.pg_last_error());
         return pg_fetch_all($result);*/
     }
-    function saveMap($mapName, $mapDescription, $userName, $entityId, $town){
-        $query = "INSERT INTO public.\"Maps\" (name, description, owner, \"entityId\", town) VALUES ('".$mapName."','".$mapDescription."','".$userName."','".$entityId."','".json_encode($town)."');";
+    function saveMap($mapName, $mapDescription, $userName, $entityId, $town, $projection){
+        $query = "INSERT INTO public.\"Maps\" (name, description, owner, \"entityId\", town, projection) VALUES ('".$mapName."','".$mapDescription."','".$userName."','".$entityId."','".json_encode($town)."','".$projection."');";
         $result = pg_query($query) or die('Error: '.pg_last_error());
         return $result;
     }
@@ -127,8 +132,8 @@
         $query = "SELECT content FROM public.\"Visors\" WHERE name='".$visorName."';";
         $result = pg_query($query) or die('Error: '.pg_last_error());
         $content=pg_fetch_all($result);
-	$dbConnection->close();
-	return $content;
+    	$dbConnection->close();
+    	return $content;
     }
 
     function deleteMap($mapName){
@@ -177,6 +182,8 @@
      */
     function updateDescriptionView($viewName, $viewDescription){
         $query = "UPDATE \"Visors\" SET date_update=now(), description='".$viewDescription."' WHERE name='".$viewName."'";
+	$result = pg_query($query) or die('Error: '.pg_last_error());
+        return $result;	
     }
 
     function downloadUserMapNames($userName){
@@ -200,10 +207,11 @@
 		return $baseLayer;
     }
 	
-	function getTown($mapName){
-		$query = "SELECT town FROM public.\"Maps\" WHERE name='".$mapName."';";
+	function getMapVars($mapName){
+		$query = "SELECT town,projection FROM public.\"Maps\" WHERE name='".$mapName."';";
         	$result = pg_query($query) or die('Error: '.pg_last_error());
-		return json_decode(pg_fetch_row($result)[0]);
+		$vars = pg_fetch_row($result); 
+		return $vars;
 	}
 	
 	function getVersionInfo(){
@@ -214,8 +222,26 @@
 	}
 	
 	function downloadUserActiveMaps($userName){
-		$query = "SELECT id, name, description, date_creation, \"layersInfo\", date_update, published, image, \"entityId\"  FROM public.\"Maps\" WHERE owner='".$userName."' AND published=true";
+		$query = "SELECT id, name, description, date_creation, \"layersInfo\", date_update, published, image, \"entityId\"  FROM public.\"Maps\" WHERE published=true";//AND owner='".$userName."'
 		$result = pg_query($query) or die('Error: '.pg_last_error());
 		return pg_fetch_all($result);
 	}
+
+	function getMiniImages($entityId){
+    	$query="";
+        if($entityId!=0)
+    	    $query = "SELECT id, image  FROM public.\"Maps\" WHERE \"entityId\"='".$entityId."'";
+        else
+    	    $query = "SELECT id, image  FROM public.\"Maps\" ;";   
+        $result = pg_query($query) or die('Error: '.pg_last_error());
+    	return pg_fetch_all($result);
+	}
+
+    function geMapProjection($mapName){
+        $query="";
+        $query = "SELECT projection  FROM public.\"Maps\" WHERE \"name\"='".$mapName."'";
+        $result = pg_query($query) or die('Error: '.pg_last_error());
+        return pg_fetch_all($result);
+    }
+
 ?>

@@ -10,7 +10,8 @@ function drawTree() {
 }
 
 function loadWmsTree(wms) {
-	//console.log(wms);
+	//console.log(auth);
+	//console.log(wms + requestCapabilities);
 	var parser = new ol.format.WMSCapabilities();
 	$.ajax({
 		type : "GET",
@@ -18,13 +19,16 @@ function loadWmsTree(wms) {
 		dataType : 'text',
 		url : wms + requestCapabilities,
 		/*headers: {
-                        "Authorization": "Basic "+auth
+       	                //Authorization: "Basic "+auth
                 },*/
-		crossDomain : true,
+		/*xhrFields: {
+  				withCredentials: true
+  		},*/
 		success : function (response) {
 			var service = parser.read(response);
 			var capabilities = service.Capability;
 			var title = service.Service.Title;
+			//var mapName = service
 			var layers = [];
 			var bBox = [];
 			//console.log(capabilities.Layer.Layer);
@@ -34,7 +38,7 @@ function loadWmsTree(wms) {
 					url : apiPath + "apiLocalgis.php",
 					data : {
 						tag : "getBbox",
-						entityId : entityId,
+						entityId : entityId
 					},
 					success : function (response) {
 						//console.log(response);
@@ -43,22 +47,40 @@ function loadWmsTree(wms) {
 						bBox.push(parseFloat(split1[0]), parseFloat(split1[1]), parseFloat(split2[0]), parseFloat(split2[1]));
 						var extent = ol.extent.applyTransform(bBox, ol.proj.getTransform("EPSG:4326", "EPSG:3857"));
 						map.getView().fitExtent(extent, map.getSize());
-						for (var i = 0; i < capabilities.Layer.Layer.length; i++) {
-							if (!searchLayerByName(capabilities.Layer.Layer[i].Name)) {
-								var style = "";
-								if (capabilities.Layer.Layer[i].Style != null && capabilities.Layer.Layer[i].Style[0].Name)
-									style = capabilities.Layer.Layer[i].Style[0].Name;
-								if (capabilities.Layer.Layer[i].cascaded == 1) {
-									var layer = addLayerWms(capabilities.Layer.Layer[i].Name, wms+"/wms");
-									layer.wms = true;
-								} else {
-									var layer = addLayer(capabilities.Layer.Layer[i].Name, wms+"/wms", style, bBox);
-									layer.wms = false;
-								}
-								layers.push(layer);
+						var layersVisibility=[];
+						getLayersVisibility(map.name,function(response){
+							var lv=JSON.parse(response);
+							//console.log(lv);
+							for (var i=lv.length-1;i>=0;i--){
+								var vinfo=[];
+								vinfo.push(lv[i][1]);	
+								vinfo.push(lv[i][2]);
+								layersVisibility.push(vinfo);
 							}
-						}
-						updateTreeLayer();
+							for (var i = 0; i < capabilities.Layer.Layer.length; i++) {
+								if (!searchLayerByName(capabilities.Layer.Layer[i].Name)) {
+									var style = "";
+									var layer;
+									var visible = layersVisibility[i][0];
+									var opacity = layersVisibility[i][1];
+									if(visible=="false")
+										visible=false;
+									else
+										visible=true;
+									if (capabilities.Layer.Layer[i].Style != null && capabilities.Layer.Layer[i].Style[0].Name)
+										style = capabilities.Layer.Layer[i].Style[0].Name;
+									if (capabilities.Layer.Layer[i].cascaded == 1) {
+										layer = addLayerWms(capabilities.Layer.Layer[i].Name, wms+"/wms");
+										layer.wms = true;
+									} else {
+										layer = addLayer(capabilities.Layer.Layer[i].Name, wms+"/wms", style, bBox, visible, opacity);
+										layer.wms = false;
+									}
+									layers.push(layer);
+								}
+							}
+							updateTreeLayer();
+						})
 					},
 					error : function (response) {
 						console.log(response);
@@ -68,7 +90,7 @@ function loadWmsTree(wms) {
 			updateTreeLayer();
 		},
 		error : function (error) {
-			alert("Error: " + error);
+			alert("Error treemap: " + error);
 		}
 	});
 }
@@ -100,7 +122,6 @@ function makeNodesSortable() {
 			$("body").removeClass(container.group.options.bodyClass);
 			var indexTo = map.getLayers().getLength() - 1 - $item.index();
 			reorderOpenlayersMap(indexFrom, indexTo);
-			updateDatabaseMap();
 		},
 		onDragStart : function ($item, container, _super, event) {
 			var offset = $item.offset(),
@@ -128,7 +149,6 @@ function updateTreeLayer() {
 	generateLayerListHTML();
 	makeNodesSortable();
 	assignEventsHandlers();
-	updateDatabaseMap();
 }
 
 function generateLayerListHTML() {
@@ -154,7 +174,7 @@ function generateNode(layer) {
 		.data("layer", layer)
 		.appendTo($("#layersList ol"));
 	if (!layer.getVisible()) {
-		console.log(node.find(".visibilityLayer"));
+		//console.log(node.find(".visibilityLayer"));
 		node.find(".visibilityLayer").css("color", "lightgray");
 	}
 }

@@ -22,7 +22,7 @@ function generateJSONLayers(){
 }
 
 function sendLayersJSON(layers){
-    //console.log(JSON.stringify(layers));
+    console.log(JSON.stringify(layers));
 }
 
 function getJSONLayer(layer, callback){

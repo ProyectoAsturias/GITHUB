@@ -98,7 +98,7 @@
 
 .invisibleFullScreenButton{
     display: none;
-    background-color: Transparent;
+    background-color: transparent;
     background-repeat:no-repeat;
     border: none;
     cursor: pointer;
@@ -112,13 +112,19 @@
     top: 650px;
     left: 600px;
     z-index: 1;
-    border: solid 1px black;
-    border-radius:5px;
+    /*border: solid 1px black;
+    border-radius:5px;*/
     width:13vw;
     background-color:#CCC;
     opacity:0.9;
 
     min-width: 150px;
+    -webkit-box-shadow: 0px 1px 2px 0px rgba(0,0,0,0.3);
+    -moz-box-shadow: 0px 1px 2px 0px rgba(0,0,0,0.3);
+    box-shadow: 0px 1px 2px 0px rgba(0,0,0,0.3);
+    max-height: 400px;
+    overflow-y: scroll;
+    overflow-x: hidden;
 }
 
 #legendContent{
@@ -126,25 +132,33 @@
     overflow-y: auto;
     overflow-x: hidden;
     min-width: 150px;
+    display: inline;
+    cursor: move;
 }
 
 #titleMap{
     width:100%;
-    height:25px;
-    border-bottom:solid 1px black;
-    border-radius:2px;
-    background-color:#2C31ED;
-    text-align:center;
-
+    height: 25px;
+    background-color:#559FCB;
+    text-align:left;
     color:#FFF;
+    -webkit-box-shadow: 0px 1px 2px 0px rgba(0,0,0,0.5);
+    -moz-box-shadow: 0px 1px 2px 0px rgba(0,0,0,0.5);
+    box-shadow: 0px 1px 2px 0px rgba(0,0,0,0.5);
+    padding: 0.2em;
+    cursor: move;
 }
 .titleLayer{
     width: 100%;
-    height:20px;
+    /*height:20px;*/
     overflow:hidden;
     text-align:center;
-    border: solid 1px blue;
+    /*border: solid 1px #559FCB;*/
     overflow-x: hidden;
+    font-size: 0.8em;
+    padding: 4px;
+    height: 25px;
+    text-transform: uppercase;
 }
 .imgLayer{
     width: 100%;
@@ -153,229 +167,277 @@
     border-radius:4px;
 }
 
+.logo-visor {
+    float: left;
+    position: absolute;
+    left: 0;
+}
 
 .functionsBar{
-    /* Permalink - use to edit and share this gradient: http://colorzilla.com/gradient-editor/#bdf3fd+0,a2daf5+45,a2daf5+68,90bcea+76,90bae4+100,a9d2f3+100,b8e1fc+100 */
-    background: #bdf3fd; /* Old browsers */
-    background: -moz-linear-gradient(top,  #bdf3fd 0%, #a2daf5 45%, #a2daf5 68%, #90bcea 76%, #90bae4 100%, #a9d2f3 100%, #b8e1fc 100%); /* FF3.6+ */
-    background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#bdf3fd), color-stop(45%,#a2daf5), color-stop(68%,#a2daf5), color-stop(76%,#90bcea), color-stop(100%,#90bae4), color-stop(100%,#a9d2f3), color-stop(100%,#b8e1fc)); /* Chrome,Safari4+ */
-    background: -webkit-linear-gradient(top,  #bdf3fd 0%,#a2daf5 45%,#a2daf5 68%,#90bcea 76%,#90bae4 100%,#a9d2f3 100%,#b8e1fc 100%); /* Chrome10+,Safari5.1+ */
-    background: -o-linear-gradient(top,  #bdf3fd 0%,#a2daf5 45%,#a2daf5 68%,#90bcea 76%,#90bae4 100%,#a9d2f3 100%,#b8e1fc 100%); /* Opera 11.10+ */
-    background: -ms-linear-gradient(top,  #bdf3fd 0%,#a2daf5 45%,#a2daf5 68%,#90bcea 76%,#90bae4 100%,#a9d2f3 100%,#b8e1fc 100%); /* IE10+ */
-    background: linear-gradient(to bottom,  #bdf3fd 0%,#a2daf5 45%,#a2daf5 68%,#90bcea 76%,#90bae4 100%,#a9d2f3 100%,#b8e1fc 100%); /* W3C */
-    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#bdf3fd', endColorstr='#b8e1fc',GradientType=0 ); /* IE6-9 */
 
-
-    -webkit-border-radius: 15px;
-    -moz-border-radius: 15px;
-    border-radius: 15px;
+    background-color: rgb(255,255,255);
+    background-color: rgba(255,255,255,0.9);
+    border-bottom: 4px solid #559FCB;
+    -webkit-box-shadow: 0px 1px 2px 0px rgba(0,0,0,0.3);
+    -moz-box-shadow: 0px 1px 2px 0px rgba(0,0,0,0.3);
+    box-shadow: 0px 1px 2px 0px rgba(0,0,0,0.3);
     height: 50px;
-    width:60vw;
-    background-color:beige;
+    width:94%;
     position: absolute;
-    top: 250px;
-    left: 250px;
+    top: 10px;
+    left: 40px;
     z-index: 1;
+    cursor: move;
+}
+
+.functionsBar {
+
+
+
 }
 
 .vertical{
-    /* Permalink - use to edit and share this gradient: http://colorzilla.com/gradient-editor/#bdf3fd+0,a2daf5+45,a2daf5+68,90bcea+76,90bae4+100,a9d2f3+100,b8e1fc+100 */
-    background: #bdf3fd; /* Old browsers */
-    background: -moz-linear-gradient(top,  #bdf3fd 0%, #a2daf5 45%, #a2daf5 68%, #90bcea 76%, #90bae4 100%, #a9d2f3 100%, #b8e1fc 100%); /* FF3.6+ */
-    background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#bdf3fd), color-stop(45%,#a2daf5), color-stop(68%,#a2daf5), color-stop(76%,#90bcea), color-stop(100%,#90bae4), color-stop(100%,#a9d2f3), color-stop(100%,#b8e1fc)); /* Chrome,Safari4+ */
-    background: -webkit-linear-gradient(top,  #bdf3fd 0%,#a2daf5 45%,#a2daf5 68%,#90bcea 76%,#90bae4 100%,#a9d2f3 100%,#b8e1fc 100%); /* Chrome10+,Safari5.1+ */
-    background: -o-linear-gradient(top,  #bdf3fd 0%,#a2daf5 45%,#a2daf5 68%,#90bcea 76%,#90bae4 100%,#a9d2f3 100%,#b8e1fc 100%); /* Opera 11.10+ */
-    background: -ms-linear-gradient(top,  #bdf3fd 0%,#a2daf5 45%,#a2daf5 68%,#90bcea 76%,#90bae4 100%,#a9d2f3 100%,#b8e1fc 100%); /* IE10+ */
-    background: linear-gradient(to bottom,  #bdf3fd 0%,#a2daf5 45%,#a2daf5 68%,#90bcea 76%,#90bae4 100%,#a9d2f3 100%,#b8e1fc 100%); /* W3C */
-    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#bdf3fd', endColorstr='#b8e1fc',GradientType=0 ); /* IE6-9 */
+    background-color: rgb(255,255,255);
+    background-color: rgba(255,255,255,0.9);
+    /*border-right: 4px solid #559FCB;*/
+    -webkit-box-shadow: 0px 1px 2px 0px rgba(0,0,0,0.3);
+    -moz-box-shadow: 0px 1px 2px 0px rgba(0,0,0,0.3);
+    box-shadow: 0px 1px 2px 0px rgba(0,0,0,0.3);
 
-
-    -webkit-border-radius: 15px;
-    -moz-border-radius: 15px;
-    border-radius: 15px;
     width:70px;
     height:46vh;
-    background-color:beige;
     padding-left: 0;
     padding-top: 26px;
     position: absolute;
     top: 250px;
     left: 250px;
-    z-index: 1
+    z-index: 1;
+    cursor: move;
+}
+
+.imagenFooterVisor {
+
+    width: 550px;
+    overflow: hidden;
+    position: fixed;
+    right: 10px;
+    bottom: 10px;
+    background-color: white;
+    -webkit-box-shadow: 0px 1px 3px 0px rgba(0,0,0,0.5);
+    -moz-box-shadow: 0px 1px 3px 0px rgba(0,0,0,0.5);
+    box-shadow: 0px 1px 3px 0px rgba(0,0,0,0.5);
+    padding: 0.2em;
+}
+.imagenFooterVisor img {
+    /*transform: scale(0.9);*/
+}
+
+.visorName {
+     position: fixed;
+    width: 550px;
+    text-align: left;
+    z-index: 2;
+    right: 10px;
+    bottom: 65px;
+    text-transform: uppercase;
+    font-weight: bold;
+    background-color: rgba(255,255,255,0.6);
+    padding: 2px 8px;
 }
 
 .functionsBar .functionContainer{
     /*top: -5px !important;*/
+    float: right;
     padding-bottom: 5px;
 }
 
 .functionsBar .functionContainer:hover{
-    top: -5px !important;
+    /*top: -5px !important;*/
 }
 
 
 .areaZoom{
     cursor: pointer;
-    height: 38px;
-    width: 38px;
+    height: 30px;
+    width: 30px;
     background-image:url("../templates/images/areazoom.png");
     background-repeat:no-repeat;
     background-size: contain;
+    opacity: 0.8;
 }
 
 .clickCoordinatesButton{
     cursor: pointer;
-    height: 38px;
-    width: 38px;
+    height: 30px;
+    width: 30px;
     background-image:url("../templates/images/coordinates.png");
     background-repeat:no-repeat;
     background-size: contain;
+    opacity: 0.8;
 }
 
 .dataRetrieving{
     cursor: pointer;
-    height: 38px;
-    width: 38px;
+    height: 30px;
+    width: 30px;
     background-image:url("../templates/images/retrieveData.png");
     background-repeat:no-repeat;
     background-size: contain;
+    opacity: 0.8;
 }
 
 .drawType{
     cursor: pointer;
-    height: 38px;
-    width: 38px;
+    height: 30px;
+    width: 30px;
     background-image:url("../templates/images/draw.png");
     background-repeat:no-repeat;
     background-size: contain;
+    opacity: 0.8;
 }
 
 .fullScreen{
     cursor: pointer;
-    height: 38px;
-    width: 38px;
+    height: 30px;
+    width: 30px;
     background-image:url("../templates/images/fullScreen.png");
     background-repeat:no-repeat;
     background-size: contain;
+    opacity: 0.8;
 }
 
 .panTo{
     cursor: pointer;
-    height: 38px;
-    width: 38px;
+    height: 30px;
+    width: 30px;
     background-image:url("../templates/images/panTo.png");
     background-repeat:no-repeat;
     background-size: contain;
+    opacity: 0.8;
 }
 
 
 .printMap{
     cursor: pointer;
-    height: 38px;
-    width: 38px;
+    height: 30px;
+    width: 30px;
     background-image:url("../templates/images/printMap.png");
     background-repeat:no-repeat;
     background-size: contain;
+    opacity: 0.8;
 }
 
 .export{
     cursor: pointer;
-    height: 38px;
-    width: 38px;
+    height: 30px;
+    width: 30px;
     background-image:url("../templates/images/export.png");
     background-repeat:no-repeat;
     background-size: contain;
+    opacity: 0.8;
 }
 
 .zoomInButton{
     cursor: pointer;
-    height: 38px;
-    width: 38px;
+    height: 30px;
+    width: 30px;
     background-image:url("../templates/images/zoomIn.png");
     background-repeat:no-repeat;
     background-size: contain;
+    opacity: 0.8;
+    opacity: 0.8;
 }
 
 .zoomOutButton{
     cursor: pointer;
-    height: 38px;
-    width: 38px;
+    height: 30px;
+    width: 30px;
     background-image:url("../templates/images/zoomOut.png");
     background-repeat:no-repeat;
     background-size: contain;
+    opacity: 0.8;
 }
 
 .empty{
     cursor: pointer;
-    height: 38px;
-    width: 38px;
+    height: 30px;
+    width: 30px;
     background-image:url("../templates/images/empty.png");
     background-repeat:no-repeat;
     background-size: contain;
+    opacity: 0.8;
 }
 .export{
     cursor: pointer;
-    height: 38px;
-    width: 38px;
+    height: 30px;
+    width: 30px;
     background-image:url("../templates/images/export.png");
     background-repeat:no-repeat;
     background-size: contain;
+    opacity: 0.8;
 }
 .configuration{
     cursor: pointer;
-    height: 38px;
-    width: 38px;
+    height: 30px;
+    width: 30px;
     background-image:url("../templates/images/configuration.png");
     background-repeat:no-repeat;
     background-size: contain;
+    opacity: 0.8;
 }
 .help{
     cursor: pointer;
-    height: 38px;
-    width: 38px;
+    height: 30px;
+    width: 30px;
     background-image:url("../templates/images/help.png");
     background-repeat:no-repeat;
     background-size: contain;
+    opacity: 0.8;
 }
 .homeinfo{
     cursor: pointer;
-    height: 38px;
-    width: 38px;
+    height: 30px;
+    width: 30px;
     background-image:url("../templates/images/homeinfo.png");
     background-repeat:no-repeat;
     background-size: contain;
+    opacity: 0.8;
 }
 .lastview{
     cursor: pointer;
-    height: 38px;
-    width: 38px;
+    height: 30px;
+    width: 30px;
     background-image:url("../templates/images/lastview.png");
     background-repeat:no-repeat;
     background-size: contain;
+    opacity: 0.8;
 }
 .mail{
     cursor: pointer;
-    height: 38px;
-    width: 38px;
+    height: 30px;
+    width: 30px;
     background-image:url("../templates/images/mail.png");
     background-repeat:no-repeat;
     background-size: contain;
+    opacity: 0.8;
 }
 .selection{
     cursor: pointer;
-    height: 38px;
-    width: 38px;
+    height: 30px;
+    width: 30px;
     background-image:url("../templates/images/selection.png");
     background-repeat:no-repeat;
     background-size: contain;
+    opacity: 0.8;
 }
 .update{
     cursor: pointer;
-    height: 38px;
-    width: 38px;
+    height: 30px;
+    width: 30px;
     background-image:url("../templates/images/update.png");
     background-repeat:no-repeat;
     background-size: contain;
+    opacity: 0.8;
 }
 
 #hideInterface{
@@ -389,29 +451,29 @@
 }
 
 #areaOverlay, #coordinatesOverlay{
-	background-color: white;
-	border-radius: 10px;
-	border: 1px solid black;
-	padding: 5px 10px;
+    background-color: white;
+    border-radius: 10px;
+    border: 1px solid black;
+    padding: 5px 10px;
 }
 
 
 #wmsImportWindow{
-	width:350px;
-	position: absolute;
-	top: 250px;
-	left: 50px;
-	opacity: 0.8;
-	filter: alpha(opacity=80); /* For IE8 and earlier */
+    width:350px;
+    position: absolute;
+    top: 250px;
+    left: 50px;
+    opacity: 0.8;
+    filter: alpha(opacity=80); /* For IE8 and earlier */
 }
 
 #drawModalWindow{
-	width:350px;
-	position: absolute;
-	top: 250px;
-	left: 50px;
-	opacity: 0.8;
-	filter: alpha(opacity=80); /* For IE8 and earlier */
+    width:350px;
+    position: absolute;
+    top: 250px;
+    left: 50px;
+    opacity: 0.8;
+    filter: alpha(opacity=80); /* For IE8 and earlier */
 }
 
 .attachedFiles{
@@ -465,25 +527,28 @@
     background-image: url("../templates/images/fixTools.png");
     background-repeat:no-repeat;
     background-size: contain;
+    opacity: 0.8;
     cursor:pointer;
 }
-
 #layersTreeWrapper{
     position: absolute;
     top:  250px;
     left: 600px;
     z-index: 1;
-    border: solid 1px black;
-    border-radius:5px;
+    /*border: solid 1px black;
+    border-radius:5px;*/
+    -webkit-box-shadow: 0px 1px 2px 0px rgba(0,0,0,0.2);
+    -moz-box-shadow: 0px 1px 2px 0px rgba(0,0,0,0.2);
+    box-shadow: 0px 1px 2px 0px rgba(0,0,0,0.2);
     width:13vw;
     background-color:#CCC;
     opacity:0.9;
     height: 100px;
+    width: 270px;
     min-height: 25px;
-    height: 150px;
-    overflow-y: scroll;
+    height: 200px;
+    overflow-y: hidden;
     overflow-x: hidden;
-    min-width: 150px;
 }
 
 #layersTree{
@@ -491,4 +556,18 @@
     width: 100%;
     min-height: 50px;
     overflow: hidden;
+    overflow-y: scroll;
+}
+
+#layersTree .ui-resizable-s{
+    height: 10px;
+}
+
+.list-group-item {
+    padding: 0px 0px; !important;
+    border: 0px;
+}
+
+.legendBar{
+	visibility: hidden; !important
 }

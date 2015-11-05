@@ -145,7 +145,7 @@ function addLayersAndGroupsFromWMS(WMSUrl){
             var capabilitiesParser = parser.read(response);
             //console.log(capabilitiesParser);
             for(var i = 0; i < capabilitiesParser.Capability.Layer.Layer.length; i ++){
-                if (!searchLayerByName(capabilitiesParser.Capability.Layer.Layer[i].Name)){
+                //if (!searchLayerByName(capabilitiesParser.Capability.Layer.Layer[i].Name)){
                     if(capabilitiesParser.Capability.Layer.Layer[i].cascaded==1){
                         dataMap.layers.push(addLayerWmsToMap(capabilitiesParser.Capability.Layer.Layer[i].Name,WMSUrl));
                     }
@@ -153,7 +153,7 @@ function addLayersAndGroupsFromWMS(WMSUrl){
                         var layer=addLayerToMap(capabilitiesParser.Capability.Layer.Layer[i].Name,WMSUrl);
                         dataMap.layers.push(layer);
                     }
-                }
+                //}
             }
             treeDataSource.push(dataMap);
             return treeDataSource;
@@ -242,12 +242,24 @@ function addLayerWmsToMap(name, wmsUrl){
 }
 
 function addLayerToMap(name, WMSUrl){
+	var projExtent = ol.proj.get('EPSG:3857').getExtent();
+    var startResolution = ol.extent.getWidth(projExtent) / 1024;
+    var resolutions = new Array(22);
+    for (var i = 0, ii = resolutions.length; i < ii; ++i) {
+        resolutions[i] = startResolution / Math.pow(2, i);
+    }
+    var tileGrid = new ol.tilegrid.TileGrid({
+        extent : projExtent,
+        resolutions : resolutions,
+        tileSize : [1024, 1024]
+    });
     var newlayer = new ol.layer.Tile({
         source: new ol.source.TileWMS({
             crossOrigin:'anonymous',
             preload: Infinity,
             url: WMSUrl,
             serverType:'geoserver',
+			tileGrid: tileGrid,
             params:{
                 'LAYERS':""+name+"", 'TILED':true
             }

@@ -15,12 +15,8 @@ function updateTreeLayer(){
 }
 
 function generateNode(layer){
-    var node = {text: '<div class="layerName">'+layer.name+'</div>', nodes: [], layer: layer, state: {checked: true}};
-    if (layer instanceof ol.layer.Group){
-        layer.getLayers().forEach(function(subLayer, indexInGroup){
-            node.nodes.push(generateNode(subLayer));
-        });
-    }
+    var node = {text: '<div class="layerName">'+layer.name+'</div>', nodes: [], layer: layer, state: {checked: true, expanded: true}};
+    node.nodes.push(getLegendImageForLayer(layer));
     return node;
 }
 
@@ -52,9 +48,17 @@ function createLayerTreeFromSource(dataSource){
 }
 
 function layerTreeHandlers(){
+    $(".hideLayers").off("click");
     makeLayerTreeResizable();
     closeLayerTree();
     hideLayerTree();
+}
+
+function getLegendImageForLayer(layer){
+    console.log(layer.getSource())
+    var imgDiv ="<div class=\"imgLayer\" id=\"" + layer.name + "\"><img crossOrigin=\"Anonymous\" src='" + layer.getSource().getUrls()[0] + "?REQUEST=GetLegendGraphic&VERSION=1.0.0&FORMAT=image/png&WIDTH=20&HEIGHT=20&LAYER=" + layer.name + "&LEGEND_OPTIONS=forceLabels:on' />";
+    var legendNode = {text:imgDiv, showCheckbox: false}
+    return legendNode
 }
 
 function closeLayerTree(){
@@ -66,12 +70,15 @@ function closeLayerTree(){
 function hideLayerTree(){
     $(".hideLayers").click(function(event){
         if(showLayersTree){
+            $("#layersTreeWrapper").css("width", $("#layersTreeWrapper").width()+1);
+            $("#layersTree").hide();
             $("#layersTree").hide();
             showLayersTree=false;
             previousHeight = $("#layersTreeWrapper").css("height");
             $("#layersTreeWrapper").css("height", 25)
         }
         else{
+            console.log("adios")
             $("#layersTree").show();
             showLayersTree=true;
             $("#layersTreeWrapper").css("height", previousHeight)
@@ -106,12 +113,16 @@ function createLayerTree(data){
 
 
 function uncheckNodeChildrens(node){
+    if (node.nodes == undefined)
+        return;
     node.nodes.forEach(function (childrenNode) {
         $('#layersTree').treeview("uncheckNode", childrenNode.nodeId);
     });
 }
 
 function checkNodeChildrens(node){
+    if (node.nodes == undefined)
+        return;
     node.nodes.forEach(function(childrenNode){
         $('#layersTree').treeview("checkNode", childrenNode.nodeId);
     });

@@ -575,10 +575,12 @@
 					classList.push(_this.options.uncheckedIcon);
 				}
 
-				treeItem
-					.append($(_this.template.icon)
-						.addClass(classList.join(' '))
+				if (node.showCheckbox != false){
+					treeItem
+						.append($(_this.template.icon)
+							.addClass(classList.join(' '))
 					);
+				}
 			}
 
 			// Add text

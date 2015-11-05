@@ -34,7 +34,17 @@ function toggleDataRetrieving(){
  * @return
  */
 function enableDataRetrieving() {
+    if(select){
+        showDataFromFeatures(selectedFeatures);
+        return;
+    }
     enabled = true;
+    activeVisibleFeatures();
+    var seleccion = new ol.interaction.Select ({
+        toggleCondition: ol.events.condition.never,
+        multi:true
+    });
+    map.addInteraction(seleccion);
     map.on('singleclick', retrieveData);
     $(".dataRetrieving").css("border", "solid 3px green");
     $(".dataRetrieving").css("border-radius", "19px");
@@ -47,8 +57,19 @@ function enableDataRetrieving() {
  */
 function disableDataRetrieving(){
     enabled = false;
+    $("#info").empty();
     map.un("singleclick", retrieveData);
     $(".dataRetrieving").css("border", "");
+    map.getInteractions().forEach(function (interaction) {
+        if(interaction instanceof ol.interaction.Select) {
+            interaction.getFeatures().clear();
+            interaction.un('select', function(e) {
+                addselectedFeatures(e.selected);
+                removeUnselectedFeatures(e.deselected);
+            });
+            map.removeInteraction(interaction)
+        }
+    });
 }
 
 /**
@@ -58,7 +79,6 @@ function disableDataRetrieving(){
  * @return
  */
 function retrieveData(evt) {
-    //console.log(evt);
     var overlays=map.getOverlays();
     if (overlays.getArray().length != 0)
         map.removeOverlay(overlays.getArray()[0]);
@@ -67,12 +87,12 @@ function retrieveData(evt) {
     var view = map.getView();
     var viewResolution = view.getResolution();
     var coord= evt.coordinate;
-    var popup = $("<div id=\"info\"></div>");
-    var overlay = new ol.Overlay({
+    $('#mapContainer').append("<div id=\"info\"></div>");
+    /*var overlay = new ol.Overlay({
         element:popup
     });
     map.addOverlay(overlay);
-    overlay.setPosition(coord);
+    overlay.setPosition(coord);*/
     $("#info").empty();
     $("#info").append("<ul class=\"menu5 nav nav-pills\"  id=\"layersHeader\" ><div><button type=\"button\" onclick='closeInfoWindow()' class=\"close\">&times;</button></div></ul><div id=\"dataTable\" class=\"tab-content\"></div>");
 
@@ -110,13 +130,17 @@ function getDataFromURL(url, layerName) {
                 for (var h=0; h<resultData.features.length; h++){
                     getAttachedFiles(resultData.features[h].properties.id, layerName).then(function(result){
                         var attachFiles = JSON.parse(result);
+                        if (attachFiles.length > 0){
+                            $("#div"+layerName+" .attachedFiles").append("<div class='horizontalPrintSeparator' style='width: 100%; margin-top: 5px; margin-bottom: 5px'></div> <h4>Ficheros adjuntos</h4>");
+                        }
                         for (var i=0; i<attachFiles.length; i++){
                             appendAttachedFile(attachFiles[i], layerName);
                         }
                     });
                 }
             }
-        }});
+        }
+    });
 }
 
 function appendAttachedFile(attachedFile, layerName){
@@ -138,7 +162,7 @@ function downloadAttachedFile(fileId){
         "html": '<input type="text" id="" name="tag" value="getDocument" /><input type="text" name="idDocument" value="'+fileId+'"/>',
         "action": apiPath + "apiDatabase.php"
     }).appendTo(document.body).submit();
-    //$("#downloadFile").remove();
+    $("#downloadFile").remove();
 }
 
 function getAttachedFiles(idFeature, layerName){
@@ -156,7 +180,7 @@ function getAttachedFiles(idFeature, layerName){
             private: pv
         },
         success : function (response) {
-            console.log(response);
+		console.log(response);
         },
         error : function (error) {
 
@@ -174,6 +198,7 @@ function getAttachedFiles(idFeature, layerName){
  */
 
 function addDataToBeShown(features){
+    //console.log(features);
     if (features==""){
         layersCounter++;
         if(layersCounter==layersLength)
@@ -199,7 +224,7 @@ function addDataToBeShown(features){
                 headTable +="<th>"+key+"</th>";
             });
             headTable +="</tr></table>";
-            headTable +="<div class=attachedFiles><div class='horizontalPrintSeparator' style='width: 100%; margin-top: 5px; margin-bottom: 5px'></div> <h4>Ficheros adjuntos</h4></div>"
+            headTable +="<div class=attachedFiles></div>"
             $("#dataTable").append(headTable);
         }
         var bodyTable="<tr>";
@@ -221,4 +246,52 @@ function changePills(layerName){
 
 function closeInfoWindow(){
     $("#info").empty();
+}
+
+function showDataFromFeatures(features){
+
+    $("#info").empty();
+    $("#info").append("<ul class=\"menu5 nav nav-pills\"  id=\"layersHeader\" ><div><button type=\"button\" onclick='closeInfoWindow()' class=\"close\">&times;</button></div></ul><div id=\"dataTable\" class=\"tab-content\"></div>");
+
+    layersNames=[];
+    for(i=0;i<features.length;i++){
+        var layerName=features[i].getId().split(".fid")[0];
+        if(layersNames.indexOf(layerName)==-1){
+            layersNames.push(layerName);
+            if(layersNames.length==1){
+                $("#layersHeader").append("<li class=\"active\" id=\"layer"+layerName+"\"><a data-toggle=\"pill\" onclick=\"changePills('"+layerName+"')\" ><b>"+layerName+"</b></a>");
+                activeFeature=layerName;
+                var headTable="<div id='div"+layerName+"' class='tab-pane fade in active'><table id=\"tableLayer"+layerName+"\"><tr>";
+            }
+            else {
+                $("#layersHeader").append("<li id=\"layer"+layerName+"\"><a data-toggle=\"pill\" onclick=\"changePills('"+layerName+"')\"><b>"+layerName+"</b></a>");
+                var headTable="<div id='div"+layerName+"' class='tab-pane fade'><table id=\"tableLayer"+layerName+"\"><tr>";
+            }
+            console.log(features[i].getProperties());
+            $.each(features[i].getProperties(), function(key, value) {
+                if(key!="geometry")
+                    headTable +="<th>"+key+"</th>";
+            });
+            headTable +="</tr></table>";
+            headTable +="<div class=attachedFiles></div>"
+            $("#dataTable").append(headTable);
+        }
+        var bodyTable="<tr>";
+        $.each(features[i].getProperties(), function(key, value) {
+            if(key!="geometry")
+                bodyTable +="<td>"+value+"</td>";
+        });
+        bodyTable+="</tr>";
+        $("#tableLayer"+layerName+"").append(bodyTable);
+
+        getAttachedFiles(features[i].getProperties().id, layerName).then(function(result){
+            var attachFiles = JSON.parse(result);
+            if (attachFiles.length > 0){
+                $("#div"+layerName+" .attachedFiles").append("<div class='horizontalPrintSeparator' style='width: 100%; margin-top: 5px; margin-bottom: 5px'></div> <h4>Ficheros adjuntos</h4>");
+            }
+            for (var i=0; i<attachFiles.length; i++){
+                appendAttachedFile(attachFiles[i], layerName);
+            }
+        });
+    }
 }

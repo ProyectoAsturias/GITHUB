@@ -2,7 +2,7 @@
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="Prueba1" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="a9c6277c-d110-4f9c-92ea-9bcc8de2a392">
 	<property name="ireport.zoom" value="1.0"/>
 	<property name="ireport.x" value="0"/>
-	<property name="ireport.y" value="85"/>
+	<property name="ireport.y" value="84"/>
 	<parameter name="title" class="java.lang.String" isForPrompting="false"/>
 	<parameter name="mapImage" class="java.lang.String"/>
 	<parameter name="description" class="java.lang.String"/>
@@ -46,7 +46,7 @@
 		<band height="116">
 			<printWhenExpression><![CDATA[$P{legendData}.size() != 0]]></printWhenExpression>
 			<rectangle>
-				<reportElement stretchType="RelativeToTallestObject" x="15" y="0" width="525" height="101" uuid="04b3a2ac-d61d-40a2-886e-39d3982a122c"/>
+				<reportElement stretchType="RelativeToBandHeight" x="15" y="0" width="525" height="101" isPrintWhenDetailOverflows="true" uuid="04b3a2ac-d61d-40a2-886e-39d3982a122c"/>
 			</rectangle>
 			<staticText>
 				<reportElement x="235" y="0" width="100" height="20" uuid="136d9344-6a13-4f2d-9a41-d9f5e9f25b0b"/>
@@ -59,7 +59,7 @@
 				<reportElement x="15" y="19" width="525" height="1" uuid="98099b58-7b0e-46d7-b5e1-90a447e57603"/>
 			</line>
 			<subreport>
-				<reportElement x="15" y="21" width="525" height="59" isRemoveLineWhenBlank="true" uuid="1afcc82c-bb3b-429b-b436-4a0fe9a6beac"/>
+				<reportElement x="15" y="21" width="525" height="59" isRemoveLineWhenBlank="true" isPrintWhenDetailOverflows="true" uuid="1afcc82c-bb3b-429b-b436-4a0fe9a6beac"/>
 				<subreportParameter name="legendTitles">
 					<subreportParameterExpression><![CDATA[$P{legendData}.get(1)]]></subreportParameterExpression>
 				</subreportParameter>
@@ -72,9 +72,7 @@
 		</band>
 		<band height="156">
 			<subreport>
-				<reportElement stretchType="RelativeToTallestObject" x="0" y="0" width="555" height="155" isRemoveLineWhenBlank="true" uuid="64bde9c7-16a7-48bf-8be9-5ab696be202a">
-					<printWhenExpression><![CDATA[$P{dataTables}.get(0) != null]]></printWhenExpression>
-				</reportElement>
+				<reportElement stretchType="RelativeToTallestObject" x="0" y="0" width="555" height="155" isRemoveLineWhenBlank="true" uuid="64bde9c7-16a7-48bf-8be9-5ab696be202a"/>
 				<subreportParameter name="SUBREPORT_DIR">
 					<subreportParameterExpression><![CDATA[$P{SUBREPORT_DIR}]]></subreportParameterExpression>
 				</subreportParameter>
