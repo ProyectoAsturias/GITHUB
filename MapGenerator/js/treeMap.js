@@ -61,19 +61,19 @@ function loadWmsTree(wms) {
 								if (!searchLayerByName(capabilities.Layer.Layer[i].Name)) {
 									var style = "";
 									var layer;
-									var visible = layersVisibility[i][0];
-									var opacity = layersVisibility[i][1];
-									if(visible=="false")
+									//var visible = layersVisibility[i][0];
+									//var opacity = layersVisibility[i][1];
+									/*if(visible=="false")
 										visible=false;
 									else
 										visible=true;
-									if (capabilities.Layer.Layer[i].Style != null && capabilities.Layer.Layer[i].Style[0].Name)
+									*/if (capabilities.Layer.Layer[i].Style != null && capabilities.Layer.Layer[i].Style[0].Name)
 										style = capabilities.Layer.Layer[i].Style[0].Name;
 									if (capabilities.Layer.Layer[i].cascaded == 1) {
 										layer = addLayerWms(capabilities.Layer.Layer[i].Name, wms+"/wms");
 										layer.wms = true;
 									} else {
-										layer = addLayer(capabilities.Layer.Layer[i].Name, wms+"/wms", style, bBox, visible, opacity);
+										layer = addLayer(capabilities.Layer.Layer[i].Name, wms+"/wms", style, bBox, true, 1);
 										layer.wms = false;
 									}
 									layers.push(layer);

@@ -27,9 +27,6 @@ function setLegendBarPosition(legendFrame){
     }else{
         topBarHeight += 10;
     }
-    if (leftBarWidth == null && legendFrame.position.left > 80){
-        leftBarWidth += 0;
-    }
     $(".legendBar").css("top", ($(".ol-viewport").height()/100)*legendFrame.position.top + topBarHeight)
     $(".legendBar").css("left", ($(".ol-viewport").width()/100)*legendFrame.position.left + leftBarWidth)
     $(".legendBar").css("height", legendFrame.position.height);
@@ -51,15 +48,6 @@ function setFunctionsBarPosition(functionsBar){
     }
     console.log(leftBarWidth);
     functionsBar.forEach(function (functionBar){
-        if (leftBarWidth == null && functionBar.position.left > 25 ){
-            leftBarWidth = 245;
-        }else if(leftBarWidth == null && functionBar.position.left > 20 ){
-            leftBarWidth = 200;
-        }else if(leftBarWidth == null && functionBar.position.left > 15 ){
-            leftBarWidth = 100;
-        }else if(leftBarWidth == null && functionBar.position.left > 10 ){
-            leftBarWidth = 0;
-        }
         $("#"+functionBar.id).css("top", ($(".ol-viewport").height()/100)*functionBar.position.top + topBarHeight)
         $("#"+functionBar.id).css("left", ($(".ol-viewport").width()/100)*functionBar.position.left + leftBarWidth)
     })
