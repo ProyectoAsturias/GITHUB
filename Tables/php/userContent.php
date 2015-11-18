@@ -3,10 +3,15 @@
     require_once("../../GeoserverApi/classes/ApiRest.php");
     require_once("../../Common/php/TCConfig.php");
 
-    if(isset($_POST["tag"])){
+    if(isset($_POST["tag"]) || isset($_GET["tag"])){
+        if(isset($_POST["tag"])){
+            $tag = $_POST["tag"];
+        }else{
+            $tag = $_GET["tag"];
+        }
         session_start();
         $dbConnection = new DBConnection(true);
-        switch ($_POST["tag"]) {
+        switch ($tag) {
             case "userMaps":
                 echo json_encode(downloadUserMaps($_SESSION["userName"]));
                 break;
@@ -73,11 +78,15 @@
 	        case "getMiniImages":
                 echo json_encode(getMiniImages($_POST["userEntityId"]));
                 break;
-            case "geMapProjection":
-                echo json_encode(geMapProjection($_POST["nameLayer"]));
+            case "getMapProjection":
+                if(isset($_GET['callback'])){ // Si es una petición cross-domain
+                    echo $_GET['callback'].'('.json_encode(geMapProjection($_GET["nameLayer"])).')';
+                    break;
+                }
+                echo json_encode(geMapProjection($_GET["nameLayer"]));
                 break;
             default:
-                echo "Error userContent: Function ".$_POST["tag"]." don't exists.";
+                echo "Error userContent: Function ".$tag." don't exists.";
         }
         $dbConnection->close();
     }

@@ -42,7 +42,6 @@ function attachMap(wmsURL,entityId){
         if (wmsURL != "Empty") {
             addMapUrl(wmsURL);
             var treeDataSource = addLayersAndGroupsFromWMS(wmsURL);
-            console.log(treeDataSource);
             createLayerTreeFromSource(treeDataSource);
             createLegendMap(wmsURL);
             if (entityId != undefined)

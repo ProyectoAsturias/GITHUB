@@ -643,3 +643,62 @@ li .removeFeature{
     overflow-x: hidden;
     overflow-y: hidden;
 }
+
+.layerTab{
+    padding-top: 15px;
+    padding-left: 20px;
+    padding-right: 20px;
+    height: auto;
+}
+
+table{
+    display: inline-block;
+    white-space: nowrap;
+    margin-right: 20px;
+    line-height: 1.8em;
+    border: 2px solid #000000;
+    border-collapse: collapse;
+}
+
+td, th{
+    padding-top: 1px;
+    padding-bottom: 1px;
+}
+
+thead{
+    display: inline-block;
+    white-space: nowrap;
+}
+
+tbody{
+    display: inline-block;
+    white-space: nowrap;
+}
+
+thead th {
+    text-align: center;
+    font-weight: bold;
+    max-width: 50%;
+    min-width: 150px;
+}
+
+thead th{
+    display: block;
+}
+
+tr{
+    display: inline-block;
+    white-space: nowrap;
+    text-align: center;
+}
+
+tbody td {
+    min-width: 150px;
+    display: block;
+    padding-left: 5px;
+}
+
+tbody tr{
+    padding-left: 10px;
+    border-left: 1px solid black;
+}

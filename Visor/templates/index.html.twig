@@ -83,30 +83,19 @@
 
 
 <style>
-    table, th, td {
-        border-collapse: collapse;
-        font-family: "Lucida Grande", "Lucida Sans", Arial, sans-serif;
-        font-family: "HelveticaNeue-Light", "Helvetica Neue Light", "Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif;
-    }
-    th, td {
-        border: 1px solid black;
-        padding: 5px;
-        text-align: left;
-    }
     #info{
         position: absolute;
         top: 60px;
         right: 15px;
         z-index: 1;
-        max-width:420px;
+        max-width:700px;
         max-height: 300px;
     }
 
     #dataTable{
         max-width: 100%;
-        max-height: inherit;
         height: 100%;
-        overflow: auto;
+        overflow-x: scroll;
         background:white;
         border-bottom:solid 4px #9999CC;
         border-left:solid 4px #9999CC;

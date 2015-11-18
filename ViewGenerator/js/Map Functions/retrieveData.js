@@ -209,31 +209,32 @@ function addDataToBeShown(features){
         var layerName=feature.id.split(".")[0];
         layerName=layerName.replace(/ /g,"_");
         if(layersNames.indexOf(layerName)==-1){
-            //console.log("hola");
             layersNames.push(layerName);
             if(layersNames.length==1){
                 $("#layersHeader").append("<li class=\"active\" id=\"layer"+layerName+"\"><a data-toggle=\"pill\" onclick=\"changePills('"+layerName+"')\" ><b>"+layerName+"</b></a>");
                 activeFeature=layerName;
-                var headTable="<div id='div"+layerName+"' class='tab-pane fade in active'><table id=\"tableLayer"+layerName+"\"><tr>";
+                var headTable="<div id='div"+layerName+"' class='layerTab tab-pane fade in active'><table id=\"tableLayer"+layerName+"\"><thead><tr>";
             }
             else {
                 $("#layersHeader").append("<li id=\"layer"+layerName+"\"><a data-toggle=\"pill\" onclick=\"changePills('"+layerName+"')\"><b>"+layerName+"</b></a>");
-                var headTable="<div id='div"+layerName+"' class='tab-pane fade'><table id=\"tableLayer"+layerName+"\"><tr>";
+                var headTable="<div id='div"+layerName+"' class='layerTab tab-pane fade'><table id=\"tableLayer"+layerName+"\"><thead><tr>";
             }
             $.each(feature.properties, function(key, value) {
                 headTable +="<th>"+key+"</th>";
             });
-            headTable +="</tr></table>";
+            headTable +="</tr></thead><tbody></tbody></table>";
             headTable +="<div class=attachedFiles></div>"
             $("#dataTable").append(headTable);
         }
         var bodyTable="<tr>";
         $.each(feature.properties, function(key, value) {
+            if (value == null) value = "-";
             bodyTable +="<td>"+value+"</td>";
         });
         bodyTable+="</tr>";
-        $("#tableLayer"+layerName+"").append(bodyTable);
+        $("#tableLayer"+layerName+" tbody").append(bodyTable);
     });
+    makeInfoWIndowDraggable();
 }
 
 function changePills(layerName){
@@ -248,6 +249,7 @@ function closeInfoWindow(){
     $("#info").empty();
 }
 
+
 function showDataFromFeatures(features){
 
     $("#info").empty();
@@ -261,27 +263,27 @@ function showDataFromFeatures(features){
             if(layersNames.length==1){
                 $("#layersHeader").append("<li class=\"active\" id=\"layer"+layerName+"\"><a data-toggle=\"pill\" onclick=\"changePills('"+layerName+"')\" ><b>"+layerName+"</b></a>");
                 activeFeature=layerName;
-                var headTable="<div id='div"+layerName+"' class='tab-pane fade in active'><table id=\"tableLayer"+layerName+"\"><tr>";
+                var headTable="<div id='div"+layerName+"' class='tab-pane fade in active'><table id=\"tableLayer"+layerName+"\"><thead>";
             }
             else {
                 $("#layersHeader").append("<li id=\"layer"+layerName+"\"><a data-toggle=\"pill\" onclick=\"changePills('"+layerName+"')\"><b>"+layerName+"</b></a>");
-                var headTable="<div id='div"+layerName+"' class='tab-pane fade'><table id=\"tableLayer"+layerName+"\"><tr>";
+                var headTable="<div id='div"+layerName+"' class='tab-pane fade'><table id=\"tableLayer"+layerName+"\"><thead>";
             }
             console.log(features[i].getProperties());
             $.each(features[i].getProperties(), function(key, value) {
                 if(key!="geometry")
                     headTable +="<th>"+key+"</th>";
             });
-            headTable +="</tr></table>";
+            headTable +="</thead></table>";
             headTable +="<div class=attachedFiles></div>"
             $("#dataTable").append(headTable);
         }
-        var bodyTable="<tr>";
+        var bodyTable="<tbody><tr>";
         $.each(features[i].getProperties(), function(key, value) {
             if(key!="geometry")
                 bodyTable +="<td>"+value+"</td>";
         });
-        bodyTable+="</tr>";
+        bodyTable+="</tr></tbody>";
         $("#tableLayer"+layerName+"").append(bodyTable);
 
         getAttachedFiles(features[i].getProperties().id, layerName).then(function(result){

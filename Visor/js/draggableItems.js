@@ -79,9 +79,10 @@ function makeTreeViewDraggable(){
 
 function makeInfoWIndowDraggable() {
     $("#info").draggable({
-        containment: $(".ol-viewport"),
-        cancel: ".functionContainer",
-        disabled: true
+        containment: $(".ol-viewport")
+    });
+    $("#info").resizable({
+        handles: "w, e, s, se, sw"
     });
 }
 

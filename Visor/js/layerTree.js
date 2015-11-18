@@ -43,6 +43,7 @@ function createLayerTreeFromSource(dataSource){
             }
             layerData.push(mapData);
         }
+        console.log(layerData);
         createLayerTree(layerData);
         orderDataSource = layerData;
         orderWmsHandler();
