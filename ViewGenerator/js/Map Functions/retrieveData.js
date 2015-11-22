@@ -126,33 +126,45 @@ function getDataFromURL(url, layerName) {
     $.ajax({url: url,
         success: function(resultData){
             if (resultData.features.length != 0){
-                addDataToBeShown(resultData["features"]);
-                for (var h=0; h<resultData.features.length; h++){
-                    getAttachedFiles(resultData.features[h].properties.id, layerName).then(function(result){
-                        var attachFiles = JSON.parse(result);
-                        if (attachFiles.length > 0){
-                            $("#div"+layerName+" .attachedFiles").append("<div class='horizontalPrintSeparator' style='width: 100%; margin-top: 5px; margin-bottom: 5px'></div> <h4>Ficheros adjuntos</h4>");
-                        }
-                        for (var i=0; i<attachFiles.length; i++){
-                            appendAttachedFile(attachFiles[i], layerName);
-                        }
-                    });
-                }
-            }
+                addDataToBeShown(resultData["features"]);}
         }
     });
 }
 
-function appendAttachedFile(attachedFile, layerName){
-    console.log(layerName);
-    var attachHtml = "<div class='fileSquare' title="+attachedFile.nombre+">";
-    if (attachedFile.is_imgdoctext == "I"){
-        attachHtml += "<img src='../templates/images/image-icon.png'/>"
-    }else{
-        attachHtml += "<img src='../templates/images/document-icon.png'/>"
-    }
-    attachHtml += "<div class='fileLink' onclick='downloadAttachedFile(\""+attachedFile.id_documento+"\");return false;'><a href='#'>"+attachedFile.nombre+"</a></div>";
-    $("#div"+layerName+" .attachedFiles").append(attachHtml+"</div>");
+function appendAttachedFile(featureId, attachedFile, layerName){
+    var headerFound= false;
+    $("#tableLayer"+layerName+" thead tr").each(function (tableElement){
+        $(this).find("th").each(function (index, tablehead){
+            if ($(tablehead).text() == "Ficheros adjuntos"){
+                headerFound = true;
+            }
+        })
+        if (!headerFound){
+            $("#tableLayer"+layerName+" thead tr").append("<th>Ficheros adjuntos</th>");
+            headerFound = true;
+        }
+    });
+    $("#tableLayer"+layerName+" tbody tr").each(function (tableElement){
+        console.log(featureId);
+        if ($(this).find("td:first-child").text() == featureId ){
+            if($(this).find(".tableAttachedElement").length == 0){
+                $(this).append("<td class=\"tableAttachedElement\">"+"<div class='fileLink' onclick='downloadAttachedFile(\""+attachedFile.id_documento+"\");return false;'><a href='#'>"+attachedFile.nombre+"</a></div>"+"</td>");
+            }else{
+                if ($(this).find(".tableAttachedElement").html() == "-"){
+                    $(this).find(".tableAttachedElement").html("<div class='fileLink' onclick='downloadAttachedFile(\""+attachedFile.id_documento+"\");return false;'><a href='#'>"+attachedFile.nombre+"</a></div>");
+                }else{
+                    $(this).find(".tableAttachedElement").append("<div class='fileLink' onclick='downloadAttachedFile(\""+attachedFile.id_documento+"\");return false;'><a href='#'>"+attachedFile.nombre+"</a></div>");
+                }
+
+            }
+        }else{
+            if (headerFound){
+                if($(this).find(".tableAttachedElement").length == 0){
+                    $(this).append("<td class=\"tableAttachedElement\">"+"-"+"</td>");
+                }
+            }
+        }
+    })
 }
 
 function downloadAttachedFile(fileId){
@@ -180,7 +192,13 @@ function getAttachedFiles(idFeature, layerName){
             private: pv
         },
         success : function (response) {
-		console.log(response);
+            var attachFiles = JSON.parse(response);
+            if (attachFiles.length > 0){
+                //$("#div"+layerName+" .attachedFiles").append("<div class='horizontalPrintSeparator' style='width: 100%; margin-top: 5px; margin-bottom: 5px'></div> <h4>Ficheros adjuntos</h4>");
+            }
+            for (var i=0; i<attachFiles.length; i++){
+                appendAttachedFile(idFeature, attachFiles[i], layerName);
+            }
         },
         error : function (error) {
 
@@ -198,7 +216,6 @@ function getAttachedFiles(idFeature, layerName){
  */
 
 function addDataToBeShown(features){
-    //console.log(features);
     if (features==""){
         layersCounter++;
         if(layersCounter==layersLength)
@@ -208,6 +225,8 @@ function addDataToBeShown(features){
     features.forEach(function (feature){
         var layerName=feature.id.split(".")[0];
         layerName=layerName.replace(/ /g,"_");
+        getAttachedFiles(feature.properties.id, layerName);
+        getEielTemplates(layerName, feature.properties.id, feature.properties.id_municipio);
         if(layersNames.indexOf(layerName)==-1){
             layersNames.push(layerName);
             if(layersNames.length==1){
@@ -275,7 +294,6 @@ function showDataFromFeatures(features){
                     headTable +="<th>"+key+"</th>";
             });
             headTable +="</thead></table>";
-            headTable +="<div class=attachedFiles></div>"
             $("#dataTable").append(headTable);
         }
         var bodyTable="<tbody><tr>";
@@ -285,15 +303,7 @@ function showDataFromFeatures(features){
         });
         bodyTable+="</tr></tbody>";
         $("#tableLayer"+layerName+"").append(bodyTable);
-
-        getAttachedFiles(features[i].getProperties().id, layerName).then(function(result){
-            var attachFiles = JSON.parse(result);
-            if (attachFiles.length > 0){
-                $("#div"+layerName+" .attachedFiles").append("<div class='horizontalPrintSeparator' style='width: 100%; margin-top: 5px; margin-bottom: 5px'></div> <h4>Ficheros adjuntos</h4>");
-            }
-            for (var i=0; i<attachFiles.length; i++){
-                appendAttachedFile(attachFiles[i], layerName);
-            }
-        });
+        getAttachedFiles(features[i].getProperties().id, layerName);
+        getEielTemplates(layerName, features[i].getProperties().id, features[i].getProperties().id_municipio);
     }
 }

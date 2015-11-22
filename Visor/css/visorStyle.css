@@ -503,13 +503,12 @@
 }
 
 .fileLink{
-    padding-left: 5px;
-    padding-right: 3px;
+    text-align: center;
+    padding-right: 6px;
     width: 100%;
     text-overflow: ellipsis;
     word-break: break-all;
     overflow: hidden;
-    height: 40px;
 }
 
 .fileLink a{
@@ -701,4 +700,8 @@ tbody td {
 tbody tr{
     padding-left: 10px;
     border-left: 1px solid black;
+}
+
+#eielModal .modal-dialog{
+    width: 600px;
 }

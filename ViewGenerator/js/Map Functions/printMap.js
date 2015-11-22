@@ -1,3 +1,4 @@
+var url;
 $(document).ready(function(){
     PrintEventHandler();
     populatePrintReportsAvailable();
@@ -37,23 +38,25 @@ function changeReportSelectorHandler(){
 }
 
 function changePreview(){
-    $.ajax({
-        url: "../../JasperReports/src/generateReport.php",
-        //url: printingPath + "src/generateReport.php",
-        data: {
-            reportName: $(".reportsAvailable").val(),
-            mapImage: generateMapImage(),
-            reportTitle: generateReportTitle(),
-            reportDescription: generateReportDescription(),
-            dataTables: generateDataTables(),
-            legendData: generateLegendForReport()
-        },
-        type: "POST",
-        success: function (response) {
-            console.log(response);
-            $("#previewCanvas iframe").attr("src", printingPath + "src/generateReport.php?tag=getPreview");
-        }
-    });
+    generateMapImage().then(function(){
+        $.ajax({
+            url: "../../JasperReports/src/generateReport.php",
+            //url: printingPath + "src/generateReport.php",
+            data: {
+                reportName: $(".reportsAvailable").val(),
+                mapImage: url,
+                reportTitle: generateReportTitle(),
+                reportDescription: generateReportDescription(),
+                dataTables: generateDataTables(),
+                legendData: generateLegendForReport()
+            },
+            type: "POST",
+            success: function (response) {
+                console.log(response);
+                $("#previewCanvas iframe").attr("src", printingPath + "src/generateReport.php?tag=getPreview");
+            }
+        });
+    })
 }
 /**
  * Start print task only for map content.
@@ -145,8 +148,22 @@ function showPrintModal(){
 }
 
 function generateMapImage(){
-    var canvas = $("canvas").get(0);
-    return canvas.toDataURL('image/jpeg');
+    var element = $("#gmap");
+    if (element[0].classList[0] && element[0].classList[0] == "fill") {
+        return html2canvas(element, {
+            useCORS: true,
+            onrendered: function (canvas) {
+                url = canvas.toDataURL("image/png");
+            }
+        });
+    }else {
+        return html2canvas($("canvas").get(0), {
+            useCORS: true,
+            onrendered: function(canvas){
+                url = canvas.toDataURL("image/png");
+            }
+        })
+    }
 }
 
 function generateReportDescription(){

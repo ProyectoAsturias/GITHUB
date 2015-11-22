@@ -1,5 +1,6 @@
 <?php
     require_once("../../Common/pclzip/pclzip.lib.php");
+    //require_once("../../Common/php/configuration.php");
     echo generateZipVisor();
 
     function saveHtmlFile(){
@@ -13,7 +14,7 @@
 
     function generateZipVisor(){
         //$files = includeDirForZipping($files, "../../ViewGenerator/js/Map Functions");
-
+        date_default_timezone_set("Europe/Madrid");
         $zipname = $_GET["visorName"].'.zip';
         $zip = new PclZip($zipname);
 
@@ -23,7 +24,7 @@
         $zip->add("../../ViewGenerator/css/",PCLZIP_OPT_REMOVE_PATH, "../../");
         $zip->add("../../ViewGenerator/templates/images/",PCLZIP_OPT_REMOVE_PATH, "../../");
         $zip->add("../../Visor/js/",PCLZIP_OPT_REMOVE_PATH, "../../");
-        $zip->add("../../Visor/templates/images",PCLZIP_OPT_REMOVE_PATH, "../../");
+        $zip->add("../../Visor/templates/",PCLZIP_OPT_REMOVE_PATH, "../../");
         $zip->add("../../Visor/css/visorStyle.css",PCLZIP_OPT_REMOVE_PATH, "../../");
         $zip->add("../../Visor/css/printVisor.css",PCLZIP_OPT_REMOVE_PATH, "../../");
 

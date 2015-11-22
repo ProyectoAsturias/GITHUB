@@ -16,7 +16,7 @@
     }
 
     function login($userName, $password, $redirect=""){
-	$encripter = new java("com.avanzit.encriptar.EncriptarPasswordAvanzit");
+	$encripter = new java("com.avanzait.encriptar.EncriptarPasswordAvanzait");
 	$connection=new DBConnection();        
 	$where=" AND bloqueado=FALSE AND fecha_proxima_modificacion > NOW()";
 	$query="SELECT password FROM iuseruserhdr WHERE name = '".$userName."'".$where;
