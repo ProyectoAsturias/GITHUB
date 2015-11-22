@@ -46,13 +46,13 @@ function login(userName, password){
         data: {method: "login", userName: userName, password: password}
     })
         .done(function(response){
-            console.log(response);
+		console.log(response);
             if (!JSON.parse(response).logged){
                 showErrorMessage(JSON.parse(response).errorMessage);
                 return;
             }
             else{
-                console.log(redirectUrl);
+                //console.log(redirectUrl);
                 window.location=redirectUrl;
             }
         })

@@ -2,44 +2,65 @@
 	require_once("../Common/php/DBConnection.php");
 	require_once("apiGeoserverFunc.php");
 	/**
-	 * Devuelve una lista con los wms más comunmente utilizados.
+	 * Devuelve una lista con los wms de un uaurio, mas los comunes
 	 * @return string
 	 */
 	function getWms() {
 		$dbConnection = new DBConnection(true);
+		$query='SELECT wms FROM "CommonWms"';
+                $result1 = pg_query($query) or die('Error: '.pg_last_error());
 		$query='SELECT wms FROM "Users" WHERE id='.$_SESSION["userId"];
-		$result = pg_query($query) or die('Error: '.pg_last_error());
+		$result2 = pg_query($query) or die('Error: '.pg_last_error());
 		$dbConnection->close();
 
-		$row = pg_fetch_row($result);
-		$wms = "";
-		if(sizeof($row[0])>0)
-			$wms=explode(",",$row[0]);
-
+		$wms = [];
+		while ($row = pg_fetch_row($result1)){
+			array_push($wms,$row[0]);
+                }	
+		$row = pg_fetch_row($result2);
+		if(sizeof($row[0])>0){
+			$userWms=explode(",",$row[0]);
+			$wms=array_merge($wms,$userWms);
+		}
 		return json_encode($wms);
 	}
 
 	/**
-	 * Actualiza la lista de wms comunes.
+         * Devuelve una lista con los wms de un usuario.
+         * @return string
+         */
+        function getUserWms() {
+                $dbConnection = new DBConnection(true);
+                $query='SELECT wms FROM "Users" WHERE id='.$_SESSION["userId"];
+                $result = pg_query($query) or die('Error: '.pg_last_error());
+                $dbConnection->close();
+
+                $wms = [];
+                $row = pg_fetch_row($result);
+                if(sizeof($row[0])>0){
+                        $wms=explode(",",$row[0]);
+                }
+                return json_encode($wms);
+        }
+
+	/**
+	 * Actualiza la lista de wms de un usuario.
 	 * @return string
 	 */
-	function updateWmsList() {
-		if (isset($_POST['wms'])) {
-			$wms = $_POST['wms'];
-			$wmsString = "";
-			for ($i = 0; $i < sizeof($wms) - 1; $i++)
-				$wmsString = $wmsString . $wms[$i].",";
-			$wmsString = $wmsString . $wms[$i];
-
-			$dbConnection = new DBConnection(true);
-			$query = "UPDATE \"Users\" SET wms='".$wmsString."' WHERE id=".$_SESSION["userid"];
-			$result = pg_query($query)or die('Error: '.pg_last_error());
-			$dbConnection->close();
-
-			return $result;
-		} else
-			echo "Error: Wms url missed.";
-	}
+        function updateUserWmsList() {
+                $wmsString = "";
+                if (isset($_POST['wms'])) {
+                        $wms = $_POST['wms'];
+                        for ($i = 0; $i < sizeof($wms) - 1; $i++)
+                                $wmsString = $wmsString . $wms[$i].",";
+                        $wmsString = $wmsString . $wms[$i];
+                }
+                $dbConnection = new DBConnection(true);
+                $query = "UPDATE \"Users\" SET wms='".$wmsString."' WHERE id=".$_SESSION["userId"];
+                $result = pg_query($query)or die('Error: '.pg_last_error());
+                $dbConnection->close();
+                return $result;
+        }
 
 	/**
 	 * Obtiene la lista de atributos de una capa en el momento que se importó.
@@ -239,6 +260,14 @@
 		$query = "SELECT selectquery FROM queries WHERE id_layer='".$layerId."'";
 		$result = pg_query($query) or die('Error: '.pg_last_error());
 		$select_layer = pg_fetch_result($result, 0,0);
+		
+		$query = "SELECT versionable FROM layers WHERE id_layer='".$layerId."'";
+                $result = pg_query($query) or die('Error: '.pg_last_error());
+                $versionable = pg_fetch_result($result, 0,0);
+	
+		if($versionable=="1")
+			$select_layer=$select_layer."AND revision_expirada=9999999999";
+		
 		$town=str_replace(array('"','[',']'),'',$town);
 		$select_layer=str_replace("?T","'".$projection."'",$select_layer);
 		$select_layer=str_replace("?M","".$town."",$select_layer);

@@ -20,18 +20,17 @@
 <body>
 
 {% include "alert.html.twig" %}
-<img id="portada" src="../../Common/images/imagenPortada.png"></img>
 {% if logged == true %}
     {% include "logout.html.twig" %}
 {% else %}
     {% include "loginForm.html.twig" %}
 {% endif %}
 
-<script type="application/javascript">
-    var redirectUrl = "{{ redirectUrl }}";
-    var redirectError = "{{ redirectError }}";
-    if (redirectError != "") showErrorMessage(redirectError);
-</script>
-
+	<script type="application/javascript">
+	    var redirectUrl = "{{ redirectUrl }}";
+	    var redirectError = "{{ redirectError }}";
+	    if (redirectError != "") showErrorMessage(redirectError);
+	</script>
+	<img id="portada" src="../../Common/images/imagenPortada.png"></img>
 </body>
 </html>

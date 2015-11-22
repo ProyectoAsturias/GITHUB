@@ -38,7 +38,7 @@ function loadWmsTree(wms) {
 					url : apiPath + "apiLocalgis.php",
 					data : {
 						tag : "getBbox",
-						entityId : entityId
+						entityId : entityId,
 					},
 					success : function (response) {
 						//console.log(response);
@@ -61,19 +61,19 @@ function loadWmsTree(wms) {
 								if (!searchLayerByName(capabilities.Layer.Layer[i].Name)) {
 									var style = "";
 									var layer;
-									//var visible = layersVisibility[i][0];
-									//var opacity = layersVisibility[i][1];
-									/*if(visible=="false")
+									var visible = 1;//layersVisibility[i][0];
+									var opacity = 1;//layersVisibility[i][1];
+									if(visible=="false")
 										visible=false;
 									else
 										visible=true;
-									*/if (capabilities.Layer.Layer[i].Style != null && capabilities.Layer.Layer[i].Style[0].Name)
+									if (capabilities.Layer.Layer[i].Style != null && capabilities.Layer.Layer[i].Style[0].Name)
 										style = capabilities.Layer.Layer[i].Style[0].Name;
 									if (capabilities.Layer.Layer[i].cascaded == 1) {
 										layer = addLayerWms(capabilities.Layer.Layer[i].Name, wms+"/wms");
 										layer.wms = true;
 									} else {
-										layer = addLayer(capabilities.Layer.Layer[i].Name, wms+"/wms", style, bBox, true, 1);
+										layer = addLayer(capabilities.Layer.Layer[i].Name, wms+"/wms", style, bBox, visible, opacity);
 										layer.wms = false;
 									}
 									layers.push(layer);
@@ -122,6 +122,7 @@ function makeNodesSortable() {
 			$("body").removeClass(container.group.options.bodyClass);
 			var indexTo = map.getLayers().getLength() - 1 - $item.index();
 			reorderOpenlayersMap(indexFrom, indexTo);
+			saveDatabaseMap();
 		},
 		onDragStart : function ($item, container, _super, event) {
 			var offset = $item.offset(),
@@ -149,6 +150,7 @@ function updateTreeLayer() {
 	generateLayerListHTML();
 	makeNodesSortable();
 	assignEventsHandlers();
+	saveDatabaseMap();
 }
 
 function generateLayerListHTML() {

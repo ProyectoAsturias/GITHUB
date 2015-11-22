@@ -21,6 +21,7 @@ function addDataAttributes(){
     selectionAssign();
     updateAssign();
     wmsimportAssign();
+    searchfeaturesAssign();
 }
 
 function exportDataAssign(){
@@ -85,4 +86,7 @@ function updateAssign(){
 }
 function wmsimportAssign(){
     $(".wmsimport").data("function", "wmsimport");
+}
+function searchfeaturesAssign(){
+    $(".searchfeatures").data("function", "searchfeatures");
 }

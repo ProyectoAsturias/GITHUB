@@ -1,4 +1,5 @@
 <?php
+	include_once("configuration.php");
 	/**
 	 * Objeto de conexión con Geoserver.
 	 */
@@ -52,13 +53,13 @@
 		 * @param string $mapName
 		 */
 		public function __construct($mapName=""){
-			$this->host="asturiasmodelo.dyndns.org";
-			$this->port="8090";
-			$this->user="admin";
-			$this->pass="geoserver";
-			$this->wsName=$mapName;
-			$this->dsName=$mapName;
-			$this->url='http://'.$this->host.':'.$this->port.'/geoserver';
+			$this->host=$GLOBALS["GSHOST"];
+                        $this->port=$GLOBALS["GSPORT"];
+                        $this->user=$GLOBALS["GSUSER"];
+                        $this->pass=$GLOBALS["GSPASS"];
+                        $this->wsName=$mapName;
+                        $this->dsName=$mapName;
+                        $this->url='http://'.$this->host.':'.$this->port.'/geoserver';
 		}
 	}
 ?>

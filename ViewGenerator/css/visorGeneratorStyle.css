@@ -290,7 +290,14 @@
     background-repeat:no-repeat;
     background-size: contain;
 }
-
+.searchfeatures{
+    cursor: pointer;
+    height: 30px;
+    width: 30px;
+    background-image:url("../templates/images/search.png");
+    background-repeat:no-repeat;
+    background-size: contain;
+}
 .legendBar{
     left: 800px;
     z-index: 1;

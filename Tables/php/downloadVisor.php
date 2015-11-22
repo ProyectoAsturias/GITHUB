@@ -1,6 +1,6 @@
 <?php
     require_once("../../Common/pclzip/pclzip.lib.php");
-    //require_once("../../Common/php/configuration.php");
+	require_once("../../Common/php/configuration.php");
     echo generateZipVisor();
 
     function saveHtmlFile(){
@@ -14,7 +14,8 @@
 
     function generateZipVisor(){
         //$files = includeDirForZipping($files, "../../ViewGenerator/js/Map Functions");
-        date_default_timezone_set("Europe/Madrid");
+		date_default_timezone_set("Europe/Madrid");
+
         $zipname = $_GET["visorName"].'.zip';
         $zip = new PclZip($zipname);
 
@@ -35,12 +36,10 @@
         $zip->add("../../Common/Jsonix/",PCLZIP_OPT_REMOVE_PATH, "../../");
         $zip->add("../../Common/jsPDF/jsPDF.js",PCLZIP_OPT_REMOVE_PATH, "../../");
         $zip->add("../../Common/html2canvas/html2canvas.js",PCLZIP_OPT_REMOVE_PATH, "../../");
-        $zip->add("../../Common/canvas2image/canvas2image.js",PCLZIP_OPT_REMOVE_PATH, "../../");
+        $zip->add("../../Common/canvas2Image/canvas2image.js",PCLZIP_OPT_REMOVE_PATH, "../../");
         $zip->add("../../Common/img/logo_principado.gif",PCLZIP_OPT_REMOVE_PATH, "../../");
         $zip->add("../../Common/images/hideInterface-left.png",PCLZIP_OPT_REMOVE_PATH, "../../");
         $zip->add("../../Common/images/hideInterface-right.png",PCLZIP_OPT_REMOVE_PATH, "../../");
-
-
 
         if(file_exists($zipname)) {
             header('Content-Type: application/zip');

@@ -49,7 +49,7 @@ class ApiRest {
 		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 		$rslt = curl_exec($ch);
 		$info = curl_getinfo($ch);
-		
+
 		if ($info['http_code'] == 401) {
 			return 'Access denied. Check login credentials.';
 		} else {
@@ -96,7 +96,6 @@ class ApiRest {
 		}
 		curl_setopt($ch, CURLOPT_HEADER, false);
 		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-		
 		$rslt = curl_exec($ch);
 		$info = curl_getinfo($ch);
 		if ($info['http_code'] == 401) {
@@ -121,7 +120,6 @@ class ApiRest {
 	 * @return mixed|string	Devuelve una String con el resultado de la petición
      */
 	public function createWorkspace($workspaceName) {
-		//return $this->runApi('workspaces', 'POST', '<workspace><name>'.htmlentities($workspaceName, ENT_COMPAT).'</name></workspace>');
 		return $this->runApi('workspaces', 'POST', '<workspace><name>'.$workspaceName.'</name></workspace>');
 	}
 

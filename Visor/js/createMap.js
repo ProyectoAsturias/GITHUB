@@ -175,7 +175,7 @@ function addLayersAndGroupsFromWMS(WMSUrl){
                     return treeDataSource;
                 },
                 error : function (error) {
-
+						console.log(error);
                 }
             });
 
@@ -248,14 +248,14 @@ function addLayerWmsToMap(name, wmsUrl){
     var format = 'image/png';
     var layer = new ol.layer.Image({
         source: new ol.source.ImageWMS({
-            ratio: 1,
-            url: wmsUrl,
-            params: {
-                'FORMAT': format,
-                'VERSION': '1.1.1',
-                STYLES: '',
-                LAYERS:  name,
-            }
+          ratio: 1,
+          url: wmsUrl,
+          params: {
+            'FORMAT': format,
+            'VERSION': '1.1.1',
+            STYLES: '',
+            LAYERS:  name,
+          }
         })
     });
     layer.name = name;
@@ -265,7 +265,7 @@ function addLayerWmsToMap(name, wmsUrl){
 }
 
 function addLayerToMap(name, WMSUrl){
-    var projExtent = ol.proj.get('EPSG:3857').getExtent();
+	var projExtent = ol.proj.get('EPSG:3857').getExtent();
     var startResolution = ol.extent.getWidth(projExtent) / 1024;
     var resolutions = new Array(22);
     for (var i = 0, ii = resolutions.length; i < ii; ++i) {
@@ -282,7 +282,7 @@ function addLayerToMap(name, WMSUrl){
             preload: Infinity,
             url: WMSUrl,
             serverType:'geoserver',
-            tileGrid: tileGrid,
+			tileGrid: tileGrid,
             params:{
                 'LAYERS':""+name+"", 'TILED':true
             }
@@ -303,31 +303,31 @@ function addVectorLayer(name, mapName, projectionCode){
     else{
         proj4.defs("EPSG:25830","+proj=utm +zone=30 +ellps=GRS80 +units=m +no_defs");
         var projection=ol.proj.get('EPSG:25830');
-        var code="EPSG:"+projectionCode;
+        var code="EPSG:"+projectionCode;        
     }
-    var url=serverGS+"geoserver/"+mapName+"/ows?service=WFS&version=1.0.0&request=GetFeature&typeName="+name+"&maxFeatures=340000&outputFormat=application/json";
-    $.ajax({
-        url: url,
-        success:function (data) {
-            // first add features
-            var vector = new ol.layer.Vector({
-                source: new ol.source.Vector(),
+	var url=serverGS+"geoserver/"+mapName+"/ows?service=WFS&version=1.0.0&request=GetFeature&typeName="+name+"&maxFeatures=340000&outputFormat=application/json";
+	$.ajax({
+		url: url,
+		success:function (data) {
+			// first add features 
+			var vector = new ol.layer.Vector({
+				source: new ol.source.Vector(),
                 visible:false,
-                opacity:0
-            });
-            map.addLayer(vector);
-            var format = new ol.format.GeoJSON({
-            });
-            var features = format.readFeatures(data, {
-                dataProjection: code,
-                featureProjection: 'EPSG:3857'
-            });
+				opacity:0
+			});
+			map.addLayer(vector);
+			var format = new ol.format.GeoJSON({
+			});
+			var features = format.readFeatures(data, {
+				dataProjection: code,
+				featureProjection: 'EPSG:3857'
+			});
             vector.name="vector"+name;
-            // console.log(map.getLayers());
-            vector.getSource().addFeatures(features);
-            vectorLayers.push(vector);
-        }
-    });
+           // console.log(map.getLayers());
+			vector.getSource().addFeatures(features);
+			vectorLayers.push(vector);
+		}
+	});
 }
 
 function searchAndRemoveLayer(layerToRemove){

@@ -1,4 +1,5 @@
 var activatedWmsWindow=false;
+var title;
 $(document).ready(function(){
 	wmsButtonEventHandler();
 });
@@ -37,17 +38,18 @@ function importWms(){
 	wms = wms.split("?");
 	wms = wms[0];
 	$.ajax({
-		type : "GET",
+		type : "POST",
 		jsonp : "callback",
 		dataType : 'text',
 		url : wms+'?request=getCapabilities&service=wms',
 		crossDomain : true,
 		success:function (response) {
+			console.log(response);
 			var parser = new ol.format.WMSCapabilities();
 			var service = parser.read(response);
 			console.log(service);
 			var capabilities = service.Capability;
-			var title = service.Service.Title;
+			title = service.Service.Title;
 			title=title.replace(/ /gi,'_');
 			var modalList="";
 			for(var i=0; i<capabilities.Layer.Layer.length; i++){
@@ -64,14 +66,22 @@ function importWms(){
 }
 
 function importLayersWms(wms){
-	$(".checkboxLayers").each(function(){
+    var dataMap = {url: wms};
+    dataMap.name = title;
+    dataMap.layers = [];
+    $(".checkboxLayers").each(function(){
 		if($(this).is(':checked')){
 			var check=checkLayer($(this).val());
 			if(check)
-				addLayerWms($(this).val(),wms);
+				dataMap.layers.push(addLayerWms($(this).val(),wms));
 		}
 	});
-	$("#wmsImportWindow .modal-header").empty().append("<button type=\"button\" onclick=\"cancel()\" class=\"close\" >&times;</button><h4 class=\"modal-title\">Importar WMs</h4>");
+	orderDataSource.push(generateMapNode(dataMap));
+    updateVisibility();
+    $("#layersTree").treeview("remove");
+    createLayerTree(orderDataSource);
+    orderWmsHandler();
+   	$("#wmsImportWindow .modal-header").empty().append("<button type=\"button\" onclick=\"cancel()\" class=\"close\" >&times;</button><h4 class=\"modal-title\">Importar WMs</h4>");
 	$("#wmsImportWindow .modal-body").empty().append("<label for=\"close\">Wms Importado con éxito</label><button type=\"button\" id=\"close\" onclick=\"cancel()\" class=\"btn btn-success btn-block\">Cerrar</button>");
 }
 
@@ -86,10 +96,10 @@ function checkLayer(name){
 }
 
 function addLayerWms(name,wmsUrl){
-    console.log("entra");
     var format = 'image/png';
     var layer = new ol.layer.Image({
         source: new ol.source.ImageWMS({
+			crossOrigin:'anonymous',
           ratio: 1,
           url: wmsUrl,
           params: {
@@ -101,6 +111,7 @@ function addLayerWms(name,wmsUrl){
         })
     });
     layer.name = name;
+    layer.wms=true;
     map.addLayer(layer);
 	addLegendLayer(name,wmsUrl);
 	return layer;

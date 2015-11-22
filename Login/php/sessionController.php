@@ -1,7 +1,10 @@
 <?php
+    if (session_status() == PHP_SESSION_NONE)
+    	session_start();
     require_once("../../Common/php/DBConnection.php");
     require_once("../../Common/php/TCConfig.php");
     require_once($loginTomcatJava);
+    require_once("../../GeoserverApi/apiLocalgisAcl.php"); 
 
     //Hacer login con el servicio de localgis
     if (!isset($_POST["method"])){
@@ -58,8 +61,8 @@
             $entityId=$row[1];
             $login= true;
         }
-        if ($login && $row[1]!=null){
-	    session_start();
+	if ($login && $row[1]!=null && acl_pass($userId)){
+	    //session_start();
             $_SESSION["userName"]=$userName;
             $_SESSION["userId"]=$userId;
             $_SESSION["userEntityId"]=$entityId;
@@ -79,7 +82,7 @@
     }
 
     function logout(){
-        session_start();
+	//session_start();
         session_unset();
         session_destroy();
     }
@@ -107,4 +110,3 @@
         $connection->close();
     }
 ?>
-

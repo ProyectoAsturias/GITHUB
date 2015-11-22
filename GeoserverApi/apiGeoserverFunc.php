@@ -11,22 +11,20 @@
 	/**
 	 * Crea un mapa en Geoserver. Genera un WorkSpace y un Datastore en Geoserver.
 	 */
-	function createMap(){
-		//if(isset($_POST['projection']) && isset($_POST['town'])){
+	function createMap(){	
 		if(isset($_POST['town'])){
-			//$_SESSION["projection"]=$_POST['projection'];
 			#Creación del WS y el DS
 			if(($result=$GLOBALS['geoserver']->createWorkspace($GLOBALS['gsConnection']->wsName))!="")
 				print("Advice".$result."\n");
 			else{
-	            print("Workspace creado\n");
-	            if(($result=$GLOBALS['geoserver']->initWsInfo($GLOBALS['gsConnection']->wsName))!="")
-	            	print("Advice".$result."\n");
-	            if(($result=$GLOBALS['geoserver']->initWmsInfo($GLOBALS['gsConnection']->wsName))!="")
-	            	print("Advice".$result."\n");
-	    	}
-	    	$dbConnection = new DBConnection(null,"localgisvistas");
-			if(($result=$GLOBALS['geoserver']->createPostGISDatastore($GLOBALS['gsConnection']->wsName, $GLOBALS['gsConnection']->dsName, $dbConnection->schema, $dbConnection->database, $dbConnection->user, $dbConnection->pass, $dbConnection->host))!="")
+	        	    print("Workspace creado\n");
+		            if(($result=$GLOBALS['geoserver']->initWsInfo($GLOBALS['gsConnection']->wsName))!="")
+		            	print("Advice".$result."\n");
+	        	    if(($result=$GLOBALS['geoserver']->initWmsInfo($GLOBALS['gsConnection']->wsName))!="")
+	            		print("Advice".$result."\n");
+	    		}
+	    		$dbConnection = new DBConnection(null,"localgisvistas");
+				if(($result=$GLOBALS['geoserver']->createPostGISDatastore($GLOBALS['gsConnection']->wsName, $GLOBALS['gsConnection']->dsName, $dbConnection->schema, $dbConnection->database, $dbConnection->user, $dbConnection->pass, $dbConnection->host))!="")
 				print("Advice".$result."\n");
 			else
 				print("Store creado\n");

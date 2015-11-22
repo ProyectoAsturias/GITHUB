@@ -3,7 +3,6 @@ var layersPerMap = [];
 var entityParams = []; //id,nombre,proyección y town de la entidad base del usuario
 
 $(document).ready(function () {
-
 	geoLogin();
 
 	$("#userName").append(userName);
@@ -41,32 +40,32 @@ $(document).ready(function () {
 });
 
 function geoLogin () {
- var username = "privateUser";
- var password = "1234";
- var url = serverGS + "geoserver/j_spring_security_check";
+	var username = "privateUser";
+	var password = "1234";
+	var url = serverGS + "geoserver/j_spring_security_check";
 
- var ajax = $.ajax({
-  data: "username=" + username + "&password=" + password,
-  type: "POST",
-  xhrFields: {
-   withCredentials: true
-  },
-  contentType: "application/x-www-form-urlencoded",
-  url: url
- });
+	var ajax = $.ajax({
+		data: "username=" + username + "&password=" + password,
+		type: "POST",
+		xhrFields: {
+			withCredentials: true
+		},
+		contentType: "application/x-www-form-urlencoded",
+		url: url
+	});
 }
 
 
 function geoLogout () {
- var url = serverGS + "geoserver/j_spring_security_logout";
+	var url = serverGS + "geoserver/j_spring_security_logout";
 
- var ajax = $.ajax({
-  type: "GET",
-  xhrFields: {
-   withCredentials: true
-  },
-  url: url
- });
+	var ajax = $.ajax({
+		type: "GET",
+		xhrFields: {
+			withCredentials: true
+		},
+		url: url
+	});
 }
 
 function version(){
@@ -77,6 +76,7 @@ function version(){
 		},
 		method : "POST",
 		success : function (response) {
+			//console.log(response);
 			var info = JSON.parse(response);
 			if(info!=null){
 				$('div[id=version]').html("Version "+info[0]+".");
@@ -151,7 +151,12 @@ function createMapsTable(target) {
 			}, {
 				field : "id",
 				title : "ID Mapa",
-				sortable : "true"
+				sortable : "true",
+				visible : false
+			}, {
+                                field : "owner",
+                                title : "Propietario",
+                                sortable : "true",
 			}, {
 				field : "name",
 				title : "Nombre",
@@ -214,6 +219,10 @@ function createVisorsTable(target) {
 				title : "ID Visor",
 				sortable : "true"
 			}, {
+                                field : "owner",
+                                title : "Propietario",
+                                sortable : "true",
+			}, {
 				field : "name",
 				title : "Nombre",
 				sortable : "true"
@@ -267,7 +276,8 @@ function retrieveUserVisors(callback) {
 	$.ajax({
 		url : "../php/userContent.php",
 		data : {
-			tag : "userVisors"
+			tag : "entityVisors",
+			userEntityId : userEntityId
 		},
 		method : "POST",
 		success : function (response) {
@@ -315,22 +325,6 @@ function FormatterAccessToVisor(value, row, index) {
 }
 
 function formatterDate(value,row,index){
-	/*var dateVal = new Date(value);
-	var h;
-	if(dateVal.getHours()<10)
-		h="0"+dateVal.getHours();
-	else
-		h=dateVal.getHours();
-	if(dateVal.getMinutes()<10)
-		m="0"+dateVal.getMinutes();	
-	else
-		m=dateVal.getMinutes();
-        if(dateVal.getSeconds()<10)
-                s="0"+dateVal.getSeconds();
-        else
-                s=dateVal.getSeconds();	
-	var dateFormat = dateVal.getDay()+"/"+dateVal.getMonth()+"/"+dateVal.getFullYear()+" "+h+":"+m+":"+s;
-	return dateFormat;*/
 	var dateFormat = new moment(value);//,"YY");// "DD-MM-YYYY HH:mm:ss");
 	return dateFormat.format("DD-MM-YYYY HH:mm:ss");
 }
@@ -424,7 +418,7 @@ function editMap(mapName, published, entityId) {
 }
 
 function accessVisor(viewName) {
-	window.location.href = installationPath + "Visor/php/visor.php?visorName=" + viewName;
+	window.open(installationPath + "Visor/php/visor.php?visorName=" + viewName);
 }
 
 function editVisor(viewName) {
@@ -586,6 +580,77 @@ function appendImages() {
 				});
 			}
 		}
+	});
+}
+
+function addWmsToList(){
+	var wms= $('#wmsInput').val();
+        wms = wms.trim();
+        var check = true;
+        if (wms) {
+                $("#wmsList option").each(function () {
+                        var listWms = $(this).val();
+                        if (listWms == wms)
+                                check = false;
+                });
+                if (check){
+			$("#wmsList").append("<option value=\"" + wms + "\">" + wms + "</option>");
+		}
+                $('#wmsInput').val("");
+        }
+}
+
+function delWmsFromList(){
+	$("#wmsList option:selected").remove();
+}
+
+function updateUserWms(){
+	var wms = [];
+	$("#wmsList option").each(function () {
+		wms.push($(this).val());
+	});
+	console.log(wms);
+	$.ajax({
+        	type : "POST",
+                url : apiPath + "apiDatabase.php",
+                data : {
+                	tag : "updateUserWmsList",
+                        wms : wms
+                },
+                success : function (response) {
+		},
+		error : function (error) {
+                        alert("Error al cargar los parámetros base : " + error);
+                }
+        });
+}
+
+function editMyWms(){
+        $("#modalWms .modal-header").empty().append(" <button type=\"button\" class=\"close\" data-dismiss=\"modal\">&times;</button><h4 class=\"modal-title\">Mis wms.<div id=\"loadingGif\"></div></h4>");
+	
+	var modalHTML="<select multiple class=\"form-control\" id=\"wmsList\" tabindex=\"1\">"
+	$.ajax({
+        	type : "POST",
+                url : apiPath + "apiDatabase.php",
+                data : {
+                	tag : "getUserWms"
+                },
+                success : function (response) {
+			var wms=JSON.parse(response);
+        		for (var i = 0; i < wms.length; i++)
+		                modalHTML += "<option value=\"" + wms[i] + "\">" + wms[i] + "</option>"
+		        modalHTML += "</select>" +
+		                "<button onclick='delWmsFromList()' id=\"delWms\" class=\"btn btn-info btn-block\" style=\"padding:0;\" >Eliminar wms</button>" +
+		                "<input type=\"text\"  id=\"wmsInput\" style=\"width:100%; border-radius: 7px; \"/>" +
+		                "<button onclick='addWmsToList()' id=\"addWms\" class=\"btn btn-info btn-block\" style=\"padding:0;\" >Añadir wms</button>";
+		        $("#modalWms .modal-body").empty().append(modalHTML);
+		        $("#modalWms").modal({
+		                backdrop : "static"
+		        });
+                 },
+                 error : function (error) {
+	                 alert("Error al cargar los parámetros base : " + error);
+                 }
 	});
 }
 

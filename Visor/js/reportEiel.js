@@ -4,7 +4,7 @@ getEielTemplates();
 function getReportEiel(){
     $.ajax({
         type : "POST",
-        url : "http://localhost:8090/Asturias/"+"EIEL/php/getReportEiel.php",
+        url : server+"EIEL/php/getReportEiel.php",
         data : {
             tag : "getEielTemplates"
         },
@@ -28,6 +28,7 @@ function getEielTemplates(layerName, featureId, townId){
             townId: townId
         },
         success : function (templatesFound) {
+		console.log(templatesFound);
             if (templatesFound != ""){
                 appendEielLink(layerName, featureId, townId, JSON.parse(templatesFound));
             }
@@ -41,7 +42,7 @@ function getEielTemplates(layerName, featureId, townId){
 function getLayerCategory(layerName){
     return $.ajax({
         type : "POST",
-        url : "http://localhost:8090/Asturias/"+"EIEL/php/getReportEiel.php",
+        url : server+"EIEL/php/getReportEiel.php",
         data : {
             tag : "getLayerCategory",
             layerName: layerName
@@ -70,7 +71,6 @@ function appendEielLink(layerName, featureId, featureTown, templates){
     });
     $("#tableLayer"+layerName+" tbody tr").each(function (index, tableElement){
         if ($(this).find("td:first-child").text() == featureId ){
-            //Este onclick está mal se lo pone a toda la tr.
             $(this).append("<td><a>"+"Generar informe"+"</a></td>").on("click",function (){
                 deployEielModalWindow(layerName, featureId, featureTown, templates);
             });

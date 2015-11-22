@@ -1,8 +1,13 @@
 <div class="panel-heading" role="tab">
     <h4 class="panel-title">
-        <p>Conectado como: <span class="glyphicon glyphicon-user"></span><strong id="userName"></strong></p>
-        <a href="#" class="btnLogout btn btn-lg btn-warning"><span class="glyphicon glyphicon-log-out"></span> Cerrar sesión</a>
-        <div hidden id=userEntityId"></div>
+	<div style="background-image: url(../../Common/images/cabeceraTablas.png); height: 140px; background-repeat: no-repeat;" align="right">
+		<div style="padding-top:10px;">
+	        	<p>Conectado como: <span class="glyphicon glyphicon-user"></span><strong id="userName"></strong></p>
+		        <table><tr><td><a href="#" class="btn btn-lg btn-success" onclick="editMyWms()"><span class="glyphicon glyphicon-map"></span> Editar mis Wms</a><p></p></td></tr>
+        		<tr><td><a href="#" class="btnLogout btn btn-lg btn-warning"><span class="glyphicon glyphicon-log-out"></span> Cerrar sesión</a></td></tr></table>
+		        <div hidden id=userEntityId"></div>
+		</div>
+	</div>
     </h4>
 </div>
 <div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true">

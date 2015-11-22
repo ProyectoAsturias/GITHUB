@@ -7,8 +7,11 @@ if (isset($_POST["tag"])) {
         case "getWms":
             echo getWms();
             break;
-        case "updateWmsList":
-            echo updateWmsList();
+	case "getUserWms":
+            echo getUserWms();
+            break;	
+        case "updateUserWmsList":
+            echo updateUserWmsList();
             break;
         case "getLayerAttributes":
             echo getLayerAttributes();

@@ -1,4 +1,5 @@
 <?php
+	require_once("configuration.php");
 	/**
 	 * Objeto de conexión con PostGreSQL.
 	 */
@@ -46,23 +47,20 @@
 		var $pass;
 
 
-		public function __construct($database=null,$schema=null){$this->host="asturiasmodelo.dyndns.org";
-			//$this->host="192.168.1.66";
-			$this->host="asturiasmodelo.dyndns.org";
-			$this->port="15432";
-			//$this->port="5432";
+		public function __construct($database=null,$schema=null){
+			$this->host=$GLOBALS["DBHOST"];
+			$this->port=$GLOBALS["DBPORT"];
 			if ($database==null)
-				//$this->database="Localgis";
-				$this->database="geopista";
+				$this->database=$GLOBALS["DBLOCALGIS"];
 			else{
-				$this->database="visores";
+				$this->database=$GLOBALS["DBVISORES"];
 			}
 			if ($schema==null)
-				$this->schema="public";
+				$this->schema=$GLOBALS["DBSCHEMA"];
 			else
 				$this->schema=$schema;
-			$this->user="visores";
-			$this->pass="1234";
+			$this->user=$GLOBALS["DBUSER"];
+			$this->pass=$GLOBALS["DBPASS"];
 			$this->conn = pg_connect("host=".$this->host." port=".$this->port." dbname=".$this->database." password=".$this->pass." user=".$this->user." password=".$this->pass)  or die('Error: '.pg_last_error());
 		}
 		

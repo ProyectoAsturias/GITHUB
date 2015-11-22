@@ -80,7 +80,8 @@ function getCenter() {
 function addLayer(name, wms, style, bBox, visible, opacity) {
 	var extent = ol.extent.applyTransform(bBox, ol.proj.getTransform("EPSG:4326", "EPSG:3857"));
 	var projExtent = ol.proj.get('EPSG:3857').getExtent();
-	var startResolution = ol.extent.getWidth(projExtent) / 1024;
+	var tileSize=1024;
+	var startResolution = ol.extent.getWidth(projExtent) / tileSize;
 	var resolutions = new Array(22);
 	for (var i = 0, ii = resolutions.length; i < ii; ++i) {
 		resolutions[i] = startResolution / Math.pow(2, i);
@@ -88,7 +89,7 @@ function addLayer(name, wms, style, bBox, visible, opacity) {
 	var tileGrid = new ol.tilegrid.TileGrid({
 			extent : extent,
 			resolutions : resolutions,
-			tileSize : [1024, 1024]
+			tileSize : [tileSize, tileSize]
 		});
 
 	var source = new ol.source.TileWMS({

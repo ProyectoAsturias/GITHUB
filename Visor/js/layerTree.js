@@ -8,6 +8,7 @@ function updateTreeLayer(){
 
     }else{
         $(document).ajaxStop(function(){
+            console.log(map.mapURL);
             var treeData = generateTreeData();
             createLayerTree(treeData);
         });
@@ -15,15 +16,25 @@ function updateTreeLayer(){
 }
 
 function generateNode(layer){
-    var node = {text: '<div class="layerName">'+layer.name+'</div>', nodes: [], layer: layer, state: {checked: true, expanded: true}};
+    var node = {text: '<div class="layerName">'+layer.name+'</div>', nodes: [], layer: layer, selectable:false , state: {checked: true, expanded: false}};
+    node.nodes.push(opacitySlider(layer));
     node.nodes.push(getLegendImageForLayer(layer));
     return node;
+}
+
+function generateMapNode(dataMap){
+    var mapData = {text:'<div class="nodeLine"><div class="mapName">'+dataMap.name+'</div><div class="visorTreeIcons"><span class="wmsBackward glyphicon glyphicon-triangle-bottom"></span><span class="wmsForward glyphicon glyphicon-triangle-top"></span></div></div>',
+            nodes: [], state: {checked: true, expanded: false}, wmsUrl: dataMap.url, backColor:"#FFEBCC"};
+    for (var h=0; h<dataMap.layers.length; h++){
+        mapData.nodes.push(generateNode(dataMap.layers[h]));
+    }
+    return mapData;
 }
 
 function generateTreeData(){
     if (map.name == undefined)
         map.name = "Incluya un mapa";
-    var treeData = [{text: map.name, nodes: [], state: {checked: true}}];
+    var treeData = [{text: map.name, nodes: [], selectable:false , state: {checked: true}}];
     map.getLayers().forEach(function(layer, index){
         if(!layer.base)
             treeData[0].nodes.push(generateNode(layer));
@@ -37,13 +48,12 @@ function createLayerTreeFromSource(dataSource){
         var layerData = [];
         for (var i = treeDataSource.length-1; i>=0; i--){
             var mapData = {text:'<div class="nodeLine"><div class="mapName">'+treeDataSource[i].name+'</div><div class="visorTreeIcons"><span class="wmsBackward glyphicon glyphicon-triangle-bottom"></span><span class="wmsForward glyphicon glyphicon-triangle-top"></span></div></div>',
-                    nodes: [], state: {checked: true}, wmsUrl: treeDataSource[i].url, backColor:"#FFEBCC"};
+                    nodes: [], state: {checked: true, expanded: false}, wmsUrl: treeDataSource[i].url, backColor:"#FFEBCC"};
             for (var h=0; h<treeDataSource[i].layers.length; h++){
                 mapData.nodes.push(generateNode(treeDataSource[i].layers[h]));
             }
             layerData.push(mapData);
         }
-        console.log(layerData);
         createLayerTree(layerData);
         orderDataSource = layerData;
         orderWmsHandler();
@@ -51,7 +61,17 @@ function createLayerTreeFromSource(dataSource){
     layerTreeHandlers();
 }
 
+function updateVisibility(){
+    for(i=0;i<orderDataSource.length; i++){
+        for(j=0;j<orderDataSource[i].nodes.length;j++){
+            orderDataSource[i].nodes[j].nodes[0].text="<div><input class='opacity' id=\"Opacity"+ orderDataSource[i].nodes[j].layer.name+"\"  onchange=\"sliderHandler('"+ orderDataSource[i].nodes[j].layer.name+"')\" value=\""+ orderDataSource[i].nodes[j].layer.getOpacity()+"\" type='range' min='0' max='1' step='0.01'/></div>";
+        }
+    }
+}
+
 function orderWmsBackward(event) {
+    console.log(orderDataSource);
+    updateVisibility();
     var node = $("#layersTree").treeview("getNode", $(event.target).parent().parent().parent().data("nodeid"));
     for (var i = 0; i < orderDataSource.length; i++) {
         if (node.wmsUrl == orderDataSource[i].wmsUrl && orderDataSource[i + 1] != undefined) {
@@ -69,6 +89,8 @@ function orderWmsBackward(event) {
 }
 
 function orderWmsForward(event) {
+    console.log(orderDataSource);
+    updateVisibility();
     var node = $("#layersTree").treeview("getNode", $(event.target).parent().parent().parent().data("nodeid"));
     for (var i = 0; i < orderDataSource.length; i++) {
         if (node.wmsUrl == orderDataSource[i].wmsUrl && orderDataSource[i - 1] != undefined) {
@@ -132,7 +154,7 @@ function swapLayersOrdering(movingMap, forcedToMoveMap){
 
 function orderWmsHandler(){
     $("#layersTree").on("click", function(event){
-        console.log(event.target);
+        //console.log(event.target);
         if (event.target.className == "wmsBackward glyphicon glyphicon-triangle-bottom"){
             console.log("Patras")
             orderWmsBackward(event);
@@ -143,6 +165,7 @@ function orderWmsHandler(){
     })
 }
 
+
 function layerTreeHandlers(){
     $(".hideLayers").off("click");
     makeLayerTreeResizable();
@@ -150,9 +173,28 @@ function layerTreeHandlers(){
     hideLayerTree();
 }
 
+function sliderHandler(layerName){
+    //console.log("transparencia modificada en: "+layerName);
+    var allLayers=map.getLayers().getArray();
+    for(i=0;i<allLayers.length;i++)
+        if(allLayers[i].name==layerName)
+            allLayers[i].setOpacity($("#Opacity"+layerName).val());
+}
+
+function opacitySlider(layer){
+    //console.log(layer.name+" : "+layer.getOpacity());
+    var slider="<div><input class='opacity' id=\"Opacity"+layer.name+"\"  onchange=\"sliderHandler('"+layer.name+"')\" value=\""+layer.getOpacity()+"\" type='range' min='0' max='1' step='0.01'/></div>";
+    var sliderNode={text:slider, selectable:false , showCheckbox:false};
+    return sliderNode;
+}
+
 function getLegendImageForLayer(layer){
-    var imgDiv ="<div class=\"imgLayer\" id=\"" + layer.name + "\"><img crossOrigin=\"Anonymous\" src='" + layer.getSource().getUrls()[0] + "?REQUEST=GetLegendGraphic&VERSION=1.0.0&FORMAT=image/png&WIDTH=20&HEIGHT=20&LAYER=" + layer.name + "&LEGEND_OPTIONS=forceLabels:on' />";
-    var legendNode = {text:imgDiv, showCheckbox: false}
+    //console.log(layer)
+    if (layer.wms)
+        var imgDiv ="<div class=\"imgLayer\" id=\"" + layer.name + "\"><img crossOrigin=\"Anonymous\" src='" + layer.getSource().getUrl() + "?REQUEST=GetLegendGraphic&VERSION=1.0.0&FORMAT=image/png&WIDTH=20&HEIGHT=20&LAYER=" + layer.name + "&LEGEND_OPTIONS=forceLabels:on' />";
+    else
+        var imgDiv ="<div class=\"imgLayer\" id=\"" + layer.name + "\"><img crossOrigin=\"Anonymous\" src='" + layer.getSource().getUrls()[0] + "?REQUEST=GetLegendGraphic&VERSION=1.0.0&FORMAT=image/png&WIDTH=20&HEIGHT=20&LAYER=" + layer.name + "&LEGEND_OPTIONS=forceLabels:on' />";
+    var legendNode = {text:imgDiv, selectable:false ,showCheckbox: false}
     return legendNode
 }
 
@@ -195,19 +237,81 @@ function createLayerTree(data){
         showCheckbox: true,
         emptyIcon: "",
         onNodeChecked: function(event, node){
-            if (node.layer) node.layer.setVisible(true);
+            if (node.layer){ 
+                node.layer.setVisible(true);
+                setVectorVisible(node.layer.name);
+            }
             checkNodeChildrens(node);
+            updateVisibility();
+            $("#layersTree").treeview("remove");
+            createLayerTree(orderDataSource);
+            orderWmsHandler();
         },
         onNodeUnchecked: function(event, node){
-            if (node.layer) node.layer.setVisible(false);
+            if (node.layer){
+                node.layer.setVisible(false);
+                setVectorInvisible(node.layer.name);
+            }
             uncheckNodeChildrens(node);
+            updateVisibility();
+            $("#layersTree").treeview("remove");
+            createLayerTree(orderDataSource);
+            orderWmsHandler();
         },
-        onNodeSelected: function(event, node){
+		onNodeSelected: function(event, node){
             $("#layersTree").treeview("toggleNodeSelected", [ node.nodeId ]);
+        },
+        onNodeCollapsed: function(event, node){
+            updateVisibility();
+            updateColapseNodes(node);
+            $("#layersTree").treeview("remove");
+            createLayerTree(orderDataSource);
+            orderWmsHandler();
+        },
+        onNodeExpanded: function(event, node){
+            updateVisibility();
+            updateExpandNodes(node);
+            $("#layersTree").treeview("remove");
+            createLayerTree(orderDataSource);
+            orderWmsHandler();
         }
     });
 }
 
+function updateColapseNodes(node){
+    for(i=0;i<orderDataSource.length; i++){
+        if(node.wmsUrl){
+            if(orderDataSource[i].wmsUrl==node.wmsUrl){
+                orderDataSource[i].state.expanded=false;
+                for(j=0;j<orderDataSource[i].nodes.length;j++)
+                    orderDataSource[i].nodes[j].state.expanded=false;
+            }
+        }
+        else{
+            for(j=0;j<orderDataSource[i].nodes.length;j++){
+                if(orderDataSource[i].nodes[j].layer==node.layer){
+                    orderDataSource[i].nodes[j].state.expanded=false;
+                }
+            }
+        }
+    }
+}
+
+function updateExpandNodes(node){
+    for(i=0;i<orderDataSource.length; i++){
+        if(node.wmsUrl){
+            if(orderDataSource[i].wmsUrl==node.wmsUrl)
+                orderDataSource[i].state.expanded=true;
+        }
+        else{
+            for(j=0;j<orderDataSource[i].nodes.length;j++){
+                if(orderDataSource[i].nodes[j].layer==node.layer){
+                    orderDataSource[i].nodes[j].state.expanded=true;
+                }
+            }
+        }
+    }
+}
 
 function uncheckNodeChildrens(node){
     if (node.nodes == undefined)
@@ -215,6 +319,22 @@ function uncheckNodeChildrens(node){
     node.nodes.forEach(function (childrenNode) {
         $('#layersTree').treeview("uncheckNode", childrenNode.nodeId);
     });
+    for(i=0;i<orderDataSource.length; i++){
+        if(node.wmsUrl){
+            if(orderDataSource[i].wmsUrl==node.wmsUrl){
+                orderDataSource[i].state.checked=false;
+                for(j=0;j<orderDataSource[i].nodes.length;j++)
+                    orderDataSource[i].nodes[j].state.checked=false;
+            }
+        }
+        else{
+            for(j=0;j<orderDataSource[i].nodes.length;j++){
+                if(orderDataSource[i].nodes[j].layer==node.layer){
+                    orderDataSource[i].nodes[j].state.checked=false;
+                }
+            }
+        }
+    }
 }
 
 function checkNodeChildrens(node){
@@ -223,4 +343,20 @@ function checkNodeChildrens(node){
     node.nodes.forEach(function(childrenNode){
         $('#layersTree').treeview("checkNode", childrenNode.nodeId);
     });
+    for(i=0;i<orderDataSource.length; i++){
+        if(node.wmsUrl){
+            if(orderDataSource[i].wmsUrl==node.wmsUrl){
+                orderDataSource[i].state.checked=true;
+                for(j=0;j<orderDataSource[i].nodes.length;j++)
+                    orderDataSource[i].nodes[j].state.checked=true;
+            }
+        }
+        else{
+            for(j=0;j<orderDataSource[i].nodes.length;j++){
+                if(orderDataSource[i].nodes[j].layer==node.layer){
+                    orderDataSource[i].nodes[j].state.checked=true;
+                }
+            }
+        }
+    }
 }

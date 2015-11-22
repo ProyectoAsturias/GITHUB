@@ -226,7 +226,7 @@ function addDataToBeShown(features){
         var layerName=feature.id.split(".")[0];
         layerName=layerName.replace(/ /g,"_");
         getAttachedFiles(feature.properties.id, layerName);
-        getEielTemplates(layerName, feature.properties.id, feature.properties.id_municipio);
+        //getEielTemplates(layerName, feature.properties.id, feature.properties.id_municipio);
         if(layersNames.indexOf(layerName)==-1){
             layersNames.push(layerName);
             if(layersNames.length==1){
@@ -304,6 +304,6 @@ function showDataFromFeatures(features){
         bodyTable+="</tr></tbody>";
         $("#tableLayer"+layerName+"").append(bodyTable);
         getAttachedFiles(features[i].getProperties().id, layerName);
-        getEielTemplates(layerName, features[i].getProperties().id, features[i].getProperties().id_municipio);
+        //getEielTemplates(layerName, features[i].getProperties().id, features[i].getProperties().id_municipio);
     }
 }

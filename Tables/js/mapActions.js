@@ -41,7 +41,7 @@ function createNewMapEventsHandler() {
 				},
 				method : "POST",
 				success : function (response) {
-				//	console.log(response);
+					console.log(response);
 					var concejos = JSON.parse(response);
 
 					//console.log(concejos)
@@ -167,7 +167,7 @@ function mapModalSaveButtonHandler() {
 				},
 				success : function (response) {
 					result = JSON.parse(response);
-					//console.log(entityParams[3]);//entityParams);
+					//console.log(result[3]);//entityParams);
 					town = result[3];
 					createMap(mapName, entityId, town, projection);
 				},
@@ -191,7 +191,7 @@ function createMap(mapName, entityId, town, projection) {
 		},
 		method : "POST",
 		success : function (response) {
-			console.log(response);
+			//console.log(response);
 			if (response.indexOf("already exists") != -1) {
 				alert("Ya existe un mapa con ese nombre, por favor introduzca otro.");
 				return;

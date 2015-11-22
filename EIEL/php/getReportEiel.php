@@ -3,8 +3,10 @@
     require_once("../../Common/php/TCConfig.php");
     require_once($loginTomcatJava);
 
-    $directorioPlantillasGenericas = "C:\Users\JOSE\Desktop\plantilla_informes_eiel";
-    $directorioPlantillasEntidad = "C:\Users\JOSE\Desktop\plantilla_informes_eiel";
+    //$directorioPlantillasGenericas = "C:\Users\JOSE\Desktop\plantilla_informes_eiel";
+    //$directorioPlantillasEntidad = "C:\Users\JOSE\Desktop\plantilla_informes_eiel";
+	$directorioPlantillasGenericas = "/usr/local/LocalGIS.MODELO/admcar/classes/plantillas/eiel";
+	$directorioPlantillasEntidad = "/usr/local/LocalGIS.MODELO/admcar/classes/plantillas/eiel";
 
     if (!isset($_POST["tag"])){
         return;

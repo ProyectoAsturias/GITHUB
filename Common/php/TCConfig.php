@@ -1,9 +1,6 @@
 <?php
-	$server = "http://localhost";
-	//$server = "http://asturiasmodelo.dyndns.org";
-	$loginTomcatServer = $server.':9090';
-	$loginTomcatJava = $loginTomcatServer.'/LocalGIS/java/Java.inc';
-
-	$printTomcatServer = $server.':9090';
-	$printTomcatJava = $printTomcatServer.'/JavaBridge/java/Java.inc';
+	include_once("configuration.php");
+	$tomcatServer = $GLOBALS["TOMCATHOST"].':'.$GLOBALS["TOMCATPORT"];
+	$loginTomcatJava = $tomcatServer.'/LocalGIS/java/Java.inc';
+	$printTomcatJava = $tomcatServer.'/JavaBridge/java/Java.inc';
 ?>

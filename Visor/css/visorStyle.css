@@ -439,6 +439,14 @@
     background-size: contain;
     opacity: 0.8;
 }
+.searchfeatures{
+    cursor: pointer;
+    height: 30px;
+    width: 30px;
+    background-image:url("../templates/images/search.png");
+    background-repeat:no-repeat;
+    background-size: contain;
+}
 
 #hideInterface{
     position: absolute;
@@ -467,6 +475,14 @@
     filter: alpha(opacity=80); /* For IE8 and earlier */
 }
 
+#searchWindow{
+    width:350px;
+    position: absolute;
+    top: 550px;
+    left: 50px;
+    opacity: 0.8;
+    filter: alpha(opacity=80); /* For IE8 and earlier */
+}
 #drawModalWindow{
     width:350px;
     position: fixed;
@@ -577,6 +593,7 @@
     padding-bottom: 3px;
 }
 
+
 .legendBar{
 	visibility: hidden; !important
 }
@@ -642,6 +659,7 @@ li .removeFeature{
     overflow-x: hidden;
     overflow-y: hidden;
 }
+
 
 .layerTab{
     padding-top: 15px;

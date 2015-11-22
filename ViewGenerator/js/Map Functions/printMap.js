@@ -1,4 +1,3 @@
-var url;
 $(document).ready(function(){
     PrintEventHandler();
     populatePrintReportsAvailable();

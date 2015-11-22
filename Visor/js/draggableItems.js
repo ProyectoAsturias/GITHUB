@@ -20,6 +20,7 @@ function toolsDraggable(){
     makeLegendBarDraggable();
     makeTreeViewDraggable();
     makeInfoWIndowDraggable();
+    makeSearchWindowDraggable();
 }
 
 function toolsFixed(){
@@ -28,6 +29,7 @@ function toolsFixed(){
     makeLegendBarFixed();
     makeTreeViewFixed();
     makeInfoWindowFixed();
+    makeSearchWindowFixed();
     $("#toolsDraggable").css("border", "solid 2px red");
     draggableButton=false;
 }
@@ -38,6 +40,7 @@ function enableToolsDraggable(){
     enableScaleDraggable();
     enableLegendBarDraggable();
     enableTreeViewDraggable();
+    enableSearchWindowDraggable();
     $("#toolsDraggable").css("border", "solid 2px white");
     draggableButton=true;
 }
@@ -82,8 +85,15 @@ function makeInfoWIndowDraggable() {
         containment: $(".ol-viewport")
     });
     $("#info").resizable({
-        handles: "w, e, s, se, sw"
+   
     });
+}
+
+function makeSearchWindowDraggable(){
+    $("#searchWindow").draggable({
+        containment: $(".ol-viewport"),
+        disabled: true
+    }); 
 }
 
 function makeFunctionsBarFixed(){
@@ -106,6 +116,10 @@ function makeInfoWindowFixed(){
     $( "#info" ).draggable( "option", "disabled", true );
 }
 
+function makeSearchWindowFixed(){
+    $( "#searchWindow" ).draggable( "option", "disabled", true );
+}
+
 function enableFunctionsBarDraggable(){
     $( ".functionsBar" ).draggable( "option", "disabled", false );
 }
@@ -124,4 +138,8 @@ function enableTreeViewDraggable(){
 
 function enableInfoWindowDraggable(){
     $( "#info" ).draggable( "option", "disabled", false );
+}
+
+function enableSearchWindowDraggable(){
+    $( "#searchWindow" ).draggable( "option", "disabled", false );
 }
