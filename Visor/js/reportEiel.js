@@ -1,15 +1,15 @@
-//getReportEiel();
-getLayerCategory();
+getReportEiel();
+//getLayerCategory();
 getEielTemplates();
 function getReportEiel(){
     $.ajax({
         type : "POST",
         url : server+"EIEL/php/getReportEiel.php",
         data : {
-            tag : "getEielTemplates"
+            tag : "generateEielReport"
         },
-        success : function (projectionResponse) {
-            console.log(projectionResponse);
+        success : function (response) {
+            console.log(response);
         },
         error : function (error){
 
