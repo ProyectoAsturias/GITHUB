@@ -4,7 +4,7 @@
 	require_once("classes/LocalgisLayer.php");
 	require_once("classes/LocalgisFamily.php");
 	require_once("classes/LocalgisMap.php");
-	require_once("../Common/php/DBConnection.php");
+	require_once(dirname(__FILE__)."/../Common/php/DBConnection.php");
 	require_once("apiDatabaseFunc.php");
 
 	function isAccessible($idlayer) {
@@ -289,17 +289,14 @@
 	/** 
 	 *  Obtiene el nombre real de una capa 
 	**/
-	function getOriginalLayerName(){
-		if (isset($_POST['layerName'])) {
-                        $layerName = $_POST['layerName'];
-                        $dbConnection = new DBConnection();
-			$query = "SELECT  name FROM layers,dictionary WHERE traduccion LIKE '".$layerName."' AND id_name=id_vocablo AND locale='es_ES'";
-                        $result = pg_query($query)or die('Error: '.pg_last_error());
-                        $dbConnection->close();
-			$name = pg_fetch_result($result, 0,0);
-			return $name;
-		}	
-		else
-                        echo "Error: Id map missed.";
-	}
+function getOriginalLayerName($layerName){
+	$dbConnection = new DBConnection();
+	$query = "SELECT  name FROM layers,dictionary WHERE traduccion LIKE '".$layerName."' AND id_name=id_vocablo AND locale='es_ES'";
+	$result = pg_query($query)or die('Error: '.pg_last_error());
+	$dbConnection->close();
+	if (pg_num_rows($result) !=0)
+		return pg_fetch_result($result, 0,0);
+	else
+		return "";
+}
 ?>

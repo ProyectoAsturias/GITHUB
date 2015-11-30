@@ -34,6 +34,17 @@ class ReportGenerator {
         $jem->exportReportToPDFFile($print, $this->outputPath);
     }
 
+    function extractReportToRtf(){
+        java_set_file_encoding("UTF-8");
+        $exportador = new java("net.sf.jasperreports.engine.export.JRRtfExporter");//libreria para rtf documentos word
+        $parametrosExportados = java("net.sf.jasperreports.engine.JRExporterParameter");
+        $print = $this->fillManager->fillReport($this->report,$this->reportParams,new Java("net.sf.jasperreports.engine.JREmptyDataSource"));
+        $exportador->setParameter($parametrosExportados->JASPER_PRINT, $print);
+        $this->javaOutputStream = new java("java.io.ByteArrayOutputStream");
+        $exportador->setParameter($parametrosExportados->OUTPUT_FILE_NAME, $this->outputPath);
+        $exportador->exportReport(); //Este código sirve para abrir el archivo generado desde el explorador
+    }
+
     function extractReportToHtml(){
         $print = $this->fillManager->fillReport($this->report,$this->reportParams,new Java("net.sf.jasperreports.engine.JREmptyDataSource"));
         $jem = new JavaClass("net.sf.jasperreports.engine.JasperExportManager");
@@ -56,12 +67,10 @@ class ReportGenerator {
 
     function addReportLegend($legendObject){
         $legendArrayList = $this->generateLegendArrayList($legendObject);
-        //$this->reportParams->get("legendData")->add($legendArrayList);  //Hay que añadir lista de imagenes y modificar el subreport;
         $this->reportParams->put("legendData", $legendArrayList);
     }
 
     private function generateTableArrayList($tableObject){
-        var_dump($tableObject);
         $tableArray = new Java("java.util.ArrayList");
         if (isset($tableObject->tableContent[0])){
             $tableArray->add($tableObject->layerName);
@@ -83,7 +92,11 @@ class ReportGenerator {
     private function generateTableValuesArrayList($tableContent){
         $tableValuesArray = new Java("java.util.ArrayList");
         foreach($tableContent as $content){
-            $tableValuesArray->add($content);
+            $rowContent = new Java("java.util.ArrayList");
+            foreach($content as $valueContent){
+                $rowContent->add($valueContent);
+            }
+            $tableValuesArray->add($rowContent);
         }
         return $tableValuesArray;
     }

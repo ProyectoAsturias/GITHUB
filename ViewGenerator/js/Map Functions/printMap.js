@@ -15,9 +15,20 @@ function PrintEventHandler() {
         showPrintModal();
         changePreview();
     });
+    $("#reportDownload").jui_dropdown({
+        launcher_id: 'printModalButton',
+        launcher_container_id: 'launcherContainer',
+        menu_id: 'formatList',
+        containerClass: 'container1',
+        menuClass: 'menu1',
+        onSelect: function(event, data) {
+            printMap(data.id);
+        }
+    });
+    /*
     $("#printModalButton").on("click", function(){
         printMap()
-    });
+    });*/
 
     $("#printModal :checkbox, #printModal :text, #printModal textarea").change(function(){
         changePreview();
@@ -37,16 +48,17 @@ function changeReportSelectorHandler(){
 }
 
 function changePreview(){
+    var tables = generateDataTables();
     generateMapImage().then(function(){
         $.ajax({
-            url: "../../JasperReports/src/generateReport.php",
-            //url: printingPath + "src/generateReport.php",
+            //url: "../../JasperReports/src/generateReport.php",
+            url: printingPath + "src/generateReport.php",
             data: {
                 reportName: $(".reportsAvailable").val(),
                 mapImage: url,
                 reportTitle: generateReportTitle(),
                 reportDescription: generateReportDescription(),
-                dataTables: generateDataTables(),
+                dataTables: tables,
                 legendData: generateLegendForReport()
             },
             type: "POST",
@@ -62,9 +74,12 @@ function changePreview(){
  * @method printMap
  * @return
  */
-function printMap(){
-    //$("#previewCanvas iframe").get(0).contentWindow.print();
-    window.open(printingPath + "src/generateReport.php?tag=downloadPdf", "_blank");
+function printMap(format){
+    if (format == "PDF"){
+        window.open(printingPath + "src/generateReport.php?tag=downloadPdf", "_blank");
+    }else if (format == "RTF"){
+        window.open(printingPath + "src/generateReport.php?tag=downloadRtf", "_blank");
+    }
 }
 
 function deleteReportOnServer(){
@@ -124,10 +139,16 @@ function generateDataTables(){
             layerHeaders = [];
             layerContent = [];
             $(this).find('th').map(function() {
-                layerHeaders.push($(this).text());
+                if ($(this).text() != "Informe EIEL" && $(this).text() != "Ficheros adjuntos")
+                    layerHeaders.push($(this).text());
             }).get();
-            $(this).find('td').map(function() {
-                layerContent.push($(this).text());
+            $(this).find("tr").map(function() {
+                var rowContent = [];
+                $(this).find("td").each(function(){
+                    rowContent.push($(this).text());
+                });
+                if (rowContent.length != 0 )
+                    layerContent.push(rowContent);
             }).get();
             tableHeaders.push(layerHeaders);
             tableContent.push(layerContent);

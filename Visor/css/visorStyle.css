@@ -81,6 +81,7 @@
 }
 
 #printModal .modal-header .modal-footer{
+    display: inline-block;
     height: 10%;
 }
 
@@ -95,6 +96,19 @@
     text-align: center;
 }
 
+#printModalButton{
+    height: 35px;
+    width: 90px;
+}
+
+#reportDownload{
+    float: right;
+    margin-right: 10px;
+}
+
+#cancelPrintButton{
+    float: right;
+}
 
 .invisibleFullScreenButton{
     display: none;

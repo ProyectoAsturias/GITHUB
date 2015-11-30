@@ -1,5 +1,5 @@
 <?php
-	require_once("../Common/php/DBConnection.php");
+	require_once(dirname(__FILE__)."/../Common/php/DBConnection.php");
 	require_once("apiGeoserverFunc.php");
 	/**
 	 * Devuelve una lista con los wms de un uaurio, mas los comunes

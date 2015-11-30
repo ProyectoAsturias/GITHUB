@@ -145,7 +145,6 @@ function appendAttachedFile(featureId, attachedFile, layerName){
         }
     });
     $("#tableLayer"+layerName+" tbody tr").each(function (tableElement){
-        console.log(featureId);
         if ($(this).find("td:first-child").text() == featureId ){
             if($(this).find(".tableAttachedElement").length == 0){
                 $(this).append("<td class=\"tableAttachedElement\">"+"<div class='fileLink' onclick='downloadAttachedFile(\""+attachedFile.id_documento+"\");return false;'><a href='#'>"+attachedFile.nombre+"</a></div>"+"</td>");
@@ -288,7 +287,6 @@ function showDataFromFeatures(features){
                 $("#layersHeader").append("<li id=\"layer"+layerName+"\"><a data-toggle=\"pill\" onclick=\"changePills('"+layerName+"')\"><b>"+layerName+"</b></a>");
                 var headTable="<div id='div"+layerName+"' class='tab-pane fade'><table id=\"tableLayer"+layerName+"\"><thead>";
             }
-            console.log(features[i].getProperties());
             $.each(features[i].getProperties(), function(key, value) {
                 if(key!="geometry")
                     headTable +="<th>"+key+"</th>";

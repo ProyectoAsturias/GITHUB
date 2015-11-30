@@ -36,8 +36,8 @@ if(isset($_POST["tag"])){
                 echo getBbox();
                 break;
 	    case "getOriginalLayerName":
-		echo getOriginalLayerName();
-		break;	
+		    echo getOriginalLayerName($_POST["layerName"]);
+		    break;
             default:
             	echo "Error apiLocalgis: Function ".$_POST["tag"]." don't exists.";
         }

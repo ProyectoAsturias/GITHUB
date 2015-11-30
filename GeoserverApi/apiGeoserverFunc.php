@@ -4,8 +4,8 @@
 	require_once("classes/LocalgisFamily.php");
 	require_once("classes/LocalgisMap.php");
 	require_once("classes/validateSld.php");
-	require_once("../Common/php/GSConnection.php");
-	require_once("../Common/php/DBConnection.php");
+	require_once(dirname(__FILE__)."/../Common/php/GSConnection.php");
+	require_once(dirname(__FILE__)."/../Common/php/DBConnection.php");
 	require_once("apiDatabaseFunc.php");
 
 	/**

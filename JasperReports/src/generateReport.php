@@ -2,6 +2,7 @@
 require_once("../../Common/php/TCConfig.php");
 define('JAVA_INC_URL',$printTomcatJava);
 require_once("ReportGenerator.php");
+require_once(JAVA_INC_URL);
 
 $reportGenerator = null;
 
@@ -9,6 +10,9 @@ if (isset($_GET["tag"])){
     switch ($_GET["tag"]){
         case "downloadPdf":
             downloadPdf();
+            break;
+            case "downloadRtf":
+            downloadRtf();
             break;
         case "getAvailableReports":
             echo getAvailableReports();
@@ -57,7 +61,7 @@ function startReport(){
     }
     if (!isset($_SESSION["reportGenerator"])){
         global $reportGenerator;
-        $reportGenerator = new ReportGenerator(realpath(".")."/../reports/".$_POST["reportName"].".jrxml", realpath(".")."/../tmpReports/".date(time()).".pdf", JAVA_INC_URL);
+        $reportGenerator = new ReportGenerator(realpath(".")."/../reports/".$_POST["reportName"].".jrxml", realpath(".")."/../tmpReports/".date(time()), JAVA_INC_URL);
         $_SESSION["reportGenerator" ] = $reportGenerator;
     }else{
         global $reportGenerator;
@@ -85,18 +89,40 @@ function previewPdf(){
     }
 }
 
-function downloadPdf(){
+function downloadRtf(){
     session_start();
     if (isset($_SESSION["reportGenerator"])){
         $reportGenerator = $_SESSION["reportGenerator"];
+        $reportGenerator->extractReportToRtf();
         $file = $reportGenerator->outputPath;
-        $filename = basename($reportGenerator->outputPath);
+        $filename = basename($reportGenerator->outputPath).".rtf";
 
         header('Content-Description: File Transfer');
         header('Content-Type: application/octet-stream');
         header("Content-Type: application/force-download");
         header('Content-Disposition: attachment; filename=' . urlencode($filename));
-        // header('Content-Transfer-Encoding: binary');
+        header('Expires: 0');
+        header('Cache-Control: must-revalidate, post-check=0, pre-check=0');
+        header('Pragma: public');
+        header('Content-Length: ' . filesize($file));
+        ob_clean();
+        flush();
+        readfile($file);
+    }
+}
+
+function downloadPdf(){
+    session_start();
+    if (isset($_SESSION["reportGenerator"])){
+        $reportGenerator = $_SESSION["reportGenerator"];
+        $reportGenerator->extractReportToPdf();
+        $file = $reportGenerator->outputPath;
+        $filename = basename($reportGenerator->outputPath).".pdf";
+
+        header('Content-Description: File Transfer');
+        header('Content-Type: application/octet-stream');
+        header("Content-Type: application/force-download");
+        header('Content-Disposition: attachment; filename=' . urlencode($filename));
         header('Expires: 0');
         header('Cache-Control: must-revalidate, post-check=0, pre-check=0');
         header('Pragma: public');

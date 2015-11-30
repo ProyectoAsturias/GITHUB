@@ -16,13 +16,6 @@ function generateJSONLayers(){
             }
         });
     }
-    $(document).ajaxStop(function(){
-        sendLayersJSON(layers);
-    });
-}
-
-function sendLayersJSON(layers){
-    console.log(JSON.stringify(layers));
 }
 
 function getJSONLayer(layer, callback){

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="Horizontal - legend_subreport" language="groovy" columnCount="3" pageWidth="842" pageHeight="595" orientation="Landscape" columnWidth="267" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="1bc0ea43-d309-4eb5-81cf-62e7a0b59af9">
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="Horizontal - legend_subreport" language="groovy" columnCount="3" printOrder="Horizontal" pageWidth="842" pageHeight="595" orientation="Landscape" columnWidth="280" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0" uuid="1bc0ea43-d309-4eb5-81cf-62e7a0b59af9">
 	<property name="ireport.zoom" value="1.0"/>
 	<property name="ireport.x" value="0"/>
 	<property name="ireport.y" value="0"/>
@@ -10,16 +10,18 @@
 		<variableExpression><![CDATA[$P{legendImages}.get($P{legendTitles}.indexOf($F{_THIS}))]]></variableExpression>
 	</variable>
 	<detail>
-		<band height="25" splitType="Stretch">
-			<image scaleImage="RetainShape" hAlign="Center" vAlign="Middle">
-				<reportElement x="0" y="0" width="74" height="24" isRemoveLineWhenBlank="true" forecolor="#FFFFFF" uuid="545f5922-3f86-46d0-b084-08bcfe753ca7"/>
-				<imageExpression><![CDATA[new java.io.StringBufferInputStream( new org.w3c.tools.codec.Base64Decoder($V{thisImage}).processString() )]]></imageExpression>
-			</image>
+		<band height="145" splitType="Stretch">
 			<textField>
-				<reportElement x="74" y="0" width="194" height="24" uuid="ad61a787-8934-4599-9692-23c698f4e6af"/>
-				<textElement textAlignment="Left" verticalAlignment="Middle"/>
+				<reportElement x="11" y="1" width="251" height="24" uuid="a3610f57-a948-412d-aa7e-09799c50d1a3"/>
+				<textElement verticalAlignment="Middle">
+					<font size="12" isBold="true"/>
+				</textElement>
 				<textFieldExpression><![CDATA[$F{_THIS}]]></textFieldExpression>
 			</textField>
+			<image scaleImage="RealHeight" hAlign="Left" vAlign="Middle">
+				<reportElement x="11" y="25" width="251" height="70" isRemoveLineWhenBlank="true" forecolor="#FFFFFF" uuid="1c286868-f69e-4515-8930-c921a0381fb4"/>
+				<imageExpression><![CDATA[new java.io.StringBufferInputStream( new org.w3c.tools.codec.Base64Decoder($V{thisImage}).processString() )]]></imageExpression>
+			</image>
 		</band>
 	</detail>
 </jasperReport>

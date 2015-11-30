@@ -53,8 +53,17 @@
                 </div>
             </div>
             <div class="modal-footer col-lg-12">
-                <button type="button" id="printModalButton" class="btn btn-success">Descargar</button>
-                <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
+                <button id="cancelPrintButton" type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
+                <div id="reportDownload">
+                    <div id="launcherContainer">
+                        <button type="button" id="printModalButton" class="btn btn-success">Descargar</button>
+                    </div>
+                    <ul id="formatList">
+                        <li id="PDF">PDF</li>
+                        <li id="RTF">RTF</li>
+                    </ul>
+                </div>
+
             </div>
         </div>
 </div>
