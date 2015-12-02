@@ -72,7 +72,8 @@ function createMap() {
     }
 
 
-    map.addControl(new ol.control.ScaleLine());
+    map.addControl(new ol.control.ScaleLine({
+    }));
     if (typeof (toolsDraggable) == "function"){
         toolsDraggable();
     }

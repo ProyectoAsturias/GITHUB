@@ -4,7 +4,7 @@
 	<property name="ireport.encoding" value="UTF-8"/>
 	<property name="ireport.zoom" value="1.0"/>
 	<property name="ireport.x" value="0"/>
-	<property name="ireport.y" value="96"/>
+	<property name="ireport.y" value="0"/>
 	<import value="net.sf.jasperreports.engine.*"/>
 	<import value="java.util.*"/>
 	<import value="net.sf.jasperreports.engine.data.*"/>
@@ -21,6 +21,7 @@
 	</parameter>
 	<parameter name="description" class="java.lang.String"/>
 	<parameter name="dataTables" class="java.util.ArrayList"/>
+	<parameter name="scale" class="java.lang.String"/>
 	<queryString>
 		<![CDATA[SELECT
 referencia_catastral,
@@ -69,7 +70,7 @@ and referencia_catastral like '%$P!{referencia}%' --and parcelas.referencia_cata
 		<band splitType="Stretch"/>
 	</columnHeader>
 	<detail>
-		<band height="402" splitType="Stretch">
+		<band height="416" splitType="Stretch">
 			<rectangle>
 				<reportElement key="rectangle-1" mode="Transparent" x="-1" y="35" width="781" height="323" uuid="f40a382c-9960-4bb4-8feb-1d4738de92e7"/>
 			</rectangle>
@@ -84,19 +85,26 @@ and referencia_catastral like '%$P!{referencia}%' --and parcelas.referencia_cata
 				<graphicElement fill="Solid"/>
 				<imageExpression><![CDATA[net.sf.jasperreports.engine.util.JRImageLoader.getInstance(new SimpleJasperReportsContext()).loadAwtImageFromBytes(javax.xml.bind.DatatypeConverter.parseBase64Binary($P{mapImage}))]]></imageExpression>
 			</image>
-			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
-				<reportElement x="15" y="358" width="759" height="33" uuid="e812675f-aef9-47d8-931d-304fe80a5012"/>
-				<textElement verticalAlignment="Middle">
-					<font fontName="SansSerif" size="11"/>
-				</textElement>
-				<textFieldExpression><![CDATA[$P{description}]]></textFieldExpression>
-			</textField>
 			<textField isStretchWithOverflow="true">
 				<reportElement x="4" y="0" width="781" height="26" uuid="4c2875bc-b270-4599-999f-0965f2731e0c"/>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
 					<font size="16" isBold="true"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$P{title}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement x="14" y="378" width="759" height="33" uuid="e812675f-aef9-47d8-931d-304fe80a5012"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="SansSerif" size="11"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{description}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="563" y="358" width="217" height="20" uuid="15cc63c6-d189-41f0-bc4d-b8a0c41be27e"/>
+				<textElement textAlignment="Right" verticalAlignment="Top">
+					<font size="12" isBold="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA["1 cm : ".concat($P{scale}).concat(" m");]]></textFieldExpression>
 			</textField>
 		</band>
 		<band height="81">

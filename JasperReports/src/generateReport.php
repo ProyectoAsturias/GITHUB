@@ -11,8 +11,8 @@ if (isset($_GET["tag"])){
         case "downloadPdf":
             downloadPdf();
             break;
-            case "downloadRtf":
-            downloadRtf();
+            case "downloadDocx":
+            downloadDocx();
             break;
         case "getAvailableReports":
             echo getAvailableReports();
@@ -89,13 +89,13 @@ function previewPdf(){
     }
 }
 
-function downloadRtf(){
+function downloadDocx(){
     session_start();
     if (isset($_SESSION["reportGenerator"])){
         $reportGenerator = $_SESSION["reportGenerator"];
-        $reportGenerator->extractReportToRtf();
+        $reportGenerator->extractReportToDocx();
         $file = $reportGenerator->outputPath;
-        $filename = basename($reportGenerator->outputPath).".rtf";
+        $filename = basename($reportGenerator->outputPath).".docx";
 
         header('Content-Description: File Transfer');
         header('Content-Type: application/octet-stream');
@@ -137,6 +137,7 @@ function addReportsField(){
     global $reportGenerator;
     $reportGenerator->addReportTextField("title", $_POST["reportTitle"]);
     $reportGenerator->addReportTextField("description", $_POST["reportDescription"]);
+    $reportGenerator->addReportTextField("scale", $_POST["scale"]);
 
     $imagedata = file_get_contents($_POST["mapImage"]);
     $reportGenerator->addReportImageField("mapImage", base64_encode($imagedata));

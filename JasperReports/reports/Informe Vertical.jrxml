@@ -2,7 +2,7 @@
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="Prueba1" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="a9c6277c-d110-4f9c-92ea-9bcc8de2a392">
 	<property name="ireport.zoom" value="1.0"/>
 	<property name="ireport.x" value="0"/>
-	<property name="ireport.y" value="64"/>
+	<property name="ireport.y" value="63"/>
 	<parameter name="title" class="java.lang.String" isForPrompting="false"/>
 	<parameter name="mapImage" class="java.lang.String"/>
 	<parameter name="description" class="java.lang.String"/>
@@ -12,6 +12,7 @@
 	<parameter name="dataTables" class="java.util.ArrayList"/>
 	<parameter name="legendData" class="java.util.ArrayList"/>
 	<parameter name="IMAGES_DIR" class="java.lang.String"/>
+	<parameter name="scale" class="java.lang.String"/>
 	<background>
 		<band splitType="Stretch"/>
 	</background>
@@ -37,29 +38,36 @@
 				<textFieldExpression><![CDATA[$P{description}]]></textFieldExpression>
 			</textField>
 		</band>
-		<band height="181">
+		<band height="175">
 			<image scaleImage="RealHeight" hAlign="Center">
 				<reportElement stretchType="RelativeToTallestObject" x="0" y="0" width="555" height="172" uuid="63b9ae9c-6881-4e3a-8c2c-38884eaf8ab3"/>
 				<imageExpression><![CDATA[new java.io.StringBufferInputStream( new org.w3c.tools.codec.Base64Decoder($P{mapImage}).processString() )]]></imageExpression>
 			</image>
 		</band>
-		<band height="116">
-			<printWhenExpression><![CDATA[$P{legendData}.size() != 0]]></printWhenExpression>
+		<band height="143">
 			<rectangle>
-				<reportElement stretchType="RelativeToBandHeight" x="0" y="0" width="555" height="101" isPrintWhenDetailOverflows="true" uuid="04b3a2ac-d61d-40a2-886e-39d3982a122c"/>
+				<reportElement stretchType="RelativeToBandHeight" x="0" y="21" width="555" height="101" isPrintWhenDetailOverflows="true" uuid="04b3a2ac-d61d-40a2-886e-39d3982a122c">
+					<printWhenExpression><![CDATA[$P{legendData}.size() != 0]]></printWhenExpression>
+				</reportElement>
 			</rectangle>
 			<staticText>
-				<reportElement x="235" y="0" width="100" height="20" uuid="136d9344-6a13-4f2d-9a41-d9f5e9f25b0b"/>
+				<reportElement x="235" y="21" width="100" height="20" uuid="136d9344-6a13-4f2d-9a41-d9f5e9f25b0b">
+					<printWhenExpression><![CDATA[$P{legendData}.size() != 0]]></printWhenExpression>
+				</reportElement>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
 					<font size="14" isBold="true"/>
 				</textElement>
 				<text><![CDATA[Leyenda]]></text>
 			</staticText>
 			<line>
-				<reportElement x="0" y="20" width="555" height="1" uuid="98099b58-7b0e-46d7-b5e1-90a447e57603"/>
+				<reportElement x="0" y="41" width="555" height="1" uuid="98099b58-7b0e-46d7-b5e1-90a447e57603">
+					<printWhenExpression><![CDATA[$P{legendData}.size() != 0]]></printWhenExpression>
+				</reportElement>
 			</line>
 			<subreport isUsingCache="true">
-				<reportElement stretchType="RelativeToTallestObject" x="15" y="30" width="525" height="61" isRemoveLineWhenBlank="true" isPrintWhenDetailOverflows="true" uuid="1afcc82c-bb3b-429b-b436-4a0fe9a6beac"/>
+				<reportElement stretchType="RelativeToTallestObject" x="15" y="51" width="525" height="61" isRemoveLineWhenBlank="true" isPrintWhenDetailOverflows="true" uuid="1afcc82c-bb3b-429b-b436-4a0fe9a6beac">
+					<printWhenExpression><![CDATA[$P{legendData}.size() != 0]]></printWhenExpression>
+				</reportElement>
 				<subreportParameter name="legendTitles">
 					<subreportParameterExpression><![CDATA[$P{legendData}.get(1)]]></subreportParameterExpression>
 				</subreportParameter>
@@ -69,6 +77,13 @@
 				<dataSourceExpression><![CDATA[new net.sf.jasperreports.engine.data.JRBeanCollectionDataSource((List)$P{legendData}.get(1))]]></dataSourceExpression>
 				<subreportExpression><![CDATA[$P{SUBREPORT_DIR} + "/Vertical - legend_subreport.jasper"]]></subreportExpression>
 			</subreport>
+			<textField>
+				<reportElement x="338" y="0" width="217" height="20" uuid="66b58500-2873-4dc6-9247-0f352d79ba04"/>
+				<textElement textAlignment="Right" verticalAlignment="Top">
+					<font size="10" isBold="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA["1 cm : ".concat($P{scale}).concat(" m");]]></textFieldExpression>
+			</textField>
 		</band>
 		<band height="156">
 			<subreport>

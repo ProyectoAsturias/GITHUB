@@ -34,9 +34,9 @@ class ReportGenerator {
         $jem->exportReportToPDFFile($print, $this->outputPath);
     }
 
-    function extractReportToRtf(){
+    function extractReportToDocx(){
         java_set_file_encoding("UTF-8");
-        $exportador = new java("net.sf.jasperreports.engine.export.JRRtfExporter");//libreria para rtf documentos word
+        $exportador = new java("net.sf.jasperreports.engine.export.ooxml.JRDocxExporter");//libreria para Docx documentos word
         $parametrosExportados = java("net.sf.jasperreports.engine.JRExporterParameter");
         $print = $this->fillManager->fillReport($this->report,$this->reportParams,new Java("net.sf.jasperreports.engine.JREmptyDataSource"));
         $exportador->setParameter($parametrosExportados->JASPER_PRINT, $print);

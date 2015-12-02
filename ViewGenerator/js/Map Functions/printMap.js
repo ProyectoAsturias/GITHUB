@@ -59,7 +59,8 @@ function changePreview(){
                 reportTitle: generateReportTitle(),
                 reportDescription: generateReportDescription(),
                 dataTables: tables,
-                legendData: generateLegendForReport()
+                legendData: generateLegendForReport(),
+                scale: Math.round(calculateScaleToMeters($(".ol-scale-line-inner").width(), $(".ol-scale-line-inner").html()))
             },
             type: "POST",
             success: function (response) {
@@ -77,8 +78,8 @@ function changePreview(){
 function printMap(format){
     if (format == "PDF"){
         window.open(printingPath + "src/generateReport.php?tag=downloadPdf", "_blank");
-    }else if (format == "RTF"){
-        window.open(printingPath + "src/generateReport.php?tag=downloadRtf", "_blank");
+    }else if (format == "DOCX"){
+        window.open(printingPath + "src/generateReport.php?tag=downloadDocx", "_blank");
     }
 }
 
@@ -124,6 +125,19 @@ function generateReportTitle(){
     }
 }
 
+function calculateScaleToMeters(elementWidth, elementContent){
+    //Se asume que 1cm = 37.8px
+    var metersFromScale;
+    if (elementContent.indexOf("km") != -1){
+        metersFromScale = parseInt(elementContent.replace("km",""))*1000;
+    }else if (elementContent.indexOf("mm") != -1){
+        metersFromScale = parseInt(elementContent.replace("km",""))/1000;
+    }else if (elementContent.indexOf("m") != -1){
+        metersFromScale = parseInt(elementContent.replace("km",""));
+    }
+    var centimetersWidth = elementWidth/37.8;
+    return (metersFromScale/centimetersWidth);
+}
 
 function generateDataTables(){
     if ($("#modalDatatables :checkbox").is(":checked")){
