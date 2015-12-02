@@ -81,7 +81,6 @@
 }
 
 #printModal .modal-header .modal-footer{
-    display: inline-block;
     height: 10%;
 }
 
@@ -109,6 +108,7 @@
 #cancelPrintButton{
     float: right;
 }
+
 
 .invisibleFullScreenButton{
     display: none;
@@ -196,18 +196,12 @@
     -moz-box-shadow: 0px 1px 2px 0px rgba(0,0,0,0.3);
     box-shadow: 0px 1px 2px 0px rgba(0,0,0,0.3);
     height: 50px;
-    width:94%;
+    width:80%;
     position: absolute;
     top: 10px;
     left: 40px;
     z-index: 1;
     cursor: move;
-}
-
-.functionsBar {
-
-
-
 }
 
 .vertical{
@@ -229,13 +223,25 @@
     cursor: move;
 }
 
+#headerVisor{
+    width:550px;
+    position: absolute;
+    height: 75px;
+    right: 10px;
+    bottom: 10px;
+}
+
 .imagenFooterVisor {
 
     width: 550px;
     overflow: hidden;
-    position: fixed;
-    right: 10px;
-    bottom: 10px;
+    position: absolute;
+
+
+    /*position: fixed;*/
+    top:20px;
+    /*right: 10px;
+    bottom: 10px;*/
     background-color: white;
     -webkit-box-shadow: 0px 1px 3px 0px rgba(0,0,0,0.5);
     -moz-box-shadow: 0px 1px 3px 0px rgba(0,0,0,0.5);
@@ -247,21 +253,23 @@
 }
 
 .visorName {
-     position: fixed;
+    /*position: fixed;*/
+    position: absolute;
     width: 550px;
     text-align: left;
     z-index: 2;
-    right: 10px;
-    bottom: 65px;
+    /*right: 10px;
+    bottom: 65px;*/
     text-transform: uppercase;
     font-weight: bold;
+    cursor:move;
     background-color: rgba(255,255,255,0.6);
     padding: 2px 8px;
 }
 
 .functionsBar .functionContainer{
     /*top: -5px !important;*/
-    float: right;
+    float: left;
     padding-bottom: 5px;
 }
 
@@ -472,6 +480,10 @@
     background-image: url("../../Common/images/hideInterface-left.png");
 }
 
+
+
+
+
 #areaOverlay, #coordinatesOverlay{
     background-color: white;
     border-radius: 10px;
@@ -497,11 +509,14 @@
     opacity: 0.8;
     filter: alpha(opacity=80); /* For IE8 and earlier */
 }
+
 #drawModalWindow{
     width:350px;
     position: fixed;
     bottom: 100px;
     right: 10px;
+
+
     opacity: 0.8;
     filter: alpha(opacity=80); /* For IE8 and earlier */
 }
@@ -534,11 +549,13 @@
 
 .fileLink{
     text-align: center;
+
     padding-right: 6px;
     width: 100%;
     text-overflow: ellipsis;
     word-break: break-all;
     overflow: hidden;
+
 }
 
 .fileLink a{
@@ -572,10 +589,10 @@
     width:13vw;
     background-color:#CCC;
     opacity:0.9;
-    height: 100px;
+    /*height: 100px;*/
     width: 270px;
-    min-height: 25px;
-    height: 200px;
+    /*min-height: 25px;
+    height: 200px;*/
     overflow-y: hidden;
     overflow-x: hidden;
 }
@@ -586,11 +603,12 @@
     min-height: 50px;
     overflow: hidden;
     overflow-y: scroll;
+    background-color: white;
 }
 
-#layersTree .ui-resizable-s{
+/*#layersTree .ui-resizable-s{
     height: 10px;
-}
+}*/
 
 .list-group-item {
     vertical-align: middle;
@@ -609,7 +627,7 @@
 
 
 .legendBar{
-	visibility: hidden; !important
+    visibility: hidden; !important
 }
 
 #drawType{
@@ -736,4 +754,23 @@ tbody tr{
 
 #eielModal .modal-dialog{
     width: 600px;
+}
+.hideLayers{
+    z-index: 1;
+    cursor:pointer; 
+}
+
+.removeLayers{
+    z-index: 1;
+    cursor:pointer;
+}
+
+#hideInterface{
+    z-index: 1;
+    cursor:pointer;
+}
+
+.ol-dragbox {
+    background-color: rgba(255,255,255,0.4);
+    border-color: rgba(100,150,0,1);
 }

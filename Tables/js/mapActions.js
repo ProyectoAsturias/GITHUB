@@ -316,17 +316,18 @@ function publicateMapEventHandler() {
 function mapModalPublicateButtonHandler() {
 	$("#publicateMapsModal").click(function () {
 		$("#table").bootstrapTable('getSelections').forEach(function (row) {
-			publicateMap(row.name).then(function (response) {
+			//publicateMap(row.name).then(function (response) {
 				$("#modalPublicateMaps").modal("hide");
-				if (response == "") {
+				//if (response == "") {
 					row.published = "t";
 					$("#table").bootstrapTable('updateRow', {
 						index : getMapRowIndexById(row.id),
 						row : row
 					});
-				} else
-					alert("Error: No se pudo publicar el mapa");
-			})
+				//}
+				// else
+					//alert("Error: No se pudo publicar el mapa");
+			//})
 		})
 	})
 }
@@ -377,18 +378,19 @@ function mapModalUnpublicateButtonHandler() {
 	$("#unpublicateMapsModal").click(function () {
 		$("#table").bootstrapTable('getSelections').forEach(function (row) {
 			//console.log(.name);
-			unpublicateMap(row.name).then(function (response) {
-				console.log(response);
+			//unpublicateMap(row.name).then(function (response) {
+				//console.log(response);
 				$("#modalUnpublicateMaps").modal("hide");
-				if (response == "") {
+				//if (response == "") {
 					row.published = "f";
 					$("#table").bootstrapTable('updateRow', {
 						index : getMapRowIndexById(row.id),
 						row : row
 					});
-				} else
-					alert("Error: No se pudo despublicar el mapa: " + response);
-			})
+				//} 
+				//else
+					//alert("Error: No se pudo despublicar el mapa: " + response);
+			//})
 		})
 	})
 }

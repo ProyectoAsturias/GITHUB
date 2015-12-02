@@ -88,8 +88,13 @@ function removeMapHandler(){
             if (index !== -1) {
                 mapDetails["WMSUrl"].splice(index, 1);
             }
+            console.log(lastData);
+            for(i=0;i<lastData.length;i++){
+                if(lastData[i].wmsUrl==deletedUrl)
+                    lastData.splice(i, 1);
+            }
             $("#layersTree").treeview("remove");
-            createLayerTree($("#layersTree").treeview("getSiblings",$(this).parent().parent().data("nodeid")));
+            createLayerTree(lastData);
         })
     });
 

@@ -20,7 +20,7 @@
 	        	    print("Workspace creado\n");
 		            if(($result=$GLOBALS['geoserver']->initWsInfo($GLOBALS['gsConnection']->wsName))!="")
 		            	print("Advice".$result."\n");
-	        	    if(($result=$GLOBALS['geoserver']->initWmsInfo($GLOBALS['gsConnection']->wsName))!="")
+	        	    if(($result=$GLOBALS['geoserver']->initWmsInfo($GLOBALS['gsConnection']->wsName,$_POST['projection']))!="")
 	            		print("Advice".$result."\n");
 	    		}
 	    		$dbConnection = new DBConnection(null,"localgisvistas");

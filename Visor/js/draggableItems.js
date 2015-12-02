@@ -1,6 +1,8 @@
 var draggableButton = false;
 $(document).ready(function (){
-    $("#mapContainer").append('<div id="toolsDraggable"></div>');
+    $("#mapContainer").append('<div id="toolsDraggable" title="Fijar interfaz"></div>');
+    $('.ol-zoom-in').attr('title', 'Acercar');
+    $('.ol-zoom-out').attr('title', 'Alejar');
     draggableButtonHandler();
     enableToolsDraggable();
 })
@@ -21,6 +23,7 @@ function toolsDraggable(){
     makeTreeViewDraggable();
     makeInfoWIndowDraggable();
     makeSearchWindowDraggable();
+    makeHeaderDraggable();
 }
 
 function toolsFixed(){
@@ -30,6 +33,7 @@ function toolsFixed(){
     makeTreeViewFixed();
     makeInfoWindowFixed();
     makeSearchWindowFixed();
+    makeHeaderFixed();
     $("#toolsDraggable").css("border", "solid 2px red");
     draggableButton=false;
 }
@@ -41,6 +45,7 @@ function enableToolsDraggable(){
     enableLegendBarDraggable();
     enableTreeViewDraggable();
     enableSearchWindowDraggable();
+    enableHeaderDraggable();
     $("#toolsDraggable").css("border", "solid 2px white");
     draggableButton=true;
 }
@@ -82,16 +87,23 @@ function makeTreeViewDraggable(){
 
 function makeInfoWIndowDraggable() {
     $("#info").draggable({
-        containment: $(".ol-viewport")
-    });
-    $("#info").resizable({
-   
+        containment: $(".ol-viewport"),
+        disabled: true
     });
 }
 
 function makeSearchWindowDraggable(){
     $("#searchWindow").draggable({
         containment: $(".ol-viewport"),
+        cancel: ".functionContainer",
+        disabled: true
+    }); 
+}
+
+function makeHeaderDraggable(){
+    $("#headerVisor").draggable({
+        containment: $(".ol-viewport"),
+        cancel: ".functionContainer",
         disabled: true
     }); 
 }
@@ -120,6 +132,10 @@ function makeSearchWindowFixed(){
     $( "#searchWindow" ).draggable( "option", "disabled", true );
 }
 
+function makeHeaderFixed(){
+    $( "#headerVisor" ).draggable( "option", "disabled", true );
+}
+
 function enableFunctionsBarDraggable(){
     $( ".functionsBar" ).draggable( "option", "disabled", false );
 }
@@ -142,4 +158,8 @@ function enableInfoWindowDraggable(){
 
 function enableSearchWindowDraggable(){
     $( "#searchWindow" ).draggable( "option", "disabled", false );
+}
+
+function enableHeaderDraggable(){
+    $( "#headerVisor" ).draggable( "option", "disabled", false );
 }

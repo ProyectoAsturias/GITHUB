@@ -271,7 +271,6 @@
 		$town=str_replace(array('"','[',']'),'',$town);
 		$select_layer=str_replace("?T","'".$projection."'",$select_layer);
 		$select_layer=str_replace("?M","".$town."",$select_layer);
-		//echo $select_layer;
 		$select_layer=traduceQuery($select_layer);
 		$result = pg_query($select_layer) or die('Error: '.pg_last_error());
 		if(pg_num_rows($result)>0)
@@ -311,6 +310,7 @@
                 $select="";
                 for($i=0;$i<sizeof($split3);$i++){
                         $tC=explode(".",$split3[$i]);
+			$tableName=trim($tC[0]);
                         $tableColumns=traduce($tC,$tradCount);
                         if($tableColumns!=null){
                                 $from.=" LEFT JOIN (
@@ -329,9 +329,9 @@
                                                     tables.id_table = columns.id_table AND
                                                     dictionary.id_vocablo = domainnodes.id_description AND
                                                     dictionary.locale = 'es_ES' AND
-                                                    tables.name= '".$tC[0]."') as ".$tableColumns[0]."
-                                                ON ".$tableColumns[0].".pattern=".$tC[0].".".$tC[1];
-                                $select.=$tableColumns[0].".traduccion as ".$tC[1].",";
+                                                    tables.name= '".$tableName."') as ".$tableColumns[0]."
+                                                ON ".$tableColumns[0].".pattern='".$tableName.".".$tableColumns[1]."'";
+                                $select.=$tableColumns[0].".traduccion as ".$tableColumns[1].",";
                         }
                         else
                                 $select.=$split3[$i].",";
@@ -346,8 +346,13 @@
                         return null;
                 $table=str_replace(" ","",trim($tableColumn[0]));
                 $table=str_replace("\"","",$table);
-				$column=str_replace(" ","",trim($tableColumn[1]));
+		$column=trim($tableColumn[1]);
                 $column=str_replace("\"","",$column);
+	
+                $column=multiexplode(array(" AS "," as "),$column);
+		if(sizeof($column)>1)
+			$column=$column[0];
+		$column=str_replace(" ","",$column);
 
                 $query=
                         "SELECT
@@ -370,7 +375,6 @@
                 $count=pg_num_rows($result);
                 if($count>0){
                         $table="s".$tradCount;
-                        $column="dictionary";
                         $tradCount++;
                         $result =  array($table,$column);
                         return $result;

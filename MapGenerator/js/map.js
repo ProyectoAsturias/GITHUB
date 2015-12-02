@@ -566,7 +566,6 @@ function clearLayersInfo() {
  * Carga la capa al ws
  **/
 function importLayer(layer, mapId) {
-	//console.log(mapId);
 	mapId || (mapId = -1);
 	var id;
 	var name;
@@ -605,6 +604,7 @@ function importLayer(layer, mapId) {
 				projection : projection
 			},
 			success : function (response) {
+				console.log(response);
 				if (response == ""){
 					var layerName=name.split(" ").join("_");
 					$("#layer" + layerName + "").empty().append("<span class='glyphicon glyphicon-ok-sign' style='color:green;'></span>");

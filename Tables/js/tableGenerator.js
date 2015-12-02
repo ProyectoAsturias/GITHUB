@@ -241,6 +241,11 @@ function createVisorsTable(target) {
 				sortable : "true",
 				formatter : "formatterDate"
 			}, {
+                                field : "miniImage",
+                                title : "Mini Imagen",
+                                formatter : "formatterMiniImage"
+
+			}, {
 				field : "editVisor",
 				title : "Editar Visor",
 				formatter : "formatterEditVisor"
@@ -296,6 +301,10 @@ function publishedFormatter(value, row, index) {
 function WmsFormatter(value, row, index) {
 	if (row.published == "t")
 		return "<button class='btn btn-success btn-block' title=\"Obtener link Wms\" onclick=\"getWmsLink('" + row.name + "')\">Enlace WMS</button>";
+}
+
+function formatterMiniImage(value,row,index) {
+	 return "<button class='btn btn-success btn-block' title=\"Mini imagen\" onclick=\"miniImage('" + row.name + "')\">Mini Imagen</button>";
 }
 
 function synchronizedFormatter(value, row, index) {

@@ -289,14 +289,14 @@
 	/** 
 	 *  Obtiene el nombre real de una capa 
 	**/
-function getOriginalLayerName($layerName){
-	$dbConnection = new DBConnection();
-	$query = "SELECT  name FROM layers,dictionary WHERE traduccion LIKE '".$layerName."' AND id_name=id_vocablo AND locale='es_ES'";
-	$result = pg_query($query)or die('Error: '.pg_last_error());
-	$dbConnection->close();
-	if (pg_num_rows($result) !=0)
-		return pg_fetch_result($result, 0,0);
-	else
-		return "";
-}
+	function getOriginalLayerName($layerName){
+		$dbConnection = new DBConnection();
+		$query = "SELECT  name FROM layers,dictionary WHERE traduccion LIKE '".$layerName."' AND id_name=id_vocablo AND locale='es_ES'";
+		$result = pg_query($query)or die('Error: '.pg_last_error());
+		$dbConnection->close();
+		if (pg_num_rows($result) !=0)
+			return pg_fetch_result($result, 0,0);
+		else
+			return "";
+	}
 ?>

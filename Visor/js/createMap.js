@@ -64,7 +64,7 @@ function createMap() {
             zoom: mapDetails.zoomLevel
         })
     });
-
+    $(".imagenFooterVisor").append("<img src=\""+visorData["imageCode"]+"\">");
     if (visorData != null){
         visorData.mapDetails.WMSUrl.forEach(function (url){
             attachMap(url);
@@ -72,8 +72,7 @@ function createMap() {
     }
 
 
-    map.addControl(new ol.control.ScaleLine({
-    }));
+    map.addControl(new ol.control.ScaleLine());
     if (typeof (toolsDraggable) == "function"){
         toolsDraggable();
     }
@@ -130,7 +129,6 @@ function resetGlobalVariables(){
     layersGroupedNames = [];
 }
 
-
 function addLayersAndGroupsFromWMS(WMSUrl){
     var dataMap = {url: WMSUrl};
     dataMap.name = WMSUrl.split("/")[WMSUrl.split("/").length-2];
@@ -143,44 +141,21 @@ function addLayersAndGroupsFromWMS(WMSUrl){
         url: WMSUrl + '?request=getcapabilities&service=wms',
         crossDomain : true
     })
-        .then(function(response) {
-            $.ajax({
-                type : "GET",
-                url : server+"Tables/php/userContent.php",
-                data : {
-                    tag : "getMapProjection",
-                    nameLayer: dataMap.name
-                },
-                dataType: "jsonp",
-                success : function (projectionResponse) {
-                    console.log(projectionResponse);
-                    var projection=JSON.parse(projectionResponse[0].projection);
-                    //console.log(projection);
-                    dataMap.layers = [];
-                    var capabilitiesParser = parser.read(response);
-                    //console.log(capabilitiesParser);
-                    for(var i = 0; i < capabilitiesParser.Capability.Layer.Layer.length; i ++){
-                        //if (!searchLayerByName(capabilitiesParser.Capability.Layer.Layer[i].Name)){
-                        if(capabilitiesParser.Capability.Layer.Layer[i].cascaded==1){
-                            dataMap.layers.push(addLayerWmsToMap(capabilitiesParser.Capability.Layer.Layer[i].Name,WMSUrl));
-                        }
-                        else{
-                            var layer=addLayerToMap(capabilitiesParser.Capability.Layer.Layer[i].Name,WMSUrl);
-                            dataMap.layers.push(layer);
-                            addVectorLayer(capabilitiesParser.Capability.Layer.Layer[i].Name,dataMap.name,projection);
-                        }
-                        //}
-                    }
-                    treeDataSource.push(dataMap);
-                    createLayerTreeFromSource(treeDataSource);
-                    return treeDataSource;
-                },
-                error : function (error) {
-						console.log(error);
+   .then(function(response) {
+        dataMap.layers = [];
+        var capabilitiesParser = parser.read(response);
+        for(var i = 0; i < capabilitiesParser.Capability.Layer.Layer.length; i ++){
+                if(capabilitiesParser.Capability.Layer.Layer[i].cascaded==1){
+                    dataMap.layers.push(addLayerWmsToMap(capabilitiesParser.Capability.Layer.Layer[i].Name,WMSUrl));
                 }
-            });
-
-        });
+                else{
+                    var layer=addLayerToMap(capabilitiesParser.Capability.Layer.Layer[i].Name,WMSUrl);
+                    dataMap.layers.push(layer);
+                }
+        }
+        treeDataSource.push(dataMap);
+        return treeDataSource;
+    });
 }
 
 function searchLayerByName(layerName){

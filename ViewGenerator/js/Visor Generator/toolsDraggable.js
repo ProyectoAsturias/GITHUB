@@ -20,7 +20,7 @@ function makeFunctionsBarDraggable() {
 }
 
 function makeToolsSortable(){
-    $("#toolBar0, #toolBar1, #toolBar2").sortable({
+    $(".functionsBar").sortable({
         connectWith: ".functionsBar",
         opacity: "0.7",
         cursor: "move",

@@ -34,17 +34,23 @@ function toggleDataRetrieving(){
  * @return
  */
 function enableDataRetrieving() {
+    var featuresSelected=[];
     if(select){
-        showDataFromFeatures(selectedFeatures);
+        map.getInteractions().forEach(function (interaction) {
+            if(interaction instanceof ol.interaction.Select) {
+                featuresSelected=interaction.getFeatures().getArray();
+            }
+        });
+        showDataFromFeatures(featuresSelected);
         return;
     }
     enabled = true;
-    activeVisibleFeatures();
+    /*activeVisibleFeatures();
     var seleccion = new ol.interaction.Select ({
         toggleCondition: ol.events.condition.never,
         multi:true
     });
-    map.addInteraction(seleccion);
+    map.addInteraction(seleccion);*/
     map.on('singleclick', retrieveData);
     $(".dataRetrieving").css("border", "solid 3px green");
     $(".dataRetrieving").css("border-radius", "19px");
@@ -60,7 +66,7 @@ function disableDataRetrieving(){
     $("#info").empty();
     map.un("singleclick", retrieveData);
     $(".dataRetrieving").css("border", "");
-    map.getInteractions().forEach(function (interaction) {
+    /*map.getInteractions().forEach(function (interaction) {
         if(interaction instanceof ol.interaction.Select) {
             interaction.getFeatures().clear();
             interaction.un('select', function(e) {
@@ -69,7 +75,7 @@ function disableDataRetrieving(){
             });
             map.removeInteraction(interaction)
         }
-    });
+    });*/
 }
 
 /**
@@ -108,7 +114,6 @@ function retrieveData(evt) {
 
         var source = mapLayers.item(i).getSource();
         if (!(source instanceof ol.source.TileWMS)) continue;
-        //console.log(new ol.format.WFS().readFeatureCollectionMetadata(source));
         var url = source.getGetFeatureInfoUrl(
             evt.coordinate, viewResolution, view.getProjection(),
             {'INFO_FORMAT': 'application/json', 'FEATURE_COUNT': 50});

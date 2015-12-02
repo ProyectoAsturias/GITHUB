@@ -15,7 +15,7 @@ function getEielTemplates(layerName, featureId, townId){
             townId: townId
         },
         success : function (templatesFound) {
-            //console.log(templatesFound); return;
+            //console.log(templatesFound);
             if (templatesFound != "false"){
                 appendEielLink(layerName, featureId, townId, JSON.parse(templatesFound));
             }

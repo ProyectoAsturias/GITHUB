@@ -44,7 +44,7 @@ function importWms(){
 		url : wms+'?request=getCapabilities&service=wms',
 		crossDomain : true,
 		success:function (response) {
-			console.log(response);
+			//console.log(response);
 			var parser = new ol.format.WMSCapabilities();
 			var service = parser.read(response);
 			console.log(service);
@@ -76,7 +76,7 @@ function importLayersWms(wms){
 				dataMap.layers.push(addLayerWms($(this).val(),wms));
 		}
 	});
-	orderDataSource.push(generateMapNode(dataMap));
+	orderDataSource.splice(0,0,generateMapNode(dataMap));
     updateVisibility();
     $("#layersTree").treeview("remove");
     createLayerTree(orderDataSource);

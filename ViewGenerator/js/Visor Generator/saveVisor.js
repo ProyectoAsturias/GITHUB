@@ -7,6 +7,7 @@ $(document).ready(function(){
 function JSONEventHandler() {
     $("#saveVisorButton").click(function () {
         saveVisorData(createJsonVisorData());
+        saveVisorPreview();
     });
 }
 
@@ -22,6 +23,9 @@ function createJsonVisorData() {
     console.log(visorData);
     visorData["functionsBar"] = extractFunctionsBar();
     visorData["legendFrame"] = extractLegendFrame();
+    visorData["imageCode"]= extractImageCode();
+    visorData["title"]= extractTitle();
+
     return visorData;
 }
 
@@ -48,11 +52,36 @@ function saveVisorData(visorData) {
  * @return ObjectExpression
  */
 function extractMapDetails(){
-    return {"center": map.getView().getCenter(), "zoom": map.getView().getZoom(), "WMSUrl": mapDetails["WMSUrl"], "baseLayer": visorBaseLayer};
+    return {"center": map.getView().getCenter(), "zoom": map.getView().getZoom(), "WMSUrl": mapDetails["WMSUrl"], "baseLayer": visorBaseLayer, "entityId": mapDetails["entityId"] };
 }
 
 function getMapUrlsJSON(){
     return JSON.stringify(mapDetails["WMSUrl"]);
+}
+
+function extractImageCode(){
+    console.log(visorData);
+    if(!visorData || !visorData["imageCode"]){
+        if(!previews.imageCode)
+            return "0.gif";
+        else
+            return previews.imageCode;
+    }
+    else{
+        return visorData["imageCode"];
+    }
+}
+
+function extractTitle(){
+    if(!visorData || !visorData["title"]){
+        if(!previews.title)
+            return visorName;
+        else
+            return previews.title;
+    }
+    else{
+        return visorData["title"];
+    }
 }
 
 /**
@@ -96,3 +125,28 @@ function extractLegendFrame(){
     }
 }
 
+function saveVisorPreview(){
+    var element = $("#mapContainer");
+    var url="";
+    html2canvas(element, {
+        useCORS : true,
+        onrendered : function (canvas) {
+            url = canvas.toDataURL("image/png");
+            $.ajax({
+                type : "POST",
+                url : "../php/uploadImage.php",
+                data : {
+                    tag:"saveVisorPreview",
+                    visorName:visorName,
+                    url: url
+                },
+                success:function (response){
+                    console.log(response);
+                },
+                error:function(error){
+                    console.log(error);
+                }
+            }); 
+        }
+    });
+}

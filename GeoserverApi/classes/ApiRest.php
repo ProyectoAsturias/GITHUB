@@ -72,27 +72,15 @@ class ApiRest {
 		if ($method == 'POST') {
 			curl_setopt($ch, CURLOPT_POST, true);
 			curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
+			curl_setopt($ch, CURLOPT_HTTPHEADER, array("Content-Type: $contentType"));
 		} else if ($method == 'DELETE' || $method == 'PUT') {
-			curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
 			curl_setopt($ch, CURLOPT_CUSTOMREQUEST, $method);
-		}
-		if ($data != '') {
-			$d=explode('@',$data);
-			if (sizeof($d)>1 && $d[0]==''){
-				/*$curl='curl -u admin:geoserver -XPUT -H "Content-type: application/vnd.ogc.sld +xml" -d @'
-				.$url_file.' http://localhost:8080/geoserver/rest/workspaces/'.$workspaceName.'/styles/'.$styleName;*/
-				//@styles/default:scb_alumbrado_privado_0.sld
+			if ($data != ''){		
+	                        curl_setopt($ch, CURLOPT_HTTPHEADER, array("Content-Type: $contentType",'Content-Length: '.strlen($data)));
+				curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
+			}
+			else
 				curl_setopt($ch, CURLOPT_HTTPHEADER, array("Content-Type: $contentType"));
-				curl_setopt($ch, CURLOPT_POSTFIELDS, array('file'=>"$data"));
-				/*curl_setopt($ch, CURLOPT_HEADER, false);
-				curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-				$rslt = curl_exec($ch);
-				$info = curl_getinfo($ch);
-				return print($info['http_code']);*/
-			}
-			else{
-				curl_setopt($ch, CURLOPT_HTTPHEADER, array("Content-Type: $contentType",'Content-Length: '.strlen($data)));
-			}
 		}
 		curl_setopt($ch, CURLOPT_HEADER, false);
 		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
@@ -628,12 +616,11 @@ class ApiRest {
 	 * @param $styleName
 	 * @param $workspaceName
      */
-	public function uploadSldStyle($workspaceName, $url_file, $styleName) {
-		$curl='curl -u admin:geoserver -XPUT -H "Content-type: application/vnd.ogc.sld +xml" -d @'.$url_file.' http://localhost:8090/geoserver/rest/workspaces/'.$workspaceName.'/styles/'.$styleName;
+        public function uploadSldStyle($workspaceName, $url_file, $styleName) {
+		$curl='curl -u '.$this->username.':'.$this->password.' -XPUT -H "Content-type: application/vnd.ogc.sld +xml" -d @'.$url_file.' '.$this->serverUrl.'rest/workspaces/'.$workspaceName.'/styles/'.$styleName;
 		$rslt = shell_exec($curl);
 		return $rslt;
-		//return $this->runApi('workspaces/'.urlencode($workspaceName).'/styles'.urlencode($styleName), 'PUT', htmlentities('@'.$url_file, ENT_COMPAT),"application/vnd.ogc.sld +xml");
-	}
+        }
 
 	/**
 	 * Crea un estilo a partir de un fichero.
@@ -806,13 +793,14 @@ class ApiRest {
 	 * @param $workspaceName
 	 * @return mixed|string
      */
-	public function initWmsInfo($workspaceName){
+	public function initWmsInfo($workspaceName,$projection){
 	    $xml='<wms>'.
 	            '<workspace><name>'.$workspaceName.'</name></workspace>'.
 	            '<enabled>true</enabled>'.
 	            '<name>WMS</name>'.
 	            '<title></title>'.
 	            '<abstrct></abstrct>'.
+	            '<srs><string>'.$projection.'</string></srs>'.
 	            '</wms>';
 	    return $this->runApi('services/wms/workspaces/'.urlencode($workspaceName).'/settings.xml', 'PUT', $xml);
     }

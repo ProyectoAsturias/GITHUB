@@ -1,6 +1,6 @@
 interfaceShown = true;
 $(document).ready(function (){
-    $("#mapContainer").append('<div id="hideInterface"></div>');
+    $("#mapContainer").append('<div id="hideInterface" title="Ocultar interfaz"></div>');
     hideInterfaceHandler();
 })
 

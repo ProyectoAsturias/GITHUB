@@ -84,7 +84,6 @@ function showListWms() {
 			$('.chosen-select').trigger("chosen:updated");
 		},
 		error : function (error) {
-			$("#selectWms").append("<option value='http://ogc.bgs.ac.uk/cgi-bin/BGS_Bedrock_and_Superficial_Geology/wms'>http://ogc.bgs.ac.uk/cgi-bin/BGS_Bedrock_and_Superficial_Geology/wms</option>");
 			$('.chosen-select').chosen({
 				width : "100%",
 				search_contains : true,

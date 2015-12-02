@@ -24,7 +24,7 @@ function generateNode(layer){
 
 function generateMapNode(dataMap){
     var mapData = {text:'<div class="nodeLine"><div class="mapName">'+dataMap.name+'</div><div class="visorTreeIcons"><span class="wmsBackward glyphicon glyphicon-triangle-bottom"></span><span class="wmsForward glyphicon glyphicon-triangle-top"></span></div></div>',
-            nodes: [], state: {checked: true, expanded: false}, wmsUrl: dataMap.url, backColor:"#FFEBCC"};
+            nodes: [], state: {checked: true, expanded: true}, wmsUrl: dataMap.url, backColor:"#FFEBCC"};
     for (var h=0; h<dataMap.layers.length; h++){
         mapData.nodes.push(generateNode(dataMap.layers[h]));
     }
@@ -48,7 +48,7 @@ function createLayerTreeFromSource(dataSource){
         var layerData = [];
         for (var i = treeDataSource.length-1; i>=0; i--){
             var mapData = {text:'<div class="nodeLine"><div class="mapName">'+treeDataSource[i].name+'</div><div class="visorTreeIcons"><span class="wmsBackward glyphicon glyphicon-triangle-bottom"></span><span class="wmsForward glyphicon glyphicon-triangle-top"></span></div></div>',
-                    nodes: [], state: {checked: true, expanded: false}, wmsUrl: treeDataSource[i].url, backColor:"#FFEBCC"};
+                    nodes: [], state: {checked: true, expanded: true}, wmsUrl: treeDataSource[i].url, backColor:"#FFEBCC"};
             for (var h=0; h<treeDataSource[i].layers.length; h++){
                 mapData.nodes.push(generateNode(treeDataSource[i].layers[h]));
             }
@@ -174,11 +174,13 @@ function layerTreeHandlers(){
 }
 
 function sliderHandler(layerName){
-    //console.log("transparencia modificada en: "+layerName);
     var allLayers=map.getLayers().getArray();
     for(i=0;i<allLayers.length;i++)
-        if(allLayers[i].name==layerName)
-            allLayers[i].setOpacity($("#Opacity"+layerName).val());
+        if(allLayers[i].name==layerName){
+            //añadido para evitar el . de jquery
+            var idLayerName=layerName.split(".").join("\\.");
+            allLayers[i].setOpacity($("#Opacity"+idLayerName).val());
+        }
 }
 
 function opacitySlider(layer){

@@ -5,11 +5,11 @@
 
 $GLOBALS["ahoraRespondo"] = true;
 
-    $directorioPlantillasGenericas = "C:\Users\JOSE\Desktop\plantilla_informes_eiel";
-    $directorioPlantillasEntidad = "C:\Users\JOSE\Desktop\plantilla_informes_eiel";
+    //$directorioPlantillasGenericas = "C:\Users\JOSE\Desktop\plantilla_informes_eiel";
+    //$directorioPlantillasEntidad = "C:\Users\JOSE\Desktop\plantilla_informes_eiel";
     $directorioTemporal = sys_get_temp_dir();
-	//$directorioPlantillasGenericas = "/usr/local/LocalGIS.MODELO/admcar/classes/plantillas/eiel";
-	//$directorioPlantillasEntidad = "/usr/local/LocalGIS.MODELO/admcar/classes/plantillas/eiel";
+	$directorioPlantillasGenericas = "/usr/local/LocalGIS.MODELO/admcar/classes/plantillas/eiel";
+	$directorioPlantillasEntidad = "/usr/local/LocalGIS.MODELO/admcar/classes/plantillas/eiel";
 
     if (!isset($_POST["tag"])){
         if (!isset($_GET["tag"])){
@@ -76,7 +76,7 @@ $GLOBALS["ahoraRespondo"] = true;
         $resultReport = $reportManager->getReport($dbCon->host, $dbCon->port, $dbCon->database, $dbCon->user, $dbCon->pass, $layerName, $template, $townId, $entityId, $featureIds, "PDF", "es_ES");
         $reportManager->closeConnection(1);
         $dbCon->close();
-        if (java_values($resultReport)  == NULL){
+		if (java_values($resultReport) == NULL){
             return "No se ha podido generar el informe. Posibles problemas:<br/>
                 - No se puede conectar a la Base de Datos.<br/>
                 - La plantilla utilizada para generar el informe no está correctamente compilada o faltan ficheros necesarios.<br/>

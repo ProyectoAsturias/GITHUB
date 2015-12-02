@@ -69,8 +69,9 @@ function createMap() {
             attachMap(url);
         })
     }
-    map.addControl(new ol.control.ScaleLine({
-    }));
+
+
+    map.addControl(new ol.control.ScaleLine());
     if (typeof (toolsDraggable) == "function"){
         toolsDraggable();
     }
@@ -92,6 +93,7 @@ function addBaseOSMLayer(){
 }
 
 function setBbox(entityId){
+    setMapEntity(entityId);
     $.ajax({
         type: "POST",
         url : apiPath+"apiLocalgis.php",

@@ -12,8 +12,9 @@
     <link rel="stylesheet" href="../../Common/css/jquery-ui.min.css">
     <link rel="stylesheet" href="../../Common/css/jquery-ui.structure.css">
     <link rel="stylesheet" href="../../Common/css/jquery-ui.theme.css">
+    <link href="../../Common/css/fileinput.min.css" rel="stylesheet" media="screen">
 
-	<script type="text/javascript" src="http://maps.googleapis.com/maps/api/js?key=AIzaSyCN6pjTCJD7fjUdhWTexgi_cnuRFu_Umt4&sensor=TRUE"></script>
+	<script type="text/javascript" src="http://maps.googleapis.com/maps/api/js?key=AIzaSyCN6pjTCJD7fjUdhWTexgi_cnuRFu_Umt4"></script>
     <script src="../../Common/js/jquery.min.js" type="text/javascript"></script>
     <script src="../../Common/js/jquery-ui.min.js" type="text/javascript"></script>
     <script src="../../Common/js/ol.js" type="text/javascript"></script>
@@ -22,6 +23,8 @@
     <script src="../../Common/js/bootstrap-treeview.js" type="text/javascript"></script>
     <script src="../../Common/js/chosen.jquery.js"></script>
     <script src="../../Common/js/configuration.js"></script>
+    <script src="../../Common/js/fileinput.min.js"></script>
+	<script src="../../Common/html2canvas/html2canvas.js" type="text/javascript"></script>
 
     <script src="../js/Map Functions/createMap.js" type="text/javascript"></script>
 
@@ -48,16 +51,13 @@
                 <div id="toolBarMax">
                     <div class="row clearfix">
                         {% include "Visor Generator/alltools.html.twig" %}
-                        <div id="mapContainer">
+						<div id="mapContainer">
                             {% include "Visor Generator/visorgeneratormap.html.twig" %}
-                        </div>
 
-                        {% if visorData == "" %}
-                            {% include "Visor Generator/functionBar.html.twig" %}
-                            {% include "Visor Generator/legend.html.twig" %}
-                        {% else %}
-                    </div>
-
+                            {% if visorData == "" %}
+                                {% include "Visor Generator/functionBar.html.twig" %}
+                                {% include "Visor Generator/legend.html.twig" %}
+                            {% else %}
                             {% for functionBar in visorData.functionsBar %}
                                 <div class="functionsBar container {{functionBar.type}}" id="{{functionBar.id}}">
                                     <div class="{{functionBar.type}}iconFunctionBar"><span class='glyphicon glyphicon-remove removeFunctionBar'></span></div>
@@ -69,10 +69,13 @@
                                     {% endfor %}
                                 </div>
                             {% endfor %}
-                        {% endif %}
-                        {% if visorData.legendFrame != "" %}
-                            {% include "Visor Generator/legend.html.twig" %}
-                        {% endif %}
+                            {% endif %}
+                            {% if visorData.legendFrame != "" %}
+                                {% include "Visor Generator/legend.html.twig" %}
+                            {% endif %}
+                        </div>
+                    </div>
+
 
 
                 </div>

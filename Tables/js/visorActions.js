@@ -96,3 +96,15 @@ function getViewRowIndexById(viewId){
         }
     })
 }
+
+function miniImage(viewName) {
+        var headHtml = "<button type=\"button\" class=\"close\" data-dismiss=\"modal\">&times;</button>" +
+                "<h4 class=\"modal-title\">Mini imagen del visor: " + viewName + "</h4>";
+        var injectedHtml="<img style='max-height:200px;max-width:200px;' src=\""+server+"visores/"+viewName+"/preview.png\" onclick=\'window.open(\""+server+"Visor/php/visor.php?visorName="+viewName+"\");\'</img>";
+        var bodyHtml = "<label for=\"linkWms\">Seleccione el texto y presione Ctrl+C para copiar</label><textarea rows=\"4\" class=\"form-control\" id=\"linkWms\" style=\"resize:none;\">"+injectedHtml+"</textarea></br>";
+	bodyHtml=bodyHtml+"<label for=\"linkWms\">Resultado:</label></br><center>"+injectedHtml+"</center></div>";
+        $("#modalWmsLink .modal-header").empty().append(headHtml);
+        $("#modalWmsLink .modal-body").empty().append(bodyHtml);
+        $("#modalWmsLink").modal("show");
+        copyToClipBoard();
+}
