@@ -1,3 +1,4 @@
+var globalWmsLayersInfo = [];
 $(document).ready(function () {
 	assignEventsHandlers();
 	leftBarResizable();
@@ -11,7 +12,7 @@ function drawTree() {
 
 function loadWmsTree(wms) {
 	//console.log(auth);
-	//console.log(wms + requestCapabilities);
+	console.log(wms + requestCapabilities);
 	var parser = new ol.format.WMSCapabilities();
 	$.ajax({
 		type : "GET",
@@ -25,6 +26,8 @@ function loadWmsTree(wms) {
   				withCredentials: true
   		},*/
 		success : function (response) {
+			globalWmsLayersInfo = getLayersInfoWms(wms);
+			var layersOrderInfo = findLayersCollectionForWms(wms);
 			var service = parser.read(response);
 			var capabilities = service.Capability;
 			var title = service.Service.Title;
@@ -47,8 +50,32 @@ function loadWmsTree(wms) {
 						bBox.push(parseFloat(split1[0]), parseFloat(split1[1]), parseFloat(split2[0]), parseFloat(split2[1]));
 						var extent = ol.extent.applyTransform(bBox, ol.proj.getTransform("EPSG:4326", "EPSG:3857"));
 						map.getView().fitExtent(extent, map.getSize());
-						var layersVisibility=[];
-						getLayersVisibility(map.name,function(response){
+						if (layersOrderInfo != null){
+							layersOrderInfo.reverse().forEach(function (layerOrdering){
+								for (var i = 0; i < capabilities.Layer.Layer.length; i++) {
+									console.log(layerOrdering.name + " -- " + capabilities.Layer.Layer[i].Name)
+									if (!searchLayerByName(capabilities.Layer.Layer[i].Name) && layerOrdering.name == capabilities.Layer.Layer[i].Name) {
+										var style = "";
+										var layer;
+										if (capabilities.Layer.Layer[i].Style != null && capabilities.Layer.Layer[i].Style[0].Name)
+											style = capabilities.Layer.Layer[i].Style[0].Name;
+										if (capabilities.Layer.Layer[i].cascaded == 1) {
+											layer = addLayerWms(capabilities.Layer.Layer[i].Name, wms+"/wms");
+											layer.wms = true;
+										} else {
+											layer = addLayer(capabilities.Layer.Layer[i].Name, wms+"/wms", style, bBox, layerOrdering.visible, layerOrdering.transparency);
+											layer.wms = false;
+										}
+										layers.push(layer);
+									}
+								}
+								updateTreeLayer();
+							})
+						}
+
+
+						// /var layersVisibility=[];
+						/*getLayersVisibility(map.name,function(response){
 							var lv=JSON.parse(response);
 							//console.log(lv);
 							for (var i=lv.length-1;i>=0;i--){
@@ -80,7 +107,7 @@ function loadWmsTree(wms) {
 								}
 							}
 							updateTreeLayer();
-						})
+						})*/
 					},
 					error : function (response) {
 						console.log(response);
@@ -93,6 +120,16 @@ function loadWmsTree(wms) {
 			alert("Error treemap: " + error);
 		}
 	});
+}
+
+function findLayersCollectionForWms(WmsUrl){
+	console.log(WmsUrl+"/wms")
+	if (globalWmsLayersInfo == undefined) return;
+	for (var i=0; i<globalWmsLayersInfo.length; i++) {
+		if (globalWmsLayersInfo[i].url == WmsUrl + "/wms") {
+			return globalWmsLayersInfo[i].layers;
+		}
+	}
 }
 
 function makeNodesSortable() {
@@ -188,4 +225,37 @@ function leftBarResizable() {
 			map.updateSize();
 		}
 	});
+}
+
+function getLayersInfoWms(wmsUrl){
+	return [
+		{
+			url: "http://asturiasmodelo.dyandns.org:8090/geoserver/Allande_braulio/wms",
+			layers: [
+				{
+					name: "ZBS_Área_II",
+					transparency: 0.2,
+					visible: true
+				},
+				{
+					name: "Concejos",
+					transparency: 0.5,
+					visible:false
+				}
+			]
+		},
+		{
+			url: "wms2",
+			layers: [
+				{
+					name: "layer3",
+					transparency: 0.6
+				},
+				{
+					name: "layer4",
+					transparency: 1
+				}
+			]
+		}
+	];
 }

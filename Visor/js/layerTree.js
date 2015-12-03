@@ -8,7 +8,6 @@ function updateTreeLayer(){
 
     }else{
         $(document).ajaxStop(function(){
-            console.log(map.mapURL);
             var treeData = generateTreeData();
             createLayerTree(treeData);
         });
@@ -16,7 +15,7 @@ function updateTreeLayer(){
 }
 
 function generateNode(layer){
-    var node = {text: '<div class="layerName">'+layer.name+'</div>', nodes: [], layer: layer, selectable:false , state: {checked: true, expanded: false}};
+    var node = {text: '<div class="layerName">'+layer.name+'</div>', nodes: [], layer: layer, selectable:false , state: {checked: layer.getVisible(), expanded: false}};
     node.nodes.push(opacitySlider(layer));
     node.nodes.push(getLegendImageForLayer(layer));
     return node;
@@ -184,7 +183,6 @@ function sliderHandler(layerName){
 }
 
 function opacitySlider(layer){
-    //console.log(layer.name+" : "+layer.getOpacity());
     var slider="<div><input class='opacity' id=\"Opacity"+layer.name+"\"  onchange=\"sliderHandler('"+layer.name+"')\" value=\""+layer.getOpacity()+"\" type='range' min='0' max='1' step='0.01'/></div>";
     var sliderNode={text:slider, selectable:false , showCheckbox:false};
     return sliderNode;

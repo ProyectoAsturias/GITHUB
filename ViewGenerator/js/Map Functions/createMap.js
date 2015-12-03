@@ -144,21 +144,44 @@ function addLayersAndGroupsFromWMS(WMSUrl){
     .then(function(response) {
             dataMap.layers = [];
             var capabilitiesParser = parser.read(response);
-            //console.log(capabilitiesParser);
-            for(var i = 0; i < capabilitiesParser.Capability.Layer.Layer.length; i ++){
-                //if (!searchLayerByName(capabilitiesParser.Capability.Layer.Layer[i].Name)){
+            var layersOrderInfo = findLayersCollectionForWms(WMSUrl);
+            if (layersOrderInfo != null){
+                layersOrderInfo.reverse().forEach(function (layerOrdering){
+                    for(var i = 0; i < capabilitiesParser.Capability.Layer.Layer.length; i ++){
+                        if (capabilitiesParser.Capability.Layer.Layer[i].Name == layerOrdering.name){
+                            if(capabilitiesParser.Capability.Layer.Layer[i].cascaded==1){
+                                dataMap.layers.push(addLayerWmsToMap(capabilitiesParser.Capability.Layer.Layer[i].Name,WMSUrl, layerOrdering.transparency));
+                            }
+                            else{
+                                var layer=addLayerToMap(capabilitiesParser.Capability.Layer.Layer[i].Name,WMSUrl, layerOrdering.transparency, layerOrdering.visible);
+                                dataMap.layers.push(layer);
+                            }
+                        }
+                    }
+                });
+            }else{
+                for(var i = 0; i < capabilitiesParser.Capability.Layer.Layer.length; i ++){
                     if(capabilitiesParser.Capability.Layer.Layer[i].cascaded==1){
                         dataMap.layers.push(addLayerWmsToMap(capabilitiesParser.Capability.Layer.Layer[i].Name,WMSUrl));
                     }
                     else{
-                        var layer=addLayerToMap(capabilitiesParser.Capability.Layer.Layer[i].Name,WMSUrl);
+                        var layer=addLayerToMap(capabilitiesParser.Capability.Layer.Layer[i].Name,WMSUrl, 1, true);
                         dataMap.layers.push(layer);
                     }
-                //}
+                }
             }
             treeDataSource.push(dataMap);
             return treeDataSource;
     });
+}
+
+function findLayersCollectionForWms(WmsUrl){
+    if (globalWmsLayersInfo == undefined) return;
+    for (var i=0; i<globalWmsLayersInfo.length; i++) {
+        if (globalWmsLayersInfo[i].url == WmsUrl) {
+            return globalWmsLayersInfo[i].layers;
+        }
+    }
 }
 
 function searchLayerByName(layerName){
@@ -222,8 +245,7 @@ function requestLayersForGroup(groupName, WMSUrl, callback){
     });
 }
 
-function addLayerWmsToMap(name, wmsUrl){
-    console.log("entra");
+function addLayerWmsToMap(name, wmsUrl, opacity){
     var format = 'image/png';
     var layer = new ol.layer.Image({
         source: new ol.source.ImageWMS({
@@ -242,7 +264,7 @@ function addLayerWmsToMap(name, wmsUrl){
     return layer;
 }
 
-function addLayerToMap(name, WMSUrl){
+function addLayerToMap(name, WMSUrl, opacity, visibility){
 	var projExtent = ol.proj.get('EPSG:3857').getExtent();
     var startResolution = ol.extent.getWidth(projExtent) / 1024;
     var resolutions = new Array(22);
@@ -267,6 +289,8 @@ function addLayerToMap(name, WMSUrl){
         })
     });
     newlayer.name = name;
+    newlayer.setOpacity(opacity)
+    newlayer.setVisible(visibility);
     map.addLayer(newlayer);
     return newlayer;
 }

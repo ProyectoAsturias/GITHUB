@@ -151,7 +151,6 @@ function requestLayersForGroup(groupName, WMSUrl, callback){
 */
 function addLayerToMap(layerIndex, WMSUrl){
     var nombre = layersNames[layerIndex];
-    console.log(nombre);
     if (layersGroupedNames.indexOf(nombre) != -1){
         return;
     }

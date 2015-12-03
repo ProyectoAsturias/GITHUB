@@ -20,7 +20,7 @@ function updateTreeLayer(){
 }
 
 function generateNode(layer){
-    var node = {text: '<div class="layerName">'+layer.name+'</div>', nodes: [], layer: layer, state: {checked: true}};
+    var node = {text: '<div class="layerName">'+layer.name+'</div>', nodes: [], layer: layer, state: {checked: layer.getVisible()}};
     if (layer instanceof ol.layer.Group){
         layer.getLayers().forEach(function(subLayer, indexInGroup){
             node.nodes.push(generateNode(subLayer));

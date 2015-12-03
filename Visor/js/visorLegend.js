@@ -1,6 +1,7 @@
 var showLegend;
 var legendLayersNames = [];
 var previousHeight;
+var globalWmsLayersInfo = [];
 
 function resizeByCreateEvent(){
     $.widget("ui.resizable", $.ui.resizable, {
@@ -135,6 +136,7 @@ function searchLayerByName(layerName){
 }
 
 function attachMap(wmsURL){
+    globalWmsLayersInfo = getLayersInfoWms(wmsURL);
     addMapUrl(wmsURL);
     var treeData = addLayersAndGroupsFromWMS(wmsURL);
     createLayerTreeFromSource(treeDataSource);
@@ -149,5 +151,38 @@ function searchLayerInLegend(layerName){
         }
     }
     return false;
+}
+
+function getLayersInfoWms(wmsUrl){
+    return [
+        {
+            url: "http://asturiasmodelo.dyndns.org:8090/geoserver/Allande_braulio/wms",
+            layers: [
+                {
+                    name: "Concejos",
+                    transparency: 0.7,
+                    visible: true
+                },
+                {
+                    name: "Depuradora",
+                    transparency: 0.5,
+                    visible:false
+                }
+            ]
+        },
+        {
+            url: "wms2",
+            layers: [
+                {
+                    name: "layer3",
+                    transparency: 0.6
+                },
+                {
+                    name: "layer4",
+                    transparency: 1
+                }
+            ]
+        }
+    ];
 }
 

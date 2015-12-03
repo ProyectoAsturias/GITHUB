@@ -1,3 +1,4 @@
+var globalWmsLayersInfo = [];
 $(document).ready(function(){
     attachMapEventHandler();
 })
@@ -38,6 +39,7 @@ function attachMapEventHandler(){
 }
 
 function attachMap(wmsURL,entityId){
+    globalWmsLayersInfo = getLayersInfoWms(wmsURL);
     if (wmsURL != ""){
         if (wmsURL != "Empty") {
             addMapUrl(wmsURL);
@@ -55,4 +57,37 @@ function attachMap(wmsURL,entityId){
             createEmptyLegend();
         }
     }
+}
+
+function getLayersInfoWms(wmsUrl){
+    return [
+        {
+            url: "http://asturiasmodelo.dyndns.org:8090/geoserver/Allande_braulio/wms",
+            layers: [
+                {
+                    name: "Concejos",
+                    transparency: 0.7,
+                    visible: true
+                },
+                {
+                    name: "Depuradora",
+                    transparency: 0.5,
+                    visible:false
+                }
+            ]
+        },
+        {
+            url: "wms2",
+            layers: [
+                {
+                    name: "layer3",
+                    transparency: 0.6
+                },
+                {
+                    name: "layer4",
+                    transparency: 1
+                }
+            ]
+        }
+    ];
 }
