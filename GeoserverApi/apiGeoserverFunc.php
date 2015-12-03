@@ -33,7 +33,16 @@
 		else
 			echo "Error: entityId missed.";
 	}
-
+	
+	/**
+	 * Devuelve todos los datasources asociados a un workstore
+	 */
+	function getDataSources(){
+		$datastoresString=$GLOBALS['geoserver']->listDatastores($GLOBALS['gsConnection']->wsName);
+		$wmsstoresString=$GLOBALS['geoserver']->listWmsstoresUrls($GLOBALS['gsConnection']->wsName);
+		return json_encode($datastoresString)."|".json_encode($wmsstoresString);
+	}
+	
 	/**
 	 * Elimina una mapa de Geoserver.
 	 */

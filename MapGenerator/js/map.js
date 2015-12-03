@@ -28,6 +28,8 @@ function initMap() {
 	getMapVars();
 	//setLayerOrder();
 	//setLayersVisibility();
+
+	getMapInfo();	
 }
 
 /**
@@ -184,7 +186,6 @@ function reorderOpenlayersMap(indexFrom, indexTo) {
 function removeLayer(layer, callback) {
 	if (!layer.wms) {
 		//console.log("Capa Normal");
-		console.log(layer.name);
 		$.ajax({
 			type : "POST",
 			url : apiPath + "apiGeoserver.php",
@@ -195,8 +196,10 @@ function removeLayer(layer, callback) {
 			},
 			success : function (response) {
 				//console.log("##" + response + "##");
-				if (response == 0)
+				if (response == 0){
+					deleteDatabaseLayer(layer.name);
 					map.removeLayer(layer);
+				}
 				else
 					console.log(response);
 				callback(response);
@@ -271,6 +274,9 @@ function importWms(wms) {
 	});
 }
 
+/**
+ * Carga un wms en Geoserver
+ **/
 function importLayersWms(wms, title) {
 	var listLayers = [];
 	$(".checkboxLayers").each(function () {
@@ -283,7 +289,7 @@ function importLayersWms(wms, title) {
 		data : {
 			tag : 'addWms',
 			mapName : map.name,
-			wmsName : title,
+			wmsName : sanear_string(title),
 			wmsUrl : wms,
 			listLayers : listLayers
 		},
@@ -542,27 +548,6 @@ function importLayersFamily(id, name) {
 
 
 /**
- * Limpia la informacion de las capas para el mapa actual
- **/
-function clearLayersInfo() {
-	$.ajax({
-		type : "POST",
-		url : apiPath + "apiDatabase.php",
-		data : {
-			tag : "clearMapInfo",
-			mapName : map.name
-		},
-		success : function (response) {
-			//console.log(response);
-		},
-		error : function (error) {
-			console.log("Error al guardar la información en MAPS: ".error);
-		}
-	});
-
-}
-
-/**
  * Carga la capa al ws
  **/
 function importLayer(layer, mapId) {
@@ -705,3 +690,31 @@ function selectAll(source) {
 	}
 }
 
+
+function str_replace(replaceString, find, replace) {
+	for (var i = 0; i < find.length; i++) {
+		var rp;
+		if(replace.length==1)
+			rp=replace;
+		else
+			rp=replace[i];
+	  	replaceString=replaceString.replace(find[i], rp);
+	}
+	return replaceString;
+};
+
+/** Reemplaza todos los acentos por sus equivalentes sin ellos
+ *  @param $string * string la cadena a sanear
+ *  @return $string * string saneada
+ **/
+function sanear_string(str) {
+	str=str.replace(' ','_');
+        str=str.trim();
+        str = str_replace( str, ['á', 'à', 'ä', 'â', 'ª', 'À', 'Â', 'Ä'], ['a', 'a', 'a', 'a', 'a', 'A', 'A', 'A']);
+        str = str_replace( str, ['è', 'ë', 'ê', 'È', 'Ê', 'Ë'], ['e', 'e', 'e', 'E', 'E', 'E']);
+        str = str_replace( str, ['ì', 'ï', 'î', 'Ì', 'Ï', 'Î'], ['i', 'i', 'i', 'I', 'I', 'I']);
+        str = str_replace( str, ['ò', 'ö', 'ô', 'º', 'Ò', 'Ö', 'Ô'], ['o', 'o', 'o', 'o', 'O', 'O', 'O']);
+        str = str_replace( str, ['ù', 'ü', 'û', 'Ù', 'Û', 'Ü'], ['u', 'u', 'u', 'U', 'U', 'U']);
+        str = str_replace( str, ["\\", "¨", "º", "~", "#", "@", "|", "!", "\"", "·", "$", "%", "&", "/", "(", ")", "?", "'", "¡", "¿", "[", "^", "`", "]", "+", "}", "{", "¨", "´", ">", "< ", ";", ",", ":"], '_');
+        return str;
+}

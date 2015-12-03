@@ -131,7 +131,7 @@
 			$i = 0;
 			while ($row = pg_fetch_row($result)) {
 				if (isAccessible($row[0]))
-					$layers[$i++] = new LocalgisLayer($row[0], $row[1]);
+					$layers[$i++] = new LocalgisLayer($row[0],  sanear_string($row[1]));
 			}
 			return json_encode($layers);
 		} else

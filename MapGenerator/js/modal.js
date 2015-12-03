@@ -57,30 +57,17 @@ function attributesClickHandler() {
 					layerName : parent.data("layer").name
 				},
 				success : function (response) {
-					//console.log(response);
-					var dbLayers = JSON.parse(JSON.parse(response)[0]);
+					var dbAttributes = JSON.parse(response);
+					var attributes = viewFeatures.features;
 					//Que aparezcan con el tick solo los que están presentes (attributes)
 					var modalHTML = "";
 					//console.log(dbLayers);
-					dbLayers.forEach(function (dbLayer) {
-						layer = dbLayer[0];
-						//console.log(layer);
-						//console.log(layer.id);
-						if (layer.id == parent.data("layer").name) {
-							var listAttributes = layer.features;
-							listAttributes.forEach(function (attribute) {
-								if (attribute != "GEOMETRY") {
-									var checked = false;
-									viewFeatures.features.forEach(function (feature) {
-										if (feature == attribute) {
-											checked = true;
-											modalHTML += "<div><input type='checkbox' style='vertical-align: middle' checked/><label>&nbsp;&nbsp;&nbsp;" + attribute + "</label></div>";
-										}
-									})
-									if (!checked)
-										modalHTML += "<div><input type='checkbox' style='vertical-align: middle' unchecked/><label>&nbsp;&nbsp;&nbsp;" + attribute + "</label></div>";
-								}
-							})
+					dbAttributes.forEach(function (dbAtt) {
+						if (dbAtt != "GEOMETRY") {
+							if(attributes.indexOf(dbAtt)>=0)
+								modalHTML += "<div><input type='checkbox' style='vertical-align: middle' checked/><label>&nbsp;&nbsp;&nbsp;" + dbAtt + "</label></div>";
+							else
+								modalHTML += "<div><input type='checkbox' style='vertical-align: middle' unchecked/><label>&nbsp;&nbsp;&nbsp;" + dbAtt + "</label></div>";
 						}
 					})
 					$("#modalAttributes .modal-body").html(modalHTML);
@@ -531,8 +518,9 @@ function saveAttributes() {
 	//Crear lista con los atributos checked
 	$(".modal-body").children().each(function () {
 		var at;
+		console.log($(this).children());
 		//if ($($(this)).children('label').html() && ($($(this)).children('input')).is(':checked')) {
-		var label = ($(this)).children('label').html().replace("&nbsp;&nbsp;&nbsp;","");
+		var label = $(this).children('label').html().replace("&nbsp;&nbsp;&nbsp;","");
 		if ($(this).children('input').is(':checked')) {	
 			at=1;
 		} else {
@@ -562,41 +550,75 @@ function saveAttributes() {
 	}
 }
 
+function addWmsToList(){
+        var wms= $('#wmsInput').val();
+        wms = wms.trim();
+        var check = true;
+        if (wms) {
+                $("#wmsList option").each(function () {
+                        var listWms = $(this).val();
+                        if (listWms == wms)
+                                check = false;
+                });
+                if (check){
+                        $("#wmsList").append("<option value=\"" + wms + "\">" + wms + "</option>");
+                }
+                $('#wmsInput').val("");
+        }
+}
+
+function delWmsFromList(){
+        $("#wmsList option:selected").remove();
+}
+
+function updateUserWms(){
+        var wms = [];
+        $("#wmsList option").each(function () {
+                wms.push($(this).val());
+        });
+        console.log(wms);
+        $.ajax({
+                type : "POST",
+                url : apiPath + "apiDatabase.php",
+                data : {
+                        tag : "updateUserWmsList",
+                        wms : wms
+                },
+                success : function (response) {
+                },
+                error : function (error) {
+                        alert("Error al cargar los parámetros base : " + error);
+                }
+        });
+}
+
 function editWmsList() {
-	var htmlModal = "<label for=\"wmsList\">Lista de Wms disponible</label>" +
-		"<select multiple class=\"form-control\" id=\"wmsList\" tabindex=\"1\">" +
-		"</select>" +
-		"<button onclick='delWmsUrl()' id=\"ButtonDelWms\" class=\"btn btn-info btn-block\" style=\"margin-top:5px;margin-bottom:5px\" >Eliminar Wms</button>" +
-		"<input type=\"text\"  id=\"newWmsUrl\" style=\"width:100%; border-radius: 7px; \"/>" +
-		"<button onclick='addWmsUrl()' id=\"ButtonAddWms\" class=\"btn btn-info btn-block\" style=\"margin-top:5px\" >Añadir Wms</button>";
-	$("#modalWmsList .modal-body").empty();
-	$("#modalWmsList .modal-body").append(htmlModal);
-	$("#modalWmsList").modal("show");
-	$('#modalWmsList').keypress(function (e) {
-		if (e.keyCode == 13)
-			$('#enterWMsListModal').click();
-	});
-	$.ajax({
-		type : "POST",
-		url : apiPath + "apiDatabase.php",
-		data : {
-			tag : "getWms"
-		},
-		success : function (response) {
-			console.log(response);
-			var wmsList = JSON.parse(response);
-			//$("#wmsList").empty();
-			for (var i = 0; i < wmsList.length; i++) {
-				$("#wmsList").append("<option value=\"" + wmsList[i] + "\">" + wmsList[i] + "</option>");
-			}
-			$('#wmsList').prop('selectedIndex', -1);
-		},
-		error : function (error) {
-			$("#selectWms").append("<option value='http://ogc.bgs.ac.uk/cgi-bin/BGS_Bedrock_and_Superficial_Geology/wms'>http://ogc.bgs.ac.uk/cgi-bin/BGS_Bedrock_and_Superficial_Geology/wms</option>");
-			console.log("Ocurrió un error. Compruebe su conexión al servidor.");
-			console.log("Error al mostrar la lista de wms: " + error);
-		}
-	});
+	 $("#modalUserWms .modal-header").empty().append(" <button type=\"button\" class=\"close\" data-dismiss=\"modal\">&times;</button><h4 class=\"modal-title\">Mis wms.</h4>");
+
+        var modalHTML="<select multiple class=\"form-control\" id=\"wmsList\" tabindex=\"1\">"
+        $.ajax({
+                type : "POST",
+                url : apiPath + "apiDatabase.php",
+                data : {
+                        tag : "getUserWms"
+                },
+                success : function (response) {
+                        var wms=JSON.parse(response);
+                        for (var i = 0; i < wms.length; i++)
+                                modalHTML += "<option value=\"" + wms[i] + "\">" + wms[i] + "</option>"
+                        modalHTML += "</select>" +
+                                "<button onclick='delWmsFromList()' id=\"delWms\" class=\"btn btn-info btn-block\" style=\"padding:0;\" >Eliminar wms</button>" +
+                                "<input type=\"text\"  id=\"wmsInput\" style=\"width:100%; border-radius: 7px; \"/>" +
+                                "<button onclick='addWmsToList()' id=\"addWms\" class=\"btn btn-info btn-block\" style=\"padding:0;\" >Añadir wms</button>";
+                        $("#modalUserWms .modal-body").empty().append(modalHTML);
+                        $("#modalUserWms").modal({
+                                backdrop : "static"
+                        });
+                 },
+                 error : function (error) {
+                         alert("Error al cargar los parámetros base : " + error);
+                 }
+        });
 }
 
 function addWmsUrl() {

@@ -71,17 +71,11 @@
 			$layerName=$_POST['layerName'];
 			$mapName=$_POST['mapName'];
 			$dbConnection = new DBConnection(true);
-			$query="SELECT \"layersInfo\" FROM \"Maps\" WHERE name='".$mapName."'";
+			$query="SELECT attributes FROM \"Maps\" as m,\"Layers\" as l WHERE m.id=l.id_map AND m.name='".$mapName."' AND l.name='".$layerName."'";
 			$result = pg_query($query) or die('Error: '.pg_last_error());
+			$result = pg_fetch_result($result, 0,0);	
 			$dbConnection->close();
-
-			//Extraer solo los nombres de las capas (en orden)
-
-			$attributes=[];
-			while ($row = pg_fetch_row($result)){
-				array_push($attributes,$row[0]);
-			}
-			return json_encode($attributes);
+			return $result;
 		}
 		else
 			echo "Error: Layer name missed.";
@@ -96,19 +90,34 @@
 			$layerName=$_POST['layerName'];
 			$mapName=$_POST['mapName'];
 			$selected_att=$_POST['selected_att'];
-			$dbConnection = new DBConnection(null,"localgisvistas");
-			$query="SELECT definition FROM pg_views WHERE viewname = '".$mapName.'_'.$layerName."'";
-			$result = pg_query($query) or die('Error: '.pg_last_error());
-			$result = pg_fetch_result($result, 0,0);
-			$exp=multiexplode(array("FROM","from","From"),$result);
+			$dbConnection = new DBConnection(true);
+			$query="SELECT query FROM \"Layers\" AS l, \"Maps\" AS m WHERE l.id_map=m.id AND m.name = '".$mapName."' AND l.name='".$layerName."'";
+                        $result = pg_query($query) or die('Error: '.pg_last_error());
+                        $queryResult = pg_fetch_result($result, 0,0);
+			$dbConnection->close();	
+			if($queryResult==""){
+				$dbConnection = new DBConnection(null,"localgisvistas");
+				$query="SELECT definition FROM pg_views WHERE viewname = '".$mapName.'_'.$layerName."'";
+				$result = pg_query($query) or die('Error: '.pg_last_error());
+				$queryResult = pg_fetch_result($result, 0,0);
+				$dbConnection->close();	
+				$dbConnection = new DBConnection(true);
+				$query = "SELECT id FROM \"Maps\" WHERE name='".$mapName."'";
+	                        $result = pg_query($query)or die('Error: '.pg_last_error());
+        	                $idMap = pg_fetch_result($result, 0,0);
+                                $query="UPDATE \"Layers\" SET query='".$queryResult."' WHERE name='".$layerName."' AND id_map='".$idMap."'";
+                                pg_query($query) or die('Error: '.pg_last_error());
+                                $dbConnection->close();		
+			}
+			$exp=multiexplode(array("FROM","from","From"),$queryResult);
 			$select=$exp[0];
 			$from="";
 
 			if(sizeof($exp)>1)
-				$from=substr($result,strlen($select));
+				$from=substr($queryResult,strlen($select));
 			else
 				$from=$exp[1];
-
+			$dbConnection = new DBConnection(null,"localgisvistas");	
 			$query='DROP VIEW "'.$dbConnection->schema.'"."'.$mapName.'_'.$layerName.'"';
 			pg_query($query) or die('Error: '.pg_last_error());	
 
@@ -139,7 +148,7 @@
 			}
 			if(substr($select_layer,-1)==",")
                                 $select_layer=substr($select_layer,0,strlen($select_layer)-1);
-			$query='CREATE VIEW "'.$dbConnection->schema.'"."'.$mapName.'_'.$layerName.'" AS '.$select_layer.$from;
+			$query='CREATE VIEW "'.$dbConnection->schema.'"."'.$mapName.'_'.$layerName.'" AS '.$select_layer.' '.$from;
 			$result = pg_query($query) or die('Error: '.pg_last_error());
 			$dbConnection->close();
 			reloadCache();
@@ -153,84 +162,75 @@
 	 *  @return string
 	 */
 	function saveMapInfo() {
-		if (isset($_POST['mapName']) && isset($_POST['layersInfo'])) {
-			$mapName = $_POST['mapName'];
-			
+		if (isset($_POST['mapName']) && isset($_POST['layerName']) && isset($_POST['position']) && isset($_POST['visibility']) && isset($_POST['opacity'])) {
+			$mapName=$_POST['mapName'];
+			$layerName=$_POST['layerName'];
+			$position=$_POST['position'];
+			$visibility=$_POST['visibility'];
+			$opacity=$_POST['opacity'];
 			$dbConnection = new DBConnection(true);
-			$query = "SELECT \"layersInfo\" FROM \"Maps\" WHERE \"name\"='".$mapName."'";
+	                $query = "SELECT id FROM \"Maps\" WHERE name='".$mapName."'";
+	                $result = pg_query($query)or die('Error: '.pg_last_error());
+			$idMap = pg_fetch_result($result, 0,0);
+			$query = "SELECT count(*) FROM \"Layers\" WHERE name='".$layerName."' AND id_map='".$idMap."'";
 			$result = pg_query($query)or die('Error: '.pg_last_error());
-			$layersInfoDB = pg_fetch_result($result, 0,0);
-
-			//Si está vacio, el update
-			$li=array();
-			/*if($layersInfoDB!="" && $layersInfoDB!="[]"){
-				$layers=$_POST['layersInfo'];
-				$layerNames="";
-				for($i=0;$i<sizeof($layers);$i++){
-					$layer=$layers[$i];
-					$layerName=$layer[0]["id"][0];
-					$layerDB=layerInfoDB($layerName,$layersInfoDB);
-					if($layerDB!=null)
-						array_push($li,$layerDB);
-					else
-						array_push($li,$layer);	
-				}
+                        $updateable = pg_fetch_result($result, 0,0);	
+			if($updateable==1){
+	        	        $query = "UPDATE \"Layers\" SET visibility='".$visibility."',opacity='".$opacity."',position='".$position."' WHERE name='".$layerName."' AND id_map='".$idMap."'";
+        	        	$result = pg_query($query)or die('Error: '.pg_last_error());
 			}
-			else*/
-				$li=$_POST['layersInfo'];;
-		
-			$li=json_encode($li);	
-			$acentos = array("á", "é", "í", "ó", "ú", "Á", "É", "Í", "Ó", "Ú", "ñ", "Ñ");
-                        $utf8 = array("\u00e1", "\u00e9", "\u00ed", "\u00f3", "\u00fa", "\u00c1", "\u00c9", "\u00cd", "\u00d3", "\u00da", "\u00f1", "\u00d1");
-                        $li = str_replace($utf8, $acentos, $li);
-			var_dump($li);	
-			$query = "UPDATE \"Maps\" SET \"layersInfo\"='".$li."', date_update=NOW() WHERE \"name\"='".$mapName."'";
-			$result = pg_query($query)or die('Error: '.pg_last_error());
-			$dbConnection->close();
-
-			return $result;
+			else{
+				if(isset($_POST['query']) && isset($_POST['attributes'])){
+					$formQuery=$_POST['query'];
+					$attributes=$_POST['attributes'];
+					$query = "INSERT INTO \"Layers\" (id_map, visibility, opacity, position, query, attributes, name) VALUES('".$idMap."','".$visibility."','".$opacity."','".$position."','".$formQuery."','".$attributes."','".$layerName."')";
+                        	        $result = pg_query($query)or die('Error: '.pg_last_error());	
+				}
+				else
+					return "Error: Layers information missed.";	
+			}
+	                $dbConnection->close();
+        	        return $result;
 		} else
 			return "Error: Layers information missed.";
 	}
 
-	function getLayersVisibility($mapName){
-		$dbConnection = new DBConnection(true);
-                $query = "SELECT \"layersInfo\" FROM \"Maps\" WHERE \"name\"='".$mapName."'";
-                $result = pg_query($query)or die('Error: '.pg_last_error());
-                $layersInfoDB = pg_fetch_result($result, 0,0);
-		$dbConnection->close();	
-		return $layersInfoDB;	
-	}
-
-	/**
-	 * Devuelve la informacion en base de datos de una capa
-	 * @return layer
-	 */
-	function layerInfoDB($layerName,$layersInfoDB){
-		 $layersInfoDB=json_decode($layersInfoDB);
-                 $layerNames="";
-                 for($i=0;$i<sizeof($layersInfoDB);$i++){
- 	                $layerDB=$layersInfoDB[$i];
-                        $layerNameDB=$layerDB[0]->id[0];
-			if(strcmp($layerName,$layerNameDB)==0)
-				return $layerDB;
-                 }
-                 return null;
-	}
-
-	function clearMapInfo(){
+	function getMapInfo(){
 		if (isset($_POST['mapName'])){
-			$mapName = $_POST['mapName'];
+			$mapName=$_POST['mapName'];
+			$dbConnection = new DBConnection(true);
+        	        $query = "SELECT l.name,visibility,opacity FROM \"Layers\" AS l, \"Maps\" AS m WHERE m.id=l.id_map AND m.name='".$mapName."' ORDER BY position";
+                	$result = pg_query($query)or die('Error: '.pg_last_error());
+			$mapInfo="{\"map\":[";
+			while ($row = pg_fetch_row($result)){
+	                        $layerInfo="{\"name\":\"".$row[0]."\",\"visibility\":".$row[1].",\"opacity\":".$row[2].",\"position\":".$row[3]."},";
+				$mapInfo.=$layerInfo;
+			}
+			$mapInfo=substr($mapInfo,0,-1);
+			$mapInfo.="]}";
+			$dbConnection->close();	
+			return $mapInfo;	
+		}
+		return "Error: Map name missed.";	
+	}
 
+	function deleteLayerInfo(){
+		if (isset($_POST['mapName']) && isset($_POST['layerName'])){
+                        $mapName = $_POST['mapName'];
+			$layerName = $_POST['layerName'];
                         $dbConnection = new DBConnection(true);
-			$query = "UPDATE \"Maps\" SET \"layersInfo\"='[]', date_update=NOW() WHERE \"name\"='".$mapName."'";
+                        $query = "SELECT id FROM \"Maps\" WHERE name='".$mapName."'";
+			$result = pg_query($query)or die('Error: '.pg_last_error());
+                        $idMap = pg_fetch_result($result, 0,0);	
+                        $query = "DELETE FROM \"Layers\"  WHERE id_map=".$idMap." AND name='".$layerName."'";
                         $result = pg_query($query)or die('Error: '.pg_last_error());
                         $dbConnection->close();
-		}
-		else
+                        return $result;
+                }
+                else
                         return "Error: Layers information missed.";
+	}
 
-	}		
 	/**
 	 *	Se actualiza la descripción del mapa
 	 *  @return string

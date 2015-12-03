@@ -1,18 +1,39 @@
-var globalWmsLayersInfo = [];
 $(document).ready(function () {
 	assignEventsHandlers();
 	leftBarResizable();
 });
 
 function drawTree() {
-	var wms = serverGS + "geoserver/" + map.name;
-	//console.log(wms);
-	loadWmsTree(wms);
+	$.ajax({
+		type : "POST",
+                url : apiPath + "apiGeoserver.php",
+                data : {
+	                tag : "getDataSources",
+                        mapName : map.name
+                },
+                success : function(response){
+			console.log(response);
+			stores=response.split("|");
+			dataStores=JSON.parse(stores[0].replace("|","")).dataStores.dataStore;
+			wmsStores=JSON.parse(stores[1].replace("|",""));
+			for(var i=0;i<dataStores.length;i++){
+				wms=serverGS+"geoserver/"+dataStores[i].name;
+				loadWmsTree(wms)
+			}
+			for(var i=0;i<wmsStores.length;i++){
+				url=wmsStores[i];
+				loadExternWmsTree(url);
+                        }
+		},
+                error : function (error) {
+                        console.log("Error al recuperar los datasources:" + error);
+                }
+        });
 }
 
 function loadWmsTree(wms) {
 	//console.log(auth);
-	console.log(wms + requestCapabilities);
+	//console.log(wms + requestCapabilities);
 	var parser = new ol.format.WMSCapabilities();
 	$.ajax({
 		type : "GET",
@@ -26,13 +47,10 @@ function loadWmsTree(wms) {
   				withCredentials: true
   		},*/
 		success : function (response) {
-			globalWmsLayersInfo = getLayersInfoWms(wms);
-			var layersOrderInfo = findLayersCollectionForWms(wms);
 			var service = parser.read(response);
 			var capabilities = service.Capability;
 			var title = service.Service.Title;
 			//var mapName = service
-			var layers = [];
 			var bBox = [];
 			//console.log(capabilities.Layer.Layer);
 			if (capabilities.Layer.Layer != undefined) {
@@ -50,64 +68,15 @@ function loadWmsTree(wms) {
 						bBox.push(parseFloat(split1[0]), parseFloat(split1[1]), parseFloat(split2[0]), parseFloat(split2[1]));
 						var extent = ol.extent.applyTransform(bBox, ol.proj.getTransform("EPSG:4326", "EPSG:3857"));
 						map.getView().fitExtent(extent, map.getSize());
-						if (layersOrderInfo != null){
-							layersOrderInfo.reverse().forEach(function (layerOrdering){
-								for (var i = 0; i < capabilities.Layer.Layer.length; i++) {
-									console.log(layerOrdering.name + " -- " + capabilities.Layer.Layer[i].Name)
-									if (!searchLayerByName(capabilities.Layer.Layer[i].Name) && layerOrdering.name == capabilities.Layer.Layer[i].Name) {
-										var style = "";
-										var layer;
-										if (capabilities.Layer.Layer[i].Style != null && capabilities.Layer.Layer[i].Style[0].Name)
-											style = capabilities.Layer.Layer[i].Style[0].Name;
-										if (capabilities.Layer.Layer[i].cascaded == 1) {
-											layer = addLayerWms(capabilities.Layer.Layer[i].Name, wms+"/wms");
-											layer.wms = true;
-										} else {
-											layer = addLayer(capabilities.Layer.Layer[i].Name, wms+"/wms", style, bBox, layerOrdering.visible, layerOrdering.transparency);
-											layer.wms = false;
-										}
-										layers.push(layer);
-									}
-								}
-								updateTreeLayer();
-							})
+						for (var i = 0; i < capabilities.Layer.Layer.length; i++) {
+							if (!searchLayerByName(capabilities.Layer.Layer[i].Name)) {
+								var style = "";
+								if (capabilities.Layer.Layer[i].Style != null && capabilities.Layer.Layer[i].Style[0].Name)
+									style = capabilities.Layer.Layer[i].Style[0].Name;
+								addLayer(capabilities.Layer.Layer[i].Name, wms+"/wms", style, bBox, 1, 1);
+							}
 						}
-
-
-						// /var layersVisibility=[];
-						/*getLayersVisibility(map.name,function(response){
-							var lv=JSON.parse(response);
-							//console.log(lv);
-							for (var i=lv.length-1;i>=0;i--){
-								var vinfo=[];
-								vinfo.push(lv[i][1]);	
-								vinfo.push(lv[i][2]);
-								layersVisibility.push(vinfo);
-							}
-							for (var i = 0; i < capabilities.Layer.Layer.length; i++) {
-								if (!searchLayerByName(capabilities.Layer.Layer[i].Name)) {
-									var style = "";
-									var layer;
-									var visible = 1;//layersVisibility[i][0];
-									var opacity = 1;//layersVisibility[i][1];
-									if(visible=="false")
-										visible=false;
-									else
-										visible=true;
-									if (capabilities.Layer.Layer[i].Style != null && capabilities.Layer.Layer[i].Style[0].Name)
-										style = capabilities.Layer.Layer[i].Style[0].Name;
-									if (capabilities.Layer.Layer[i].cascaded == 1) {
-										layer = addLayerWms(capabilities.Layer.Layer[i].Name, wms+"/wms");
-										layer.wms = true;
-									} else {
-										layer = addLayer(capabilities.Layer.Layer[i].Name, wms+"/wms", style, bBox, visible, opacity);
-										layer.wms = false;
-									}
-									layers.push(layer);
-								}
-							}
-							updateTreeLayer();
-						})*/
+						updateTreeLayer();
 					},
 					error : function (response) {
 						console.log(response);
@@ -122,14 +91,33 @@ function loadWmsTree(wms) {
 	});
 }
 
-function findLayersCollectionForWms(WmsUrl){
-	console.log(WmsUrl+"/wms")
-	if (globalWmsLayersInfo == undefined) return;
-	for (var i=0; i<globalWmsLayersInfo.length; i++) {
-		if (globalWmsLayersInfo[i].url == WmsUrl + "/wms") {
-			return globalWmsLayersInfo[i].layers;
-		}
-	}
+function loadExternWmsTree(wms) {
+        var parser = new ol.format.WMSCapabilities();
+        $.ajax({
+                type : "GET",
+                jsonp : "callback",
+                dataType : 'text',
+                url : wms + requestCapabilities,
+                success : function (response) {
+                        var service = parser.read(response);
+                        var capabilities = service.Capability;
+                        var title = service.Service.Title;
+                        var layers = [];
+                        if (capabilities.Layer.Layer != undefined) {
+                        	for (var i = 0; i < capabilities.Layer.Layer.length; i++) {
+	                                if (!searchLayerByName(capabilities.Layer.Layer[i].Name)) {
+						var bBox=[-7.18211729951, 42.88231008548, -4.51116461875, 43.65924484073];
+                                                //addLayerWms(capabilities.Layer.Layer[i].Name, wms+"/wms");
+						addLayer(capabilities.Layer.Layer[i].Name, wms+"/wms", "",bBox, 1, 1);
+                                        }
+                                       	updateTreeLayer();
+                                }
+                        }
+                },
+                error : function (error) {
+                        alert("Error treemap: " + error);
+                }
+        });
 }
 
 function makeNodesSortable() {
@@ -225,37 +213,4 @@ function leftBarResizable() {
 			map.updateSize();
 		}
 	});
-}
-
-function getLayersInfoWms(wmsUrl){
-	return [
-		{
-			url: "http://asturiasmodelo.dyandns.org:8090/geoserver/Allande_braulio/wms",
-			layers: [
-				{
-					name: "ZBS_Área_II",
-					transparency: 0.2,
-					visible: true
-				},
-				{
-					name: "Concejos",
-					transparency: 0.5,
-					visible:false
-				}
-			]
-		},
-		{
-			url: "wms2",
-			layers: [
-				{
-					name: "layer3",
-					transparency: 0.6
-				},
-				{
-					name: "layer4",
-					transparency: 1
-				}
-			]
-		}
-	];
 }

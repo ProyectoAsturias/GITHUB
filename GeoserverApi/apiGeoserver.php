@@ -11,6 +11,9 @@
 	        	case "createMap":
 	                print(createMap());
 	                break;
+		    case "getDataSources":
+			print(getDataSources());
+			break;
 	            case "removeMap":
 	                print(removeMap());
 	                break;

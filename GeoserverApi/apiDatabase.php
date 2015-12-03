@@ -23,8 +23,11 @@ if (isset($_POST["tag"])) {
             echo updateMapDescription();
             break;
         case "saveMapInfo":
-            echo SaveMapInfo();
+            echo saveMapInfo();
             break;
+	case "getMapInfo":
+	    echo getMapInfo();
+	    break;
 	case "getLayersVisibility":
 	    if (isset($_POST['mapName'])){
 		$mapName=$_POST['mapName']; 
@@ -33,8 +36,8 @@ if (isset($_POST["tag"])) {
 	    else
 		echo "Error getLayersVisibility Documents. Params missed";	
             break;	
-        case "clearMapInfo":
-            echo clearMapInfo();
+	case "deleteLayerInfo":
+            echo deleteLayerInfo();
             break;
         case "getAttachDocuments":
             if (isset($_POST['nameLayer']) && isset($_POST['idFeature']) && isset($_POST['private'])) {

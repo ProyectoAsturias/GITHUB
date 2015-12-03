@@ -191,7 +191,6 @@ class ApiRest {
 		return json_decode($this->runApi('workspaces/'.urlencode($workspaceName).'/datastores.json'));
 	}
 
-
 	/**
 	 * Creación de un almacén de datos vinculado a una tabla en una base de datos postgresl.
 	 * @param $workspaceName
@@ -714,6 +713,19 @@ class ApiRest {
 	public function listWmsstores($workspaceName) {
 		return json_decode($this->runApi('workspaces/'.urlencode($workspaceName).'/wmsstores.json'));
 	}
+	
+	public function listWmsstoresUrls($workspaceName) {
+		$urls=array();
+		if($this->listWmsstores($workspaceName)->wmsStores){
+			$wmsStores=$this->listWmsstores($workspaceName)->wmsStores->wmsStore;
+			for($i=0;$i<sizeof($wmsStores);$i++){
+				$name=$wmsStores[$i]->name;
+				$url=json_decode($this->runApi('workspaces/'.urlencode($workspaceName).'/wmsstores/'.$name.'.json'))->wmsStore->capabilitiesURL;	
+		                array_push($urls,$url);	
+			}
+		}
+		return ($urls);
+	}
 
 	/**
 	 * Listado de las capas de un WmsSpace.
@@ -734,6 +746,7 @@ class ApiRest {
 	 * @return mixed|string
      */
 	public function addWmsLayer($workspaceName, $wmsstoreName, $wmsTitle, $description = ''){
+		return $workspaceName." ".$wmsstoreName;
 		$xml='<wmsLayer>
 			<name>'.$wmsTitle.'</name>
 			</wmsLayer>';
