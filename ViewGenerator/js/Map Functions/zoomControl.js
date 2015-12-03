@@ -30,7 +30,6 @@ function ZoomInEventHandler() {
  */
 function ZoomOutEventHandler() {
     $(".zoomOutButton").click(function () {
-        console.log("adios")
         doZoom(2);
     });
 }

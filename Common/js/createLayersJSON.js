@@ -10,7 +10,7 @@ function generateJSONLayers(){
         if (!(mapLayers.item(i).getSource() instanceof ol.source.TileWMS)) {
             continue;
         }
-        getJSONLayer(mapLayers.item(i), function(layerAttributes) {
+        getJSONLayer(mapLayers.item(i), function(layer, layerAttributes) {
             if (layerAttributes) {
                 layers.push(layerAttributes);
             }
@@ -20,7 +20,7 @@ function generateJSONLayers(){
 
 function getJSONLayer(layer, callback){
     getDescribeFeatureType(layer.getSource().getUrls()[0], layer.name, function(response){
-        callback (parseDescribeFeatureType(response));
+        callback (layer, parseDescribeFeatureType(response));
     });
 }
 

@@ -46,7 +46,7 @@ function deleteIconClickHandler() {
 function attributesClickHandler() {
 	$(".attributesLayer").click(function (event) {
 		var parent = $(this).parent().parent();
-		getJSONLayer(parent.data("layer"), function (viewFeatures) {
+		getJSONLayer(parent.data("layer"), function (layer, viewFeatures) {
 			//Rescatar atributos de MAP
 			$.ajax({
 				type : "POST",

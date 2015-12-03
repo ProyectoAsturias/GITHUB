@@ -24,7 +24,6 @@ function getPositionEvent(){
 function lastviewEventHandler() {
     $(".lastview").click(function () {
         if(counter>1){
-            console.log(counter);
             savePosition=false;
             map.getView().setCenter(centersArray[centersArray.length-2]);
             map.getView().setZoom(zoomsArray[zoomsArray.length-2]);

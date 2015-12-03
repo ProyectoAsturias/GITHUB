@@ -28,8 +28,6 @@ function initMap() {
 	getMapVars();
 	//setLayerOrder();
 	//setLayersVisibility();
-
-	getMapInfo();	
 }
 
 /**

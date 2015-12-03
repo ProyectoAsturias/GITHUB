@@ -27,6 +27,5 @@ function panToPosition(coordinates){
         source: /** @type {ol.Coordinate} */ (map.getView().getCenter())
     });
     map.beforeRender(pan);
-    console.log(coordinates);
     map.getView().setCenter(coordinates);
 }

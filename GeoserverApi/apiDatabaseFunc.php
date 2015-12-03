@@ -203,7 +203,7 @@
                 	$result = pg_query($query)or die('Error: '.pg_last_error());
 			$mapInfo="{\"map\":[";
 			while ($row = pg_fetch_row($result)){
-	                        $layerInfo="{\"name\":\"".$row[0]."\",\"visibility\":".$row[1].",\"opacity\":".$row[2].",\"position\":".$row[3]."},";
+	                        $layerInfo="{\"name\":\"".$row[0]."\",\"visibility\":".$row[1].",\"opacity\":".$row[2]."},";
 				$mapInfo.=$layerInfo;
 			}
 			$mapInfo=substr($mapInfo,0,-1);

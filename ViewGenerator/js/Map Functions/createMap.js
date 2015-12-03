@@ -17,7 +17,6 @@ function setMapDetails(sentMapDetails){
     setMapCenter(sentMapDetails["center"]);
     setMapZoomLevel(sentMapDetails["zoom"]);
     setBaseLayer(sentMapDetails["baseLayer"]);
-    console.log(mapDetails);
 }
 
 function setMapURL(WMSUrlArray){
@@ -26,7 +25,6 @@ function setMapURL(WMSUrlArray){
 
 function addMapUrl(WMSUrl){
     mapDetails["WMSUrl"].push(WMSUrl);
-    console.log(mapDetails);
 }
 
 function setMapEntity(entityId){
@@ -102,7 +100,6 @@ function setBbox(entityId){
             entityId:entityId
         },
         success: function (response) {
-            console.log(response);
             var bBox=[];
             var split1 = response.split(",")[0].split("(")[1].split(" ");
             var split2 = response.split(",")[1].split(")")[0].split(" ");
@@ -144,44 +141,64 @@ function addLayersAndGroupsFromWMS(WMSUrl){
     .then(function(response) {
             dataMap.layers = [];
             var capabilitiesParser = parser.read(response);
-            var layersOrderInfo = findLayersCollectionForWms(WMSUrl);
-            if (layersOrderInfo != null){
-                layersOrderInfo.reverse().forEach(function (layerOrdering){
-                    for(var i = 0; i < capabilitiesParser.Capability.Layer.Layer.length; i ++){
-                        if (capabilitiesParser.Capability.Layer.Layer[i].Name == layerOrdering.name){
-                            if(capabilitiesParser.Capability.Layer.Layer[i].cascaded==1){
-                                dataMap.layers.push(addLayerWmsToMap(capabilitiesParser.Capability.Layer.Layer[i].Name,WMSUrl, layerOrdering.transparency));
-                            }
-                            else{
-                                var layer=addLayerToMap(capabilitiesParser.Capability.Layer.Layer[i].Name,WMSUrl, layerOrdering.transparency, layerOrdering.visible);
-                                dataMap.layers.push(layer);
+            findLayersCollectionForWms(WMSUrl).then(function(response){
+                if (response != '{"map":]}'){
+                    layersOrderInfo = JSON.parse(response).map;
+                    layersOrderInfo.forEach(function (layerOrdering){
+                        for(var i = 0; i < capabilitiesParser.Capability.Layer.Layer.length; i ++){
+                            if (capabilitiesParser.Capability.Layer.Layer[i].Name == layerOrdering.name){
+                                if(capabilitiesParser.Capability.Layer.Layer[i].cascaded==1){
+                                    dataMap.layers.push(addLayerWmsToMap(capabilitiesParser.Capability.Layer.Layer[i].Name,WMSUrl, layerOrdering.transparency));
+                                }
+                                else{
+                                    var layer=addLayerToMap(capabilitiesParser.Capability.Layer.Layer[i].Name,WMSUrl, layerOrdering.opacity, layerOrdering.visibility);
+                                    dataMap.layers.push(layer);
+                                }
                             }
                         }
+                    });
+                    dataMap.layers = dataMap.layers.reverse();
+                }else{
+                    for(var i = 0; i < capabilitiesParser.Capability.Layer.Layer.length; i ++) {
+                        if (capabilitiesParser.Capability.Layer.Layer[i].cascaded == 1) {
+                            dataMap.layers.push(addLayerWmsToMap(capabilitiesParser.Capability.Layer.Layer[i].Name, WMSUrl));
+                        }
+                        else {
+                            var layer = addLayerToMap(capabilitiesParser.Capability.Layer.Layer[i].Name, WMSUrl, 1, true);
+                            dataMap.layers.push(layer);
+                        }
                     }
-                });
-            }else{
-                for(var i = 0; i < capabilitiesParser.Capability.Layer.Layer.length; i ++){
-                    if(capabilitiesParser.Capability.Layer.Layer[i].cascaded==1){
-                        dataMap.layers.push(addLayerWmsToMap(capabilitiesParser.Capability.Layer.Layer[i].Name,WMSUrl));
-                    }
-                    else{
-                        var layer=addLayerToMap(capabilitiesParser.Capability.Layer.Layer[i].Name,WMSUrl, 1, true);
-                        dataMap.layers.push(layer);
-                    }
+                    dataMap.layers = dataMap.layers.reverse();
                 }
-            }
-            treeDataSource.push(dataMap);
-            return treeDataSource;
+                treeDataSource.push(dataMap);
+                return treeDataSource;
+            });
     });
 }
 
 function findLayersCollectionForWms(WmsUrl){
-    if (globalWmsLayersInfo == undefined) return;
-    for (var i=0; i<globalWmsLayersInfo.length; i++) {
-        if (globalWmsLayersInfo[i].url == WmsUrl) {
-            return globalWmsLayersInfo[i].layers;
+    return $.ajax({
+        type : "POST",
+        url : apiPath + "apiDatabase.php",
+        data : {
+            tag : "getMapInfo",
+            mapName : getMapNameFromUrl(WmsUrl)
+        },
+        success : function (response) {
+            //console.log(response);
+            //console.log(JSON.parse(response));
+        },
+        error : function (error) {
+            console.log("Error: ".error);
         }
-    }
+    });
+}
+
+function getMapNameFromUrl(wmsUrl){
+    if (wmsUrl.indexOf("geoserver") == -1) return "";
+    var pattern = /^(.+)(geoserver\/)(.+)(\/wms)$/;
+    var match = wmsUrl.match(pattern)
+    return match[3];
 }
 
 function searchLayerByName(layerName){

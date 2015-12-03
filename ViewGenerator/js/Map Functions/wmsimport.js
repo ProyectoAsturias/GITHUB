@@ -47,7 +47,6 @@ function importWms(){
 			//console.log(response);
 			var parser = new ol.format.WMSCapabilities();
 			var service = parser.read(response);
-			console.log(service);
 			var capabilities = service.Capability;
 			title = service.Service.Title;
 			title=title.replace(/ /gi,'_');

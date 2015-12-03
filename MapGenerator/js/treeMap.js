@@ -12,7 +12,7 @@ function drawTree() {
                         mapName : map.name
                 },
                 success : function(response){
-			console.log(response);
+					console.log(response);
 			stores=response.split("|");
 			dataStores=JSON.parse(stores[0].replace("|","")).dataStores.dataStore;
 			wmsStores=JSON.parse(stores[1].replace("|",""));
@@ -22,7 +22,7 @@ function drawTree() {
 			}
 			for(var i=0;i<wmsStores.length;i++){
 				url=wmsStores[i];
-				loadExternWmsTree(url);
+				//loadExternWmsTree(url);
                         }
 		},
                 error : function (error) {
@@ -62,28 +62,54 @@ function loadWmsTree(wms) {
 						entityId : entityId,
 					},
 					success : function (response) {
-						//console.log(response);
-						var split1 = response.split(",")[0].split("(")[1].split(" ");
-						var split2 = response.split(",")[1].split(")")[0].split(" ");
-						bBox.push(parseFloat(split1[0]), parseFloat(split1[1]), parseFloat(split2[0]), parseFloat(split2[1]));
-						var extent = ol.extent.applyTransform(bBox, ol.proj.getTransform("EPSG:4326", "EPSG:3857"));
-						map.getView().fitExtent(extent, map.getSize());
-						for (var i = 0; i < capabilities.Layer.Layer.length; i++) {
-							if (!searchLayerByName(capabilities.Layer.Layer[i].Name)) {
-								var style = "";
-								if (capabilities.Layer.Layer[i].Style != null && capabilities.Layer.Layer[i].Style[0].Name)
-									style = capabilities.Layer.Layer[i].Style[0].Name;
-								addLayer(capabilities.Layer.Layer[i].Name, wms+"/wms", style, bBox, 1, 1);
+						var BboxResponse = response;
+						getMapInfo(map.name).then(function (response){
+							var layersOrderInfo = JSON.parse(response).map;
+							var split1 = BboxResponse.split(",")[0].split("(")[1].split(" ");
+							var split2 = BboxResponse.split(",")[1].split(")")[0].split(" ");
+							bBox.push(parseFloat(split1[0]), parseFloat(split1[1]), parseFloat(split2[0]), parseFloat(split2[1]));
+							var extent = ol.extent.applyTransform(bBox, ol.proj.getTransform("EPSG:4326", "EPSG:3857"));
+							map.getView().fitExtent(extent, map.getSize());
+							if (layersOrderInfo != null){
+								console.log(layersOrderInfo);
+								for (var h = 0; h<layersOrderInfo.length; h++){
+									var layerOrdering = layersOrderInfo[h];
+									for (var i = 0; i < capabilities.Layer.Layer.length; i++) {
+										if (!searchLayerByName(capabilities.Layer.Layer[i].Name) && layerOrdering.name == capabilities.Layer.Layer[i].Name) {
+											var style = "";
+											var layer;
+											if (capabilities.Layer.Layer[i].Style != null && capabilities.Layer.Layer[i].Style[0].Name)
+												style = capabilities.Layer.Layer[i].Style[0].Name;
+											if (capabilities.Layer.Layer[i].cascaded == 1) {
+												layer = addLayerWms(capabilities.Layer.Layer[i].Name, wms+"/wms");
+												layer.wms = true;
+											} else {
+												layer = addLayer(capabilities.Layer.Layer[i].Name, wms+"/wms", style, bBox, layerOrdering.visibility, layerOrdering.opacity);
+												layer.wms = false;
+											}
+										}
+									}
+								}
+								updateTreeLayer();
+							}else{
+								/*for (var i = 0; i < capabilities.Layer.Layer.length; i++) {
+									if (!searchLayerByName(capabilities.Layer.Layer[i].Name)) {
+										var style = "";
+										if (capabilities.Layer.Layer[i].Style != null && capabilities.Layer.Layer[i].Style[0].Name)
+											style = capabilities.Layer.Layer[i].Style[0].Name;
+										addLayer(capabilities.Layer.Layer[i].Name, wms+"/wms", style, bBox, 1, 1);
+									}
+								}*/
 							}
-						}
-						updateTreeLayer();
+						});
+
+						//console.log(response);
 					},
 					error : function (response) {
 						console.log(response);
 					}
 				})
 			}
-			updateTreeLayer();
 		},
 		error : function (error) {
 			alert("Error treemap: " + error);

@@ -35,7 +35,6 @@ function toggleAreaZoom(){
  * @return
  */
 function enableAreaZoom(){
-    console.log("activado");
     enabled = true;
     changeCursor();
     map.addInteraction(dragZoom);

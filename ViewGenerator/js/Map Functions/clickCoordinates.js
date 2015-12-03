@@ -55,7 +55,6 @@ function enableClickCoordinates(){
  * @return
  */
 function disableClickCoordinate(){
-    console.log("hola");
     enabled = false;
     map.un("click", showCoordinates);
     coordinatesOverlay.setPosition();
@@ -82,6 +81,5 @@ function showCoordinates(event) {
     var hdms = ol.coordinate.toStringHDMS(ol.proj.transform(coordinate, 'EPSG:3857', 'EPSG:4326'));
     coordinatesOverlay.getElement().innerHTML = '<p>Coordenadas del lugar:</p><code>' + hdms + '</code>';
     coordinatesOverlay.setPosition(coordinate);
-    console.log(coordinate);
     map.addOverlay(coordinatesOverlay);
 }
